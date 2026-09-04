@@ -2,6 +2,10 @@
 
 This standard applies to all new seed questions and to the progressive re-audit of the existing bank.
 
+## 0. PARCS sample questions are immutable
+
+Questions supplied directly by PARCS, including their scenario text, stems, answer options and confirmed answer keys, are reference material and must not be rewritten. The app may shuffle their presentation order and the order in which answer options are displayed, but the underlying sample-question content and keyed answer must remain unchanged.
+
 ## 1. Source discipline is non-negotiable
 
 - Write questions only from source text actually available in the working conversation/project: uploaded Acumen readings, PARCS materials, answer keys, or other source documents explicitly supplied for the study bank.
