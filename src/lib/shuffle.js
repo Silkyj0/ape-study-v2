@@ -41,16 +41,19 @@ function presentQuestion(question, targetCorrectPosition) {
 /**
  * Creates a presentation-only study queue.
  *
- * Correct answer positions are balanced across A/B/C/D for the session, then
- * the distractors are shuffled independently. The stored question content and
- * stored `correct` source index are never mutated.
+ * Question order is shuffled first. Correct answer positions are then balanced
+ * across A/B/C/D for the session, and distractors are shuffled independently.
+ * Stored question content, source order and `correct` source indexes are never
+ * mutated. Spaced repetition still determines which questions are eligible;
+ * this function only randomises presentation within that eligible pool.
  */
 export function prepareStudyQueue(questions) {
+  const shuffledQuestions = shuffleCopy(questions);
   const answerPositions = shuffleCopy(
-    questions.map((_, index) => index % 4),
+    shuffledQuestions.map((_, index) => index % 4),
   );
 
-  return questions.map((question, index) =>
+  return shuffledQuestions.map((question, index) =>
     presentQuestion(question, answerPositions[index]),
   );
 }
