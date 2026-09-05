@@ -52,6 +52,14 @@ export function getQaMetadata(question) {
     };
   }
 
+  if (question.module === 3 && question.sourceFileId && question.sourceUrl) {
+    return {
+      qaStatus: 'drive-source-verified',
+      qaLabel: 'Drive source verified',
+      qaNote: `Built directly from the connected Module 3 Acumen reading and checked against that source${question.sourceCheckedOn ? ` on ${question.sourceCheckedOn}` : ''}. The source Drive file ID and URL are retained with the question.`,
+    };
+  }
+
   if (question.source === 'From your notes') {
     return {
       qaStatus: 'user-added',
