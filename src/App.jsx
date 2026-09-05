@@ -14,8 +14,10 @@ import {
   SAME_SESSION_RETRY_GAP,
   answerScheduleFeedback,
   applyAnswerResult,
+  applyLowConfidence,
   buildAdaptiveSession,
   buildFocusSession,
+  lowConfidenceFeedback,
 } from './lib/learning.js';
 import { reconcile, uid } from './lib/progress.js';
 import { prepareRepeatQuestion, prepareStudyQueue } from './lib/shuffle.js';
@@ -37,6 +39,7 @@ export default function App() {
   const [sessionCorrect, setSessionCorrect] = useState(0);
   const [sessionRetryCounts, setSessionRetryCounts] = useState({});
   const [answerFeedback, setAnswerFeedback] = useState(null);
+  const [confidenceMarked, setConfidenceMarked] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState('');
 
@@ -80,6 +83,7 @@ export default function App() {
     setSessionCorrect(0);
     setSessionRetryCounts({});
     setAnswerFeedback(null);
+    setConfidenceMarked(false);
     setView('study');
     return true;
   }
@@ -116,6 +120,7 @@ export default function App() {
     const isCorrect = selectedSourceIndex === question.correct;
     setSelected(presentationIndex);
     setRevealed(true);
+    setConfidenceMarked(false);
     if (isCorrect) setSessionCorrect((count) => count + 1);
 
     const current = data.questions.find((item) => item.id === question.id) || question;
@@ -143,6 +148,21 @@ export default function App() {
     persist({ ...data, questions: nextQuestions });
   }
 
+  async function markLowConfidence() {
+    if (!revealed || confidenceMarked) return;
+    const question = queue[qIdx];
+    if (selected !== question.presentationCorrect) return;
+
+    const current = data.questions.find((item) => item.id === question.id) || question;
+    const updatedQuestion = applyLowConfidence(current);
+    const nextQuestions = data.questions.map((item) => item.id === question.id ? updatedQuestion : item);
+
+    setConfidenceMarked(true);
+    setAnswerFeedback(lowConfidenceFeedback());
+    setQueue((items) => items.map((item, index) => index === qIdx ? { ...item, ...updatedQuestion } : item));
+    await persist({ ...data, questions: nextQuestions });
+  }
+
   async function toggleFlag(id) {
     let nextFlagged = false;
     const nextQuestions = data.questions.map((item) => {
@@ -160,6 +180,7 @@ export default function App() {
       setSelected(null);
       setRevealed(false);
       setAnswerFeedback(null);
+      setConfidenceMarked(false);
     } else setView('modules');
   }
 
@@ -172,7 +193,7 @@ export default function App() {
     if (form.options.some((option) => !option.trim())) return setFormError('Fill in all four options.');
     setFormError('');
     const question = {
-      id: uid(), moduleId: form.moduleId, scenarioText: form.scenarioText.trim() || null, prompt: form.prompt.trim(), options: form.options.map((option) => option.trim()), correct: form.unknownAnswer ? null : form.correct, explanation: form.explanation.trim(), source: 'From your notes', difficulty: form.difficulty, status: form.unknownAnswer ? 'pending' : 'ready', qaStatus: 'user-added', qaLabel: 'User-added', qaNote: 'Manually added question. Verify against the source material you used to create it.', flagged: false, flaggedAt: null, level: 0, due: 0, seen: 0, correctCount: 0, correctStreak: 0, lapseCount: 0, recentResults: [], lastResult: null, lastAnsweredAt: null, learningTopic: 'Your notes',
+      id: uid(), moduleId: form.moduleId, scenarioText: form.scenarioText.trim() || null, prompt: form.prompt.trim(), options: form.options.map((option) => option.trim()), correct: form.unknownAnswer ? null : form.correct, explanation: form.explanation.trim(), source: 'From your notes', difficulty: form.difficulty, status: form.unknownAnswer ? 'pending' : 'ready', qaStatus: 'user-added', qaLabel: 'User-added', qaNote: 'Manually added question. Verify against the source material you used to create it.', flagged: false, flaggedAt: null, level: 0, due: 0, seen: 0, correctCount: 0, correctStreak: 0, lapseCount: 0, recentResults: [], recentConfidence: [], lowConfidenceCount: 0, lastResult: null, lastConfidence: null, lastConfidenceAt: null, lastAnsweredAt: null, learningTopic: 'Your notes',
     };
     await persist({ ...data, questions: [...data.questions, question] });
     setForm({ ...EMPTY_FORM, moduleId: form.moduleId, scenarioText: form.scenarioText, difficulty: form.difficulty, unknownAnswer: form.unknownAnswer });
@@ -201,14 +222,14 @@ export default function App() {
 
   return <div className="min-h-screen bg-slate-50 text-slate-800"><div className="mx-auto min-h-screen max-w-3xl bg-white shadow-sm">
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur"><div className="flex items-center justify-between gap-3">
-      <div><h1 className="text-base font-semibold text-slate-900">APE Part 2 study</h1><p className="text-xs text-slate-500">adaptive review · shuffled answers · weak-area focus · provenance QA</p></div>
+      <div><h1 className="text-base font-semibold text-slate-900">APE Part 2 study</h1><p className="text-xs text-slate-500">adaptive review · confidence-aware mastery · weak-area focus · provenance QA</p></div>
       <nav className="flex gap-1">{nav.map(([key, Icon, label]) => <button key={key} onClick={() => setView(key)} className={`flex flex-col items-center rounded px-2 py-1 text-[10px] sm:text-xs ${view === key ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-100'}`}><Icon size={16} /><span className="hidden sm:inline">{label}</span></button>)}</nav>
     </div></header>
     <main className="p-4 sm:p-5">
       {saveError && <div className="mb-3 flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700"><AlertCircle size={15} className="mt-0.5 shrink-0" /> {saveError}</div>}
       {notice && <div className="mb-3 flex items-start justify-between gap-3 rounded-md border border-blue-200 bg-blue-50 p-2 text-xs text-blue-800"><span>{notice}</span><button onClick={() => setNotice(null)} className="font-medium">×</button></div>}
       {view === 'modules' && <ModulesView questions={data.questions} onStart={startStudy} onSmartReview={startSmartReview} onCalibration={startRevisedExamBank} />}
-      {view === 'study' && currentQuestion && <StudyView question={currentQuestion} index={qIdx} total={queue.length} sessionCorrect={sessionCorrect} selected={selected} revealed={revealed} answerFeedback={answerFeedback} onAnswer={answer} onNext={nextCard} onExit={() => setView('modules')} onToggleFlag={toggleFlag} />}
+      {view === 'study' && currentQuestion && <StudyView question={currentQuestion} index={qIdx} total={queue.length} sessionCorrect={sessionCorrect} selected={selected} revealed={revealed} answerFeedback={answerFeedback} confidenceMarked={confidenceMarked} onAnswer={answer} onLowConfidence={markLowConfidence} onNext={nextCard} onExit={() => setView('modules')} onToggleFlag={toggleFlag} />}
       {view === 'add' && <AddQuestionView form={form} setForm={setForm} formError={formError} questions={data.questions} onUpdateOption={updateOption} onSubmit={submitForm} onDelete={deleteQuestion} onResolve={resolveAnswer} />}
       {view === 'dashboard' && <DashboardView questions={data.questions} onStartFocus={startFocusArea} />}
       {view === 'quality' && <QualityDashboard questions={data.questions} onToggleFlag={toggleFlag} />}
