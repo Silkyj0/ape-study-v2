@@ -13,7 +13,7 @@ export default function DashboardView({ questions, onStartFocus }) {
         <h2 className="text-sm font-semibold text-slate-900">Focus areas</h2>
       </div>
       <p className="mb-3 text-xs leading-relaxed text-slate-500">
-        Weak areas are detected from your recent results, repeated misses and the source topic attached to each question. A topic only appears after enough attempts to avoid overreacting to a single mistake.
+        Weak areas are detected from recent results, repeated misses and answers you marked as guessed/not confident. A topic only appears after enough attempts to avoid overreacting to one mistake.
       </p>
 
       {weakAreas.length ? <div className="space-y-2">
@@ -29,14 +29,16 @@ export default function DashboardView({ questions, onStartFocus }) {
                 <span className="text-sm font-medium text-slate-900">{area.topic}</span>
               </div>
               <div className="mt-1 text-xs text-slate-600">
-                {area.accuracy}% accuracy · {area.recentMisses} misses across {area.questionCount} question{area.questionCount === 1 ? '' : 's'}
+                {area.accuracy}% accuracy · {area.recentMisses} misses
+                {area.lowConfidence > 0 && <> · {area.lowConfidence} low-confidence correct</>}
+                {' '}· {area.questionCount} question{area.questionCount === 1 ? '' : 's'}
               </div>
             </div>
             <div className="flex shrink-0 items-center gap-1 text-xs font-medium text-amber-800">Focus <ChevronRight size={15} /></div>
           </button>
         ))}
       </div> : <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs leading-relaxed text-emerald-800">
-        No clear weak topic yet. Once you have a few attempts in each area, repeated misses or low recent accuracy will appear here automatically.
+        No clear weak topic yet. Once you have a few attempts in each area, repeated misses, low recent accuracy or uncertain correct answers will appear here automatically.
       </div>}
     </section>
 
