@@ -11,6 +11,16 @@ function normalized(value) {
     .trim();
 }
 
+function materialLengthClue(lengths, correctIndex) {
+  const correctLength = lengths[correctIndex];
+  const distractorLengths = lengths.filter((_, index) => index !== correctIndex);
+  const maxDistractor = Math.max(...distractorLengths, 1);
+  return correctLength === Math.max(...lengths)
+    && lengths.filter((length) => length === correctLength).length === 1
+    && correctLength > maxDistractor * 1.15
+    && correctLength - maxDistractor >= 8;
+}
+
 export function auditQuestion(question) {
   const flags = [];
 
@@ -30,22 +40,20 @@ export function auditQuestion(question) {
   const correctLength = lengths[question.correct];
   const distractorLengths = lengths.filter((_, index) => index !== question.correct);
   const maxDistractor = Math.max(...distractorLengths, 1);
-  const averageDistractor = distractorLengths.reduce((sum, length) => sum + length, 0) / distractorLengths.length;
-  const maxLength = Math.max(...lengths);
 
-  if (correctLength === maxLength && lengths.filter((length) => length === maxLength).length === 1) {
+  if (materialLengthClue(lengths, question.correct)) {
     flags.push({
       type: 'correct-longest',
       severity: correctLength > maxDistractor * 1.3 && correctLength - maxDistractor >= 12 ? 'high' : 'medium',
-      message: 'Correct option is uniquely the longest option.',
+      message: 'Correct option is materially longer than every distractor.',
     });
   }
 
-  if (correctLength > averageDistractor * 1.45 && correctLength - averageDistractor >= 18) {
+  if (correctLength > maxDistractor * 1.45 && correctLength - maxDistractor >= 18) {
     flags.push({
       type: 'length-outlier',
       severity: 'high',
-      message: 'Correct option is substantially longer than the distractors.',
+      message: 'Correct option is substantially longer than every distractor.',
     });
   }
 
@@ -102,8 +110,7 @@ export function auditQuestionBank(questions) {
   ready.forEach((question) => {
     positionCounts[question.correct] += 1;
     const lengths = question.options.map(textLength);
-    const correctLength = lengths[question.correct];
-    if (correctLength === Math.max(...lengths)) correctLongest += 1;
+    if (materialLengthClue(lengths, question.correct)) correctLongest += 1;
 
     const flags = auditQuestion(question);
     if (flags.some((flag) => flag.type === 'length-outlier')) lengthOutliers += 1;
