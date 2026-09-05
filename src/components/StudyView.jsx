@@ -9,7 +9,13 @@ function qaClasses(status) {
   return 'border-slate-200 bg-slate-50 text-slate-600';
 }
 
-export default function StudyView({ question, index, total, sessionCorrect, selected, revealed, onAnswer, onNext, onExit, onToggleFlag }) {
+function learningClasses(tone) {
+  if (tone === 'error') return 'border-red-200 bg-red-50 text-red-800';
+  if (tone === 'mastered') return 'border-emerald-300 bg-emerald-50 text-emerald-900';
+  return 'border-blue-200 bg-blue-50 text-blue-800';
+}
+
+export default function StudyView({ question, index, total, sessionCorrect, selected, revealed, answerFeedback, onAnswer, onNext, onExit, onToggleFlag }) {
   return (
     <div>
       <div className="mb-3 flex items-center justify-between text-xs text-slate-500">
@@ -41,13 +47,20 @@ export default function StudyView({ question, index, total, sessionCorrect, sele
         {revealed && <div className="mt-4 border-t border-slate-200 pt-3">
           <p className="mb-3 text-xs leading-relaxed text-slate-600">{question.explanation}</p>
 
+          {answerFeedback && <div className={`mb-3 rounded-md border p-2 ${learningClasses(answerFeedback.tone)}`}>
+            <div className="text-[11px] font-semibold">{answerFeedback.title}</div>
+            <p className="mt-1 text-[10px] leading-relaxed opacity-90">{answerFeedback.detail}</p>
+          </div>}
+
           <div className={`mb-3 rounded-md border p-2 ${qaClasses(question.qaStatus)}`}>
             <div className="flex items-center gap-2 text-[11px] font-semibold"><ShieldCheck size={14} /> {question.qaLabel || 'QA status unknown'}</div>
             {question.qaNote && <p className="mt-1 text-[10px] leading-relaxed opacity-90">{question.qaNote}</p>}
           </div>
 
           <div className="mb-3 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-400">
-            <span>Source: {question.source}</span><span>Difficulty: {question.difficulty || 'unrated'}</span>
+            {question.learningTopic && <span>Topic: {question.learningTopic}</span>}
+            <span>Source: {question.source}</span>
+            <span>Difficulty: {question.difficulty || 'unrated'}</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
