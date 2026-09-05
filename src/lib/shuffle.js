@@ -43,9 +43,9 @@ function presentQuestion(question, targetCorrectPosition) {
  *
  * Question order is shuffled first. Correct answer positions are then balanced
  * across A/B/C/D for the session, and distractors are shuffled independently.
- * Stored question content, source order and `correct` source indexes are never
- * mutated. Spaced repetition still determines which questions are eligible;
- * this function only randomises presentation within that eligible pool.
+ * Stored source order and answer indexes are never mutated. Spaced repetition
+ * determines which questions are eligible; this function only randomises their
+ * presentation.
  */
 export function prepareStudyQueue(questions) {
   const shuffledQuestions = shuffleCopy(questions);
@@ -56,4 +56,10 @@ export function prepareStudyQueue(questions) {
   return shuffledQuestions.map((question, index) =>
     presentQuestion(question, answerPositions[index]),
   );
+}
+
+// A missed question can be reinserted later in the same session. A fresh random
+// answer position prevents the repeat from becoming a memory-of-position test.
+export function prepareRepeatQuestion(question) {
+  return presentQuestion(question, Math.floor(Math.random() * 4));
 }
