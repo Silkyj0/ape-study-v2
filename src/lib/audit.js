@@ -62,12 +62,42 @@ export function auditQuestion(question) {
   return flags;
 }
 
+export function auditInformationQuality(question) {
+  const flags = [];
+  const source = String(question.source || '').trim();
+  const explanation = String(question.explanation || '').trim();
+
+  if (!source || source.toLowerCase().includes('ai-drafted')) {
+    flags.push({ type: 'source', severity: 'high', message: 'No reliable source provenance is recorded.' });
+  }
+
+  if (!explanation) {
+    flags.push({ type: 'explanation', severity: 'medium', message: 'No post-answer explanation is recorded.' });
+  }
+
+  if (question.qaStatus === 'needs-source-check') {
+    flags.push({ type: 'verification', severity: 'high', message: question.qaNote || 'Primary-source verification is required.' });
+  }
+
+  if (question.qaStatus === 'legacy-placeholder') {
+    flags.push({ type: 'verification', severity: 'medium', message: 'Later-module placeholder has not yet completed the source-audited rewrite workflow.' });
+  }
+
+  if (question.flagged) {
+    flags.push({ type: 'user-flag', severity: 'medium', message: 'Flagged during study for manual QA review.' });
+  }
+
+  return flags;
+}
+
 export function auditQuestionBank(questions) {
   const ready = questions.filter((q) => q.correct !== null && q.correct !== undefined);
   const positionCounts = [0, 0, 0, 0];
   let correctLongest = 0;
   let lengthOutliers = 0;
   const flagged = [];
+  const informationFlagged = [];
+  const qaCounts = {};
 
   ready.forEach((question) => {
     positionCounts[question.correct] += 1;
@@ -80,6 +110,13 @@ export function auditQuestionBank(questions) {
     if (flags.length) flagged.push({ question, flags });
   });
 
+  questions.forEach((question) => {
+    const status = question.qaStatus || 'unknown';
+    qaCounts[status] = (qaCounts[status] || 0) + 1;
+    const flags = auditInformationQuality(question);
+    if (flags.length) informationFlagged.push({ question, flags });
+  });
+
   const modules = [...new Set(questions.map((q) => q.module ?? q.moduleId))]
     .filter((moduleId) => moduleId !== undefined)
     .sort((a, b) => a - b)
@@ -89,11 +126,13 @@ export function auditQuestionBank(questions) {
       const modulePositions = [0, 0, 0, 0];
       moduleReady.forEach((q) => { modulePositions[q.correct] += 1; });
       const moduleFlagged = moduleQuestions.filter((q) => auditQuestion(q).length > 0).length;
+      const moduleInfoFlagged = moduleQuestions.filter((q) => auditInformationQuality(q).length > 0).length;
       return {
         moduleId,
         total: moduleQuestions.length,
         ready: moduleReady.length,
         flagged: moduleFlagged,
+        informationFlagged: moduleInfoFlagged,
         positionCounts: modulePositions,
       };
     });
@@ -111,6 +150,9 @@ export function auditQuestionBank(questions) {
     correctLongestPercent: Math.round((correctLongest / total) * 100),
     lengthOutliers,
     flagged,
+    informationFlagged,
+    userFlagged: questions.filter((q) => q.flagged),
+    qaCounts,
     modules,
     positionBalanceWarning: ready.length >= 12 && maxPositionDeviation > expectedPerPosition * 0.35,
     letters: LETTERS,
