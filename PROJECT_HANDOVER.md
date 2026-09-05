@@ -41,7 +41,6 @@ APE Part 2 study application for Patrick's Queensland Architectural Practice Exa
 ### Module 5
 
 - Module 5 — Responsible Design: Country, Environment, Equity, Safety & Amenity — is deliberately the **smallest authored module**.
-- Root Drive folder: `https://drive.google.com/drive/folders/1DcoNkcK1jNuDCmutM1379XXaJbsL_fhS`.
 - The PARC Unit 5 guide references many evolving external websites. At the user's direction, these external sources are **not used in the live M5 authored bank**.
 - A larger draft remains archived in `module05.part01.js` to `module05.part07.js`, but `module05.js` filters the live set to **20 Drive-source-verified questions** only.
 - Live authored answer positions: **5 A / 5 B / 5 C / 5 D**.
@@ -51,49 +50,63 @@ APE Part 2 study application for Patrick's Queensland Architectural Practice Exa
   - operational vs embodied energy/carbon and life-cycle thinking: 8 questions.
 - Deliberately excluded from the live authored bank: external Country/native-title websites, current ABCB web updates, Your Home, NatHERS, NABERS and other externally linked material.
 - The Victoria-only OHS note is not used as the Queensland default.
-- `edg_71_rc_edited.pdf` has poor extracted text and is not relied on for precise propositions.
+- The Module 5 sample-question material remains unused for answer-key purposes.
 - `MODULE05_SOURCE_MANIFEST.md` records the curation and exclusions.
-- The Module 5 Sample Questions folder remains unused for answer-key purposes; next step is blind calibration from user-supplied sample questions.
 
 ### Modules 6–11
 
-- Legacy placeholders remain for M6 and M7: M6 4, M7 4.
-- M8–M11 are empty.
-- Procurement and tendering (M6/7) remain priority study areas.
+Modules 6–11 were rebuilt from the connected Drive course readings. The sample-question folders remain deliberately unused so later calibration is blind.
+
+- **M6 — Building Procurement, Construction Contracts, Construction Documentation: 36 questions** — 9 A / 9 B / 9 C / 9 D.
+- **M7 — Tendering and Construction Contract Execution: 32 questions** — 8 A / 8 B / 8 C / 8 D.
+- **M8 — CA: Construction Commencement: 24 questions** — 6 A / 6 B / 6 C / 6 D.
+- **M9 — CA: Money: 28 questions** — 7 A / 7 B / 7 C / 7 D.
+- **M10 — CA: Time, EOT Costs, Liquidated Damages: 32 questions** — 8 A / 8 B / 8 C / 8 D.
+- **M11 — Final Certificate, Dispute Resolution + Termination: 24 questions** — 6 A / 6 B / 6 C / 6 D.
+
+Across M6–M11 there are **176 Drive-source-verified authored questions**, with stored answer positions exactly **44 A / 44 B / 44 C / 44 D**.
+
+M6/7 deliberately receive the deepest coverage because procurement and tendering are priority study areas. The four inherited M6 and four inherited M7 placeholders are retained in `module06.legacy.js` and `module07.legacy.js` for provenance but are no longer live.
+
+`MODULES06_11_SOURCE_MANIFEST.md` records source focus, counts and QA treatment.
 
 ## Current bank totals
 
-- M1: 44
-- M2: 75
-- M3: 60
-- M4: 69
-- M5: 20
-- M6: 4 legacy placeholders
-- M7: 4 legacy placeholders
-- M8–M11: 0
+| Module | Live questions |
+| --- | ---: |
+| M1 | 44 |
+| M2 | 75 |
+| M3 | 60 |
+| M4 | 69 |
+| M5 | 20 |
+| M6 | 36 |
+| M7 | 32 |
+| M8 | 24 |
+| M9 | 28 |
+| M10 | 32 |
+| M11 | 24 |
 
-Total live seed: **276 questions**.
+Total live seed: **444 questions**.
 
-Verified/authored exam practice: **236 questions**:
-- 100 source-audited M1/M2 rewrites
-- 60 Drive-source-verified M3
-- 56 Drive-source-verified M4
-- 20 Drive-source-verified M5
+Verified/authored exam practice: **412 questions**:
+- 100 source-audited M1/M2 rewrites;
+- 312 Drive-source-verified authored questions across M3–M11.
 
 There are **32 PARCS-confirmed questions** in the live seed: 19 from M1/M2 and 13 from M4. PARCS-confirmed questions remain available through normal module study but are excluded from the mixed Verified exam bank.
 
 ## Architecture and question data
 
-- `src/data/questions.js` combines modules and applies M1/M2 curated overlay logic.
+- `src/data/questions.js` combines all modules and applies M1/M2 curated overlay logic plus later-module distractor-only QA refinements.
 - `src/data/module03.js`, `module03Sources.js`, `module03Factory.js`, `MODULE03_SOURCE_MANIFEST.md` contain M3.
 - `src/data/module04.js`, the M4 authored chunks, `module04.parcs.js`, `module04Sources.js`, `module04Factory.js`, `MODULE04_SOURCE_MANIFEST.md` contain M4.
 - `src/data/module05.js` is the live curation layer for M5 and exposes 20 selected IDs from the archived M5 draft files.
-- `src/data/module05Sources.js` retains source metadata; live M5 currently uses Drive-backed sources only.
-- `src/data/module05Factory.js` attaches source metadata.
-- `MODULE05_SOURCE_MANIFEST.md` records the source-only curation decision.
+- `src/data/module06.js` to `src/data/module11.js` contain the source-built later-module banks.
+- `src/data/module06.legacy.js` and `src/data/module07.legacy.js` preserve the inherited placeholders but are not imported by the live seed.
+- `src/data/laterModuleQaOverrides.js` contains distractor-only wording refinements for later modules; it does not change keyed answers, explanations or source provenance.
+- `MODULES06_11_SOURCE_MANIFEST.md` records the M6–M11 source/QA workflow.
 - `src/data/qaMetadata.js` contains immutable PARCS IDs and provenance statuses.
 - Stable seed IDs are used throughout.
-- `SEED_VERSION` is **22** so stored progress reconciles safely to the compact M5 bank.
+- `SEED_VERSION` is **23** so stored progress reconciles safely to the fully source-built M6–M11 bank.
 
 ## Study presentation
 
@@ -101,6 +114,7 @@ There are **32 PARCS-confirmed questions** in the live seed: 19 from M1/M2 and 1
 - Correct presentation positions are balanced across A–D without mutating canonical answers.
 - Normal module study uses spaced-review eligibility.
 - The **Verified exam bank** contains `source-audited` and `drive-source-verified` authored questions and excludes immutable PARCS samples.
+- The Verified exam bank now spans M1–M11 and contains **412 questions**.
 
 ## Information QA model
 
@@ -109,12 +123,14 @@ Current QA statuses:
 - **Source-audited rewrite** — retained M1/M2 proposition/key/source from the earlier audited bank with improved wording/distractors.
 - **Drive source verified** — authored question built directly from a connected reading and retaining the Drive file reference/check date.
 - **Needs source check** — known ambiguity; withheld rather than guessed.
-- **Legacy placeholder** — later-module item not yet rebuilt.
+- **Legacy placeholder** — retained only for genuinely unreconstructed/user data; the live seed currently has no M6–M11 legacy placeholders.
 - **User-added** — manually created question requiring source verification.
 
 The repository still contains an inactive `parc-external-verified` pathway for archived M5 draft questions, but no current live M5 question uses that status.
 
 Users can **Flag for QA** during study; flags persist through local storage and export/import.
+
+The structural audit now distinguishes material answer-length cues from trivial one-character length differences. M6–M11 received a dedicated distractor-only length-cue pass; source propositions and confirmed/keyed answers were not changed to satisfy structural QA.
 
 ## Source discipline
 
@@ -134,20 +150,21 @@ Core rules:
 
 ## Next content task
 
-**Attempt Module 5 PARCS sample questions blind against the supplied M5 source files.**
+**Blind sample-question calibration from Module 5 onward.**
 
-Workflow:
-1. user supplies M5 sample screenshots/PDF in chat;
-2. answer blind from the supplied M5 readings;
+Proceed in order: **M5 → M6 → M7 → M8 → M9 → M10 → M11**.
+
+For each module:
+1. user supplies sample screenshots/PDF in chat;
+2. answer blind from that module's supplied readings without opening the stored sample-answer material;
 3. user confirms the official answer key;
-4. extract any calibration rules from differences;
-5. review the 20 authored M5 questions for those issues;
+4. extract any PARCS-specific reasoning rules from differences;
+5. review the authored bank for those issues;
 6. add confirmed samples as immutable PARCS questions if desired;
-7. bump `SEED_VERSION` if samples are added;
-8. verify Vercel production;
-9. proceed to Module 6.
+7. bump `SEED_VERSION` when samples are added;
+8. verify Vercel production before moving to the next module.
 
-M6/7 procurement and tendering should receive particular attention because they are Patrick's weaker areas.
+M6/7 procurement and tendering deserve particular attention during calibration because they are Patrick's priority weakness areas.
 
 ## Deployment
 
