@@ -10,8 +10,9 @@ import { module09Questions } from './module09.js';
 import { module10Questions } from './module10.js';
 import { module11Questions } from './module11.js';
 import { calibrationOverrides } from './calibrationOverrides.js';
+import { examOverridesBatch02 } from './examOverridesBatch02.js';
 
-export const SEED_VERSION = 15;
+export const SEED_VERSION = 16;
 
 const BASE_SEED = [
   ...module01Questions,
@@ -28,6 +29,6 @@ const BASE_SEED = [
 ];
 
 export const SEED = BASE_SEED.map((question) => {
-  const override = calibrationOverrides[question.id];
+  const override = examOverridesBatch02[question.id] || calibrationOverrides[question.id];
   return override ? { ...question, ...override } : question;
 });
