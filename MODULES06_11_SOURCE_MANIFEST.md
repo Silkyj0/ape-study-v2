@@ -92,6 +92,7 @@ Live questions use the supplied readings on:
 - Question propositions and keyed answers are based on the supplied source material; unsupported detail is not added from general knowledge.
 - Correct-answer source positions are exactly balanced within each module.
 - Distractor-only QA overlays in `src/data/laterModuleQaOverrides.js` remove material answer-length cues without changing keyed answers, explanations or provenance.
+- Under the current structural audit, the final 176-question M6–M11 set has **0 material answer-length flags, 0 high length outliers, 0 option-shape flags and 0 duplicate-option flags**.
 - `src/lib/audit.js` treats only material length differences as answer-length clues; trivial one-character differences are not counted as meaningful structural defects.
 - Sample questions remain outside the authored source pass until the user supplies them for blind answering and confirms the official PARC key.
 
