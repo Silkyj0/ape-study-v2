@@ -2,10 +2,12 @@ import { AlertTriangle, CheckCircle2, Flag, ShieldCheck, Shuffle } from 'lucide-
 import { auditQuestionBank } from '../lib/audit.js';
 import { WITHHELD_QA_ITEMS } from '../data/qaMetadata.js';
 
-export default function QualityDashboard({ questions }) {
+export default function QualityDashboard({ questions, onToggleFlag }) {
   const report = auditQuestionBank(questions);
   const sourceQuestions = questions.filter((q) => q.seedId);
   const sourceReport = auditQuestionBank(sourceQuestions);
+  const authoredQuestions = sourceQuestions.filter((q) => q.qaStatus === 'source-audited');
+  const authoredReport = auditQuestionBank(authoredQuestions);
   const qa = sourceReport.qaCounts;
 
   return (
@@ -33,7 +35,7 @@ export default function QualityDashboard({ questions }) {
         <Metric label="Live seed questions" value={sourceReport.totalQuestions} />
         <Metric label="PARCS confirmed" value={qa['parcs-confirmed'] || 0} />
         <Metric label="Source-audited rewrites" value={qa['source-audited'] || 0} />
-        <Metric label="Flagged by you" value={sourceReport.userFlagged.length} warning={sourceReport.userFlagged.length > 0} />
+        <Metric label="Flagged by you" value={report.userFlagged.length} warning={report.userFlagged.length > 0} />
       </div>
 
       {(qa['legacy-placeholder'] || 0) > 0 && (
@@ -72,42 +74,43 @@ export default function QualityDashboard({ questions }) {
       </div>
 
       <div>
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Structural audit</h3>
+        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Structural audit · authored exam bank only</h3>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <Metric label="Correct is longest" value={`${sourceReport.correctLongestPercent}%`} warning={sourceReport.correctLongestPercent > 40} />
-          <Metric label="Length outliers" value={sourceReport.lengthOutliers} warning={sourceReport.lengthOutliers > 0} />
-          <Metric label="Structurally flagged" value={sourceReport.flagged.length} warning={sourceReport.flagged.length > 0} />
+          <Metric label="Correct is longest" value={`${authoredReport.correctLongestPercent}%`} warning={authoredReport.correctLongestPercent > 40} />
+          <Metric label="Length outliers" value={authoredReport.lengthOutliers} warning={authoredReport.lengthOutliers > 0} />
+          <Metric label="Structurally flagged" value={authoredReport.flagged.length} warning={authoredReport.flagged.length > 0} />
           <Metric label="Info QA flags" value={sourceReport.informationFlagged.length} warning={sourceReport.informationFlagged.length > 0} />
         </div>
+        <p className="mt-2 text-[10px] leading-relaxed text-slate-400">Immutable PARCS samples and provisional later-module placeholders are excluded from structural scoring.</p>
       </div>
 
       <div className="rounded-lg border border-slate-200 p-3">
         <div className="mb-3 flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-700">Stored correct-answer positions</p>
+            <p className="text-xs font-semibold text-slate-700">Stored answer positions · authored exam bank</p>
             <p className="text-[11px] text-slate-400">Authoring audit only; students see shuffled positions.</p>
           </div>
-          {sourceReport.positionBalanceWarning ? <AlertTriangle size={17} className="text-amber-500" /> : <CheckCircle2 size={17} className="text-emerald-500" />}
+          {authoredReport.positionBalanceWarning ? <AlertTriangle size={17} className="text-amber-500" /> : <CheckCircle2 size={17} className="text-emerald-500" />}
         </div>
         <div className="grid grid-cols-4 gap-2">
-          {sourceReport.letters.map((letter, i) => (
+          {authoredReport.letters.map((letter, i) => (
             <div key={letter} className="rounded-md bg-slate-50 p-2 text-center">
               <div className="text-xs font-semibold text-slate-800">{letter}</div>
-              <div className="text-lg font-semibold text-slate-900">{sourceReport.positionPercentages[i]}%</div>
-              <div className="text-[10px] text-slate-400">{sourceReport.positionCounts[i]} questions</div>
+              <div className="text-lg font-semibold text-slate-900">{authoredReport.positionPercentages[i]}%</div>
+              <div className="text-[10px] text-slate-400">{authoredReport.positionCounts[i]} questions</div>
             </div>
           ))}
         </div>
       </div>
 
       <div className="space-y-2">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">By module</h3>
-        {sourceReport.modules.map((module) => (
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Authored bank by module</h3>
+        {authoredReport.modules.map((module) => (
           <div key={module.moduleId} className="rounded-lg border border-slate-200 p-3">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-medium text-slate-800">Module {module.moduleId}</p>
-                <p className="text-xs text-slate-400">{module.total} questions · {module.flagged} structural · {module.informationFlagged} info QA flags</p>
+                <p className="text-xs text-slate-400">{module.total} exam rewrites · {module.flagged} structurally flagged</p>
               </div>
               <div className="text-right text-[11px] text-slate-500">
                 A {module.positionCounts[0]} · B {module.positionCounts[1]} · C {module.positionCounts[2]} · D {module.positionCounts[3]}
@@ -123,16 +126,21 @@ export default function QualityDashboard({ questions }) {
           <div className="space-y-2">
             {report.userFlagged.map((question) => (
               <div key={question.id} className="rounded-md bg-white/70 p-2 text-xs">
-                <div className="font-medium text-slate-800">M{question.moduleId} · {question.seedId || question.id}</div>
-                <div className="mt-1 line-clamp-2 text-slate-600">{question.prompt}</div>
-                <div className="mt-1 text-[10px] text-slate-400">{question.source}</div>
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="font-medium text-slate-800">M{question.moduleId} · {question.seedId || question.id}</div>
+                    <div className="mt-1 line-clamp-2 text-slate-600">{question.prompt}</div>
+                    <div className="mt-1 text-[10px] text-slate-400">{question.source}</div>
+                  </div>
+                  {onToggleFlag && <button onClick={() => onToggleFlag(question.id)} className="shrink-0 rounded border border-amber-300 px-2 py-1 text-[10px] font-medium text-amber-800">Clear flag</button>}
+                </div>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {report.flagged.length > 0 && (
+      {authoredReport.flagged.length > 0 && (
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">
           Structural flags are rewrite prompts, not instructions to auto-change legal content. Source accuracy takes priority over making every option mechanically identical in length.
         </div>
