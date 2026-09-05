@@ -1,27 +1,19 @@
-// Source question content migrated unchanged from ape_study_app.jsx
+import { module04Part01 } from './module04.part01.js';
+import { module04Part02 } from './module04.part02.js';
+import { module04Part03 } from './module04.part03.js';
+import { module04Part04 } from './module04.part04.js';
+import { module04Part05 } from './module04.part05.js';
+import { module04Part06 } from './module04.part06.js';
+import { module04Part07 } from './module04.part07.js';
+
 export const module04Questions = [
-  {
-    "module": 4,
-    "prompt": "At what point in a project should site constraints (such as heritage overlays, easements, or overshadowing) generally be identified?",
-    "options": [
-      "During project initiation and site analysis, before concept design proceeds",
-      "Only if a neighbour complains during construction",
-      "During the documentation stage once the design is fixed",
-      "It is solely the builder's responsibility"
-    ],
-    "correct": 0,
-    "explanation": "Identifying constraints early allows them to inform the design concept and planning strategy, avoiding costly redesign later in the process."
-  },
-  {
-    "module": 4,
-    "prompt": "What is a primary purpose of engaging specialist consultants (structural, services, traffic, acoustic) early in a project?",
-    "options": [
-      "To transfer all design responsibility away from the architect",
-      "To integrate their input into the design before it is too costly to change",
-      "It is only necessary for projects over a certain size",
-      "To satisfy insurance requirements only"
-    ],
-    "correct": 1,
-    "explanation": "Early consultant engagement allows their technical input to shape the design while changes remain relatively low-cost, rather than being retrofitted later."
-  }
+  ...module04Part01,
+  ...module04Part02,
+  ...module04Part03,
+  ...module04Part04,
+  ...module04Part05,
+  ...module04Part06,
+  ...module04Part07,
 ];
+
+export const module04Ids = module04Questions.map((question) => question.id);
