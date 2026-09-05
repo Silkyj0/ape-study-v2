@@ -19,7 +19,7 @@ console.log('');
 console.log('Authored/verified exam-bank structural audit');
 console.log(`Questions: ${authoredReport.totalQuestions}`);
 console.log(`Correct position: A ${authoredReport.positionCounts[0]} | B ${authoredReport.positionCounts[1]} | C ${authoredReport.positionCounts[2]} | D ${authoredReport.positionCounts[3]}`);
-console.log(`Correct option is longest: ${authoredReport.correctLongest}/${authoredReport.readyQuestions} (${authoredReport.correctLongestPercent}%)`);
+console.log(`Material correct-answer length clues: ${authoredReport.correctLongest}/${authoredReport.readyQuestions} (${authoredReport.correctLongestPercent}%)`);
 console.log(`High length outliers: ${authoredReport.lengthOutliers}`);
 console.log(`Questions with structural flags: ${authoredReport.flagged.length}`);
 console.log('');
