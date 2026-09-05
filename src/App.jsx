@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { AlertCircle, BarChart3, BookOpen, Database, FlaskConical, Loader2, Plus } from 'lucide-react';
 import { SEED_VERSION } from './data/questions.js';
 import { calibrationIds } from './data/calibrationOverrides.js';
+import { examBatch02Ids } from './data/examOverridesBatch02.js';
 import AddQuestionView from './components/AddQuestionView.jsx';
 import DashboardView from './components/DashboardView.jsx';
 import DataPanel from './components/DataPanel.jsx';
@@ -13,6 +14,7 @@ import { prepareStudyQueue } from './lib/shuffle.js';
 import { downloadProgress, parseProgressFile, readStoredProgress, writeStoredProgress } from './lib/storage.js';
 
 const EMPTY_FORM = { moduleId: 1, scenarioText: '', prompt: '', options: ['', '', '', ''], correct: 0, unknownAnswer: false, explanation: '', difficulty: 'exam' };
+const REVISED_EXAM_IDS = [...calibrationIds, ...examBatch02Ids];
 
 export default function App() {
   const [data, setData] = useState(null);
@@ -77,9 +79,9 @@ export default function App() {
     beginQueue(due);
   }
 
-  function startCalibration() {
-    const calibrationSet = data.questions.filter((q) => calibrationIds.includes(q.seedId) && q.status === 'ready');
-    beginQueue(calibrationSet);
+  function startRevisedExamBank() {
+    const revisedSet = data.questions.filter((q) => REVISED_EXAM_IDS.includes(q.seedId) && q.status === 'ready');
+    beginQueue(revisedSet);
   }
 
   function answer(presentationIndex) {
@@ -142,7 +144,7 @@ export default function App() {
     <main className="p-4 sm:p-5">
       {saveError && <div className="mb-3 flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700"><AlertCircle size={15} className="mt-0.5 shrink-0" /> {saveError}</div>}
       {notice && <div className="mb-3 flex items-start justify-between gap-3 rounded-md border border-blue-200 bg-blue-50 p-2 text-xs text-blue-800"><span>{notice}</span><button onClick={() => setNotice(null)} className="font-medium">×</button></div>}
-      {view === 'modules' && <ModulesView questions={data.questions} onStart={startStudy} onCalibration={startCalibration} />}
+      {view === 'modules' && <ModulesView questions={data.questions} onStart={startStudy} onCalibration={startRevisedExamBank} />}
       {view === 'study' && currentQuestion && <StudyView question={currentQuestion} index={qIdx} total={queue.length} sessionCorrect={sessionCorrect} selected={selected} revealed={revealed} onAnswer={answer} onNext={nextCard} onExit={() => setView('modules')} />}
       {view === 'add' && <AddQuestionView form={form} setForm={setForm} formError={formError} questions={data.questions} onUpdateOption={updateOption} onSubmit={submitForm} onDelete={deleteQuestion} onResolve={resolveAnswer} />}
       {view === 'dashboard' && <DashboardView questions={data.questions} />}
