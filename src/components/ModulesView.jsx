@@ -1,24 +1,38 @@
-import { ChevronRight, FlaskConical } from 'lucide-react';
+import { ChevronRight, FlaskConical, RefreshCw } from 'lucide-react';
 import { MODULES } from '../data/modules.js';
 import { moduleStats } from '../lib/progress.js';
 
-export default function ModulesView({ questions, onStart, onCalibration }) {
+export default function ModulesView({ questions, onStart, onSmartReview, onCalibration }) {
   const examCount = questions.filter((q) => ['source-audited', 'drive-source-verified'].includes(q.qaStatus)).length;
   const parcsCount = questions.filter((q) => q.qaStatus === 'parcs-confirmed').length;
+  const now = Date.now();
+  const dueCount = questions.filter((q) => q.status === 'ready' && q.seen > 0 && q.due <= now).length;
+  const newCount = questions.filter((q) => q.status === 'ready' && !q.seen).length;
 
   return (
     <div>
       <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs leading-relaxed text-slate-600">
-        Question order and answer order are shuffled for every study session. Modules 1 and 2 use a smaller curated bank, Modules 3–11 are built from connected readings, and Module 5 is intentionally the smallest bank and limited to supplied source files. PARCS sample questions remain locked and unchanged.
+        Study is adaptive: missed questions return again within the session and become due sooner; consecutive correct answers progressively snooze a question for 1, 3, 7 and then 14 days. Module sessions are capped so you are not forced through an entire bank at once.
       </div>
+
+      <button
+        onClick={onSmartReview}
+        className="mb-3 flex w-full items-center justify-between gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-left hover:border-emerald-400"
+      >
+        <div>
+          <div className="flex items-center gap-2 text-sm font-semibold text-emerald-950"><RefreshCw size={17} /> Adaptive review · up to 20 cards</div>
+          <div className="mt-1 text-xs text-emerald-700">Prioritises mistakes and due reviews, then introduces unseen questions · {dueCount} due · {newCount} unseen</div>
+        </div>
+        <ChevronRight size={18} className="shrink-0 text-emerald-600" />
+      </button>
 
       <button
         onClick={onCalibration}
         className="mb-4 flex w-full items-center justify-between gap-3 rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-left hover:border-indigo-400"
       >
         <div>
-          <div className="flex items-center gap-2 text-sm font-semibold text-indigo-950"><FlaskConical size={17} /> Verified exam bank · {examCount} questions</div>
-          <div className="mt-1 text-xs text-indigo-700">Source-audited M1/M2 + Drive-verified M3–M11 · excludes the {parcsCount} locked PARCS samples · shuffled each run</div>
+          <div className="flex items-center gap-2 text-sm font-semibold text-indigo-950"><FlaskConical size={17} /> Verified exam bank · adaptive 25-card session</div>
+          <div className="mt-1 text-xs text-indigo-700">{examCount} source-verified questions available · excludes the {parcsCount} locked PARCS samples · weak/due questions are prioritised</div>
         </div>
         <ChevronRight size={18} className="shrink-0 text-indigo-500" />
       </button>
@@ -37,8 +51,8 @@ export default function ModulesView({ questions, onStart, onCalibration }) {
                 <div className="text-sm font-medium text-slate-900">M{String(module.id).padStart(2, '0')} · {module.title}</div>
                 <div className="mt-1 text-xs text-slate-500">
                   {stats.total === 0 && stats.pending === 0 ? 'No ready questions yet' : <>
-                    {stats.total} ready · {stats.due} due
-                    {stats.accuracy !== null && <> · {stats.accuracy}% accuracy</>}
+                    {stats.total} ready · {stats.due} due · {stats.newCount} new · {stats.mastered} mastered
+                    {stats.weak > 0 && <span className="text-amber-600"> · {stats.weak} weak</span>}
                     {stats.pending > 0 && <span className="text-slate-400"> · {stats.pending} awaiting answer key</span>}
                   </>}
                 </div>
