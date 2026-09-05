@@ -12,8 +12,6 @@ export const PARCS_SAMPLE_IDS = [
 
 export const PARCS_SAMPLE_SET = new Set(PARCS_SAMPLE_IDS);
 
-// These source-bank items are deliberately withheld from normal study until the
-// original reading is checked again. They remain in the archived module files.
 export const WITHHELD_QA_ITEMS = [
   {
     id: 'm1-woolcock',
@@ -56,7 +54,7 @@ export function getQaMetadata(question) {
     };
   }
 
-  if ([3, 4, 5].includes(question.module) && question.sourceKind !== 'parc-external' && question.sourceFileId && question.sourceUrl) {
+  if (question.module >= 3 && question.module <= 11 && question.sourceKind !== 'parc-external' && question.sourceFileId && question.sourceUrl) {
     return {
       qaStatus: 'drive-source-verified',
       qaLabel: 'Drive source verified',
