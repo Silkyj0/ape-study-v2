@@ -7,8 +7,18 @@ import DataPanel from './components/DataPanel.jsx';
 import ModulesView from './components/ModulesView.jsx';
 import QualityDashboard from './components/QualityDashboard.jsx';
 import StudyView from './components/StudyView.jsx';
-import { DAY_MS, INTERVALS, reconcile, uid } from './lib/progress.js';
-import { prepareStudyQueue } from './lib/shuffle.js';
+import {
+  MAX_SAME_SESSION_RETRIES,
+  MIXED_SESSION_LIMIT,
+  MODULE_SESSION_LIMIT,
+  SAME_SESSION_RETRY_GAP,
+  answerScheduleFeedback,
+  applyAnswerResult,
+  buildAdaptiveSession,
+  buildFocusSession,
+} from './lib/learning.js';
+import { reconcile, uid } from './lib/progress.js';
+import { prepareRepeatQuestion, prepareStudyQueue } from './lib/shuffle.js';
 import { downloadProgress, parseProgressFile, readStoredProgress, writeStoredProgress } from './lib/storage.js';
 
 const EMPTY_FORM = { moduleId: 1, scenarioText: '', prompt: '', options: ['', '', '', ''], correct: 0, unknownAnswer: false, explanation: '', difficulty: 'exam' };
@@ -25,6 +35,8 @@ export default function App() {
   const [selected, setSelected] = useState(null);
   const [revealed, setRevealed] = useState(false);
   const [sessionCorrect, setSessionCorrect] = useState(0);
+  const [sessionRetryCounts, setSessionRetryCounts] = useState({});
+  const [answerFeedback, setAnswerFeedback] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState('');
 
@@ -60,25 +72,41 @@ export default function App() {
   }, []);
 
   function beginQueue(questions) {
+    if (!questions.length) return false;
     setQueue(prepareStudyQueue(questions));
     setQIdx(0);
     setSelected(null);
     setRevealed(false);
     setSessionCorrect(0);
+    setSessionRetryCounts({});
+    setAnswerFeedback(null);
     setView('study');
+    return true;
   }
 
   function startStudy(moduleId) {
-    const now = Date.now();
-    const all = data.questions.filter((q) => q.moduleId === moduleId && q.status === 'ready');
-    let due = all.filter((q) => q.due <= now).sort((a, b) => a.level - b.level);
-    if (!due.length) due = [...all].sort((a, b) => a.level - b.level);
-    beginQueue(due);
+    const pool = data.questions.filter((q) => q.moduleId === moduleId && q.status === 'ready');
+    const session = buildAdaptiveSession(pool, MODULE_SESSION_LIMIT);
+    if (!beginQueue(session)) {
+      setNotice('Nothing is due in this module right now. Mastered questions are snoozed until their next review date.');
+    }
+  }
+
+  function startSmartReview() {
+    const pool = data.questions.filter((q) => q.status === 'ready');
+    const session = buildAdaptiveSession(pool, MODULE_SESSION_LIMIT);
+    if (!beginQueue(session)) setNotice('Nothing is due and there are no unseen questions available.');
   }
 
   function startRevisedExamBank() {
     const revisedSet = data.questions.filter((q) => ['source-audited', 'drive-source-verified'].includes(q.qaStatus) && q.status === 'ready');
-    beginQueue(revisedSet);
+    const session = buildAdaptiveSession(revisedSet, MIXED_SESSION_LIMIT);
+    if (!beginQueue(session)) setNotice('Nothing is due in the verified exam bank right now.');
+  }
+
+  function startFocusArea(topic) {
+    const session = buildFocusSession(data.questions, topic);
+    if (!beginQueue(session)) setNotice(`No ready questions are available for ${topic}.`);
   }
 
   function answer(presentationIndex) {
@@ -86,11 +114,32 @@ export default function App() {
     const question = queue[qIdx];
     const selectedSourceIndex = question.presentationOptions[presentationIndex].sourceIndex;
     const isCorrect = selectedSourceIndex === question.correct;
-    setSelected(presentationIndex); setRevealed(true);
+    setSelected(presentationIndex);
+    setRevealed(true);
     if (isCorrect) setSessionCorrect((count) => count + 1);
-    const level = isCorrect ? Math.min(question.level + 1, 5) : 0;
-    const due = Date.now() + INTERVALS[level] * DAY_MS;
-    const nextQuestions = data.questions.map((item) => item.id === question.id ? { ...item, level, due, seen: item.seen + 1, correctCount: item.correctCount + (isCorrect ? 1 : 0) } : item);
+
+    const current = data.questions.find((item) => item.id === question.id) || question;
+    const progress = applyAnswerResult(current, isCorrect);
+    const updatedQuestion = { ...current, ...progress };
+
+    let retryQueued = false;
+    if (!isCorrect) {
+      const retryCount = sessionRetryCounts[question.id] || 0;
+      if (retryCount < MAX_SAME_SESSION_RETRIES) {
+        retryQueued = true;
+        setSessionRetryCounts((counts) => ({ ...counts, [question.id]: retryCount + 1 }));
+        const repeat = prepareRepeatQuestion(updatedQuestion);
+        setQueue((items) => {
+          const next = [...items];
+          const insertAt = Math.min(qIdx + SAME_SESSION_RETRY_GAP + 1, next.length);
+          next.splice(insertAt, 0, repeat);
+          return next;
+        });
+      }
+    }
+
+    setAnswerFeedback(answerScheduleFeedback(updatedQuestion, isCorrect, retryQueued));
+    const nextQuestions = data.questions.map((item) => item.id === question.id ? updatedQuestion : item);
     persist({ ...data, questions: nextQuestions });
   }
 
@@ -106,8 +155,12 @@ export default function App() {
   }
 
   function nextCard() {
-    if (qIdx + 1 < queue.length) { setQIdx((index) => index + 1); setSelected(null); setRevealed(false); }
-    else setView('modules');
+    if (qIdx + 1 < queue.length) {
+      setQIdx((index) => index + 1);
+      setSelected(null);
+      setRevealed(false);
+      setAnswerFeedback(null);
+    } else setView('modules');
   }
 
   function updateOption(index, value) {
@@ -119,7 +172,7 @@ export default function App() {
     if (form.options.some((option) => !option.trim())) return setFormError('Fill in all four options.');
     setFormError('');
     const question = {
-      id: uid(), moduleId: form.moduleId, scenarioText: form.scenarioText.trim() || null, prompt: form.prompt.trim(), options: form.options.map((option) => option.trim()), correct: form.unknownAnswer ? null : form.correct, explanation: form.explanation.trim(), source: 'From your notes', difficulty: form.difficulty, status: form.unknownAnswer ? 'pending' : 'ready', qaStatus: 'user-added', qaLabel: 'User-added', qaNote: 'Manually added question. Verify against the source material you used to create it.', flagged: false, flaggedAt: null, level: 0, due: 0, seen: 0, correctCount: 0,
+      id: uid(), moduleId: form.moduleId, scenarioText: form.scenarioText.trim() || null, prompt: form.prompt.trim(), options: form.options.map((option) => option.trim()), correct: form.unknownAnswer ? null : form.correct, explanation: form.explanation.trim(), source: 'From your notes', difficulty: form.difficulty, status: form.unknownAnswer ? 'pending' : 'ready', qaStatus: 'user-added', qaLabel: 'User-added', qaNote: 'Manually added question. Verify against the source material you used to create it.', flagged: false, flaggedAt: null, level: 0, due: 0, seen: 0, correctCount: 0, correctStreak: 0, lapseCount: 0, recentResults: [], lastResult: null, lastAnsweredAt: null, learningTopic: 'Your notes',
     };
     await persist({ ...data, questions: [...data.questions, question] });
     setForm({ ...EMPTY_FORM, moduleId: form.moduleId, scenarioText: form.scenarioText, difficulty: form.difficulty, unknownAnswer: form.unknownAnswer });
@@ -148,16 +201,16 @@ export default function App() {
 
   return <div className="min-h-screen bg-slate-50 text-slate-800"><div className="mx-auto min-h-screen max-w-3xl bg-white shadow-sm">
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur"><div className="flex items-center justify-between gap-3">
-      <div><h1 className="text-base font-semibold text-slate-900">APE Part 2 study</h1><p className="text-xs text-slate-500">v2 development · shuffled questions + answers · spaced review · provenance QA</p></div>
+      <div><h1 className="text-base font-semibold text-slate-900">APE Part 2 study</h1><p className="text-xs text-slate-500">adaptive review · shuffled answers · weak-area focus · provenance QA</p></div>
       <nav className="flex gap-1">{nav.map(([key, Icon, label]) => <button key={key} onClick={() => setView(key)} className={`flex flex-col items-center rounded px-2 py-1 text-[10px] sm:text-xs ${view === key ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-100'}`}><Icon size={16} /><span className="hidden sm:inline">{label}</span></button>)}</nav>
     </div></header>
     <main className="p-4 sm:p-5">
       {saveError && <div className="mb-3 flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700"><AlertCircle size={15} className="mt-0.5 shrink-0" /> {saveError}</div>}
       {notice && <div className="mb-3 flex items-start justify-between gap-3 rounded-md border border-blue-200 bg-blue-50 p-2 text-xs text-blue-800"><span>{notice}</span><button onClick={() => setNotice(null)} className="font-medium">×</button></div>}
-      {view === 'modules' && <ModulesView questions={data.questions} onStart={startStudy} onCalibration={startRevisedExamBank} />}
-      {view === 'study' && currentQuestion && <StudyView question={currentQuestion} index={qIdx} total={queue.length} sessionCorrect={sessionCorrect} selected={selected} revealed={revealed} onAnswer={answer} onNext={nextCard} onExit={() => setView('modules')} onToggleFlag={toggleFlag} />}
+      {view === 'modules' && <ModulesView questions={data.questions} onStart={startStudy} onSmartReview={startSmartReview} onCalibration={startRevisedExamBank} />}
+      {view === 'study' && currentQuestion && <StudyView question={currentQuestion} index={qIdx} total={queue.length} sessionCorrect={sessionCorrect} selected={selected} revealed={revealed} answerFeedback={answerFeedback} onAnswer={answer} onNext={nextCard} onExit={() => setView('modules')} onToggleFlag={toggleFlag} />}
       {view === 'add' && <AddQuestionView form={form} setForm={setForm} formError={formError} questions={data.questions} onUpdateOption={updateOption} onSubmit={submitForm} onDelete={deleteQuestion} onResolve={resolveAnswer} />}
-      {view === 'dashboard' && <DashboardView questions={data.questions} />}
+      {view === 'dashboard' && <DashboardView questions={data.questions} onStartFocus={startFocusArea} />}
       {view === 'quality' && <QualityDashboard questions={data.questions} onToggleFlag={toggleFlag} />}
       {view === 'data' && <DataPanel data={data} storageBackend={storageBackend} onExport={() => downloadProgress(data)} onImport={importProgress} />}
     </main>
