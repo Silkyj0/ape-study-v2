@@ -13,9 +13,18 @@ export function reconcile(stored = { questions: [] }) {
     if (q.seedId) priorBySeedId.set(q.seedId, q);
   });
 
-  const userQuestions = (stored.questions || []).filter(
-    (q) => !q.seedId && q.source === 'From your notes',
-  );
+  const userQuestions = (stored.questions || [])
+    .filter((q) => !q.seedId && q.source === 'From your notes')
+    .map((q) => ({
+      ...q,
+      difficulty: q.difficulty || 'unrated',
+      status: q.status || (q.correct === null || q.correct === undefined ? 'pending' : 'ready'),
+      qaStatus: q.qaStatus || 'user-added',
+      qaLabel: q.qaLabel || 'User-added',
+      qaNote: q.qaNote || 'Manually added question. Verify against the source material you used to create it.',
+      flagged: Boolean(q.flagged),
+      flaggedAt: q.flaggedAt || null,
+    }));
 
   const seedQuestions = SEED.map((q) => {
     const prior = priorBySeedId.get(q.id);
@@ -31,6 +40,11 @@ export function reconcile(stored = { questions: [] }) {
       source: q.source || 'AI-drafted — verify against your notes',
       difficulty: q.difficulty || prior?.difficulty || 'unrated',
       status: q.correct === null || q.correct === undefined ? 'pending' : 'ready',
+      qaStatus: q.qaStatus || 'unknown',
+      qaLabel: q.qaLabel || 'Unknown',
+      qaNote: q.qaNote || '',
+      flagged: prior ? Boolean(prior.flagged) : false,
+      flaggedAt: prior?.flaggedAt || null,
       level: prior ? prior.level : 0,
       due: prior ? prior.due : 0,
       seen: prior ? prior.seen : 0,
