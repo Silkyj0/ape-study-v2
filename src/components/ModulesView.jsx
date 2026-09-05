@@ -3,13 +3,13 @@ import { MODULES } from '../data/modules.js';
 import { moduleStats } from '../lib/progress.js';
 
 export default function ModulesView({ questions, onStart, onCalibration }) {
-  const examCount = questions.filter((q) => ['source-audited', 'drive-source-verified'].includes(q.qaStatus)).length;
+  const examCount = questions.filter((q) => ['source-audited', 'drive-source-verified', 'parc-external-verified'].includes(q.qaStatus)).length;
   const parcsCount = questions.filter((q) => q.qaStatus === 'parcs-confirmed').length;
 
   return (
     <div>
       <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs leading-relaxed text-slate-600">
-        Question order and answer order are shuffled for every study session. Modules 1 and 2 use a smaller curated bank, while Modules 3 and 4 are built directly from connected Acumen source folders. PARCS sample questions remain locked and unchanged.
+        Question order and answer order are shuffled for every study session. Modules 1 and 2 use a smaller curated bank, while Modules 3–5 are built from connected readings and, for Module 5, current public sources explicitly directed by PARC. PARCS sample questions remain locked and unchanged.
       </div>
 
       <button
@@ -18,7 +18,7 @@ export default function ModulesView({ questions, onStart, onCalibration }) {
       >
         <div>
           <div className="flex items-center gap-2 text-sm font-semibold text-indigo-950"><FlaskConical size={17} /> Verified exam bank · {examCount} questions</div>
-          <div className="mt-1 text-xs text-indigo-700">Source-audited M1/M2 + Drive-verified M3/M4 · excludes the {parcsCount} locked PARCS samples · shuffled each run</div>
+          <div className="mt-1 text-xs text-indigo-700">Source-audited M1/M2 + verified-source M3–M5 · excludes the {parcsCount} locked PARCS samples · shuffled each run</div>
         </div>
         <ChevronRight size={18} className="shrink-0 text-indigo-500" />
       </button>
