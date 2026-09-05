@@ -6,7 +6,7 @@ export default function QualityDashboard({ questions, onToggleFlag }) {
   const report = auditQuestionBank(questions);
   const sourceQuestions = questions.filter((q) => q.seedId);
   const sourceReport = auditQuestionBank(sourceQuestions);
-  const authoredQuestions = sourceQuestions.filter((q) => q.qaStatus === 'source-audited');
+  const authoredQuestions = sourceQuestions.filter((q) => ['source-audited', 'drive-source-verified'].includes(q.qaStatus));
   const authoredReport = auditQuestionBank(authoredQuestions);
   const qa = sourceReport.qaCounts;
 
@@ -15,7 +15,7 @@ export default function QualityDashboard({ questions, onToggleFlag }) {
       <div>
         <h2 className="text-sm font-semibold text-slate-900">Question quality assurance</h2>
         <p className="mt-1 text-xs leading-relaxed text-slate-500">
-          QA is split into provenance and structural checks. The app can verify that a question comes from the audited source bank, preserve confirmed PARCS keys, detect known review issues and let you flag suspect items. It cannot independently prove a legal proposition without re-reading the underlying source.
+          QA is split into provenance and structural checks. The app preserves confirmed PARCS keys, records source-audited rewrites, tracks questions built directly from connected source readings, detects known review issues and lets you flag suspect items. It does not silently replace source material with general knowledge.
         </p>
       </div>
 
@@ -25,22 +25,23 @@ export default function QualityDashboard({ questions, onToggleFlag }) {
           <div>
             <p className="text-xs font-semibold text-emerald-900">Provenance QA is active</p>
             <p className="mt-1 text-xs leading-relaxed text-emerald-800">
-              PARCS samples are locked to their supplied scenario, stem, options and confirmed answer key. Retained Module 1 and 2 questions keep the proposition, source and explanation from the previously source-audited bank while assessment wording is improved.
+              PARCS samples are locked to their supplied content. Retained Modules 1–2 questions preserve propositions from the earlier audited bank. Module 3 questions are built directly from the connected Acumen readings and retain the exact Drive file reference used for verification.
             </p>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
         <Metric label="Live seed questions" value={sourceReport.totalQuestions} />
         <Metric label="PARCS confirmed" value={qa['parcs-confirmed'] || 0} />
         <Metric label="Source-audited rewrites" value={qa['source-audited'] || 0} />
+        <Metric label="Drive source verified" value={qa['drive-source-verified'] || 0} />
         <Metric label="Flagged by you" value={report.userFlagged.length} warning={report.userFlagged.length > 0} />
       </div>
 
       {(qa['legacy-placeholder'] || 0) > 0 && (
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">
-          <strong>{qa['legacy-placeholder']} later-module questions are still legacy placeholders.</strong> They remain visible only until Modules 3–11 are rebuilt from supplied source material and should not be treated as having the same QA status as the curated M1/M2 bank.
+          <strong>{qa['legacy-placeholder']} later-module questions are still legacy placeholders.</strong> They remain visible only until the remaining modules are rebuilt from supplied source material and should not be treated as having the same QA status as the curated bank.
         </div>
       )}
 
@@ -74,7 +75,7 @@ export default function QualityDashboard({ questions, onToggleFlag }) {
       </div>
 
       <div>
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Structural audit · authored exam bank only</h3>
+        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Structural audit · authored/verified exam bank</h3>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           <Metric label="Correct is longest" value={`${authoredReport.correctLongestPercent}%`} warning={authoredReport.correctLongestPercent > 40} />
           <Metric label="Length outliers" value={authoredReport.lengthOutliers} warning={authoredReport.lengthOutliers > 0} />
@@ -87,7 +88,7 @@ export default function QualityDashboard({ questions, onToggleFlag }) {
       <div className="rounded-lg border border-slate-200 p-3">
         <div className="mb-3 flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-700">Stored answer positions · authored exam bank</p>
+            <p className="text-xs font-semibold text-slate-700">Stored answer positions · authored/verified exam bank</p>
             <p className="text-[11px] text-slate-400">Authoring audit only; students see shuffled positions.</p>
           </div>
           {authoredReport.positionBalanceWarning ? <AlertTriangle size={17} className="text-amber-500" /> : <CheckCircle2 size={17} className="text-emerald-500" />}
@@ -104,13 +105,13 @@ export default function QualityDashboard({ questions, onToggleFlag }) {
       </div>
 
       <div className="space-y-2">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Authored bank by module</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Verified/authored bank by module</h3>
         {authoredReport.modules.map((module) => (
           <div key={module.moduleId} className="rounded-lg border border-slate-200 p-3">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-medium text-slate-800">Module {module.moduleId}</p>
-                <p className="text-xs text-slate-400">{module.total} exam rewrites · {module.flagged} structurally flagged</p>
+                <p className="text-xs text-slate-400">{module.total} exam questions · {module.flagged} structurally flagged</p>
               </div>
               <div className="text-right text-[11px] text-slate-500">
                 A {module.positionCounts[0]} · B {module.positionCounts[1]} · C {module.positionCounts[2]} · D {module.positionCounts[3]}
