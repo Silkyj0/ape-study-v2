@@ -2,7 +2,7 @@ import { SEED } from '../src/data/questions.js';
 import { auditQuestionBank } from '../src/lib/audit.js';
 
 const report = auditQuestionBank(SEED);
-const authored = SEED.filter((q) => ['source-audited', 'drive-source-verified'].includes(q.qaStatus));
+const authored = SEED.filter((q) => ['source-audited', 'drive-source-verified', 'parc-external-verified'].includes(q.qaStatus));
 const authoredReport = auditQuestionBank(authored);
 
 console.log('APE Study question-bank QA audit');
@@ -12,6 +12,7 @@ console.log(`Questions with answer keys: ${report.readyQuestions}`);
 console.log(`PARCS confirmed: ${report.qaCounts['parcs-confirmed'] || 0}`);
 console.log(`Source-audited rewrites: ${report.qaCounts['source-audited'] || 0}`);
 console.log(`Drive source verified: ${report.qaCounts['drive-source-verified'] || 0}`);
+console.log(`PARC external source verified: ${report.qaCounts['parc-external-verified'] || 0}`);
 console.log(`Legacy placeholders: ${report.qaCounts['legacy-placeholder'] || 0}`);
 console.log(`User/source QA flags: ${report.informationFlagged.length}`);
 console.log('');
