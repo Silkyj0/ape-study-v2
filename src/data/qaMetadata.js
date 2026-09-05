@@ -56,11 +56,19 @@ export function getQaMetadata(question) {
     };
   }
 
-  if ([3, 4].includes(question.module) && question.sourceFileId && question.sourceUrl) {
+  if ([3, 4, 5].includes(question.module) && question.sourceKind !== 'parc-external' && question.sourceFileId && question.sourceUrl) {
     return {
       qaStatus: 'drive-source-verified',
       qaLabel: 'Drive source verified',
-      qaNote: `Built directly from the connected Module ${question.module} Acumen reading and checked against that source${question.sourceCheckedOn ? ` on ${question.sourceCheckedOn}` : ''}. The source Drive file ID and URL are retained with the question.`,
+      qaNote: `Built directly from the connected Module ${question.module} reading and checked against that source${question.sourceCheckedOn ? ` on ${question.sourceCheckedOn}` : ''}. The source Drive file ID and URL are retained with the question.`,
+    };
+  }
+
+  if (question.module === 5 && question.sourceKind === 'parc-external' && question.sourceUrl) {
+    return {
+      qaStatus: 'parc-external-verified',
+      qaLabel: 'PARC external source verified',
+      qaNote: `Built from a current public source explicitly directed by the PARC Module 5 reading guide and checked${question.sourceCheckedOn ? ` on ${question.sourceCheckedOn}` : ''}. The exact source URL is retained with the question.`,
     };
   }
 
