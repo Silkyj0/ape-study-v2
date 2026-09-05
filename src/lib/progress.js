@@ -1,10 +1,30 @@
 import { SEED, SEED_VERSION } from '../data/questions.js';
+import { DAY_MS, getLearningTopic, masteryState } from './learning.js';
 
-export const DAY_MS = 24 * 60 * 60 * 1000;
-export const INTERVALS = [0, 1, 2, 4, 9, 18];
+// Retained for backwards compatibility with older imports/data exports.
+export const INTERVALS = [0, 1, 3, 7, 14];
+export { DAY_MS };
 
 export function uid() {
   return Math.random().toString(36).slice(2, 10);
+}
+
+function learningProgress(prior, fallback = {}) {
+  return {
+    level: prior ? (prior.level ?? 0) : 0,
+    due: prior ? (prior.due ?? 0) : 0,
+    seen: prior ? (prior.seen ?? 0) : 0,
+    correctCount: prior ? (prior.correctCount ?? 0) : 0,
+    // null distinguishes historical progress whose consecutive-answer streak
+    // cannot be reconstructed from aggregate counts. The first new answer will
+    // start a real streak without falsely snoozing an old question.
+    correctStreak: prior ? (prior.correctStreak ?? null) : 0,
+    lapseCount: prior ? (prior.lapseCount ?? 0) : 0,
+    recentResults: prior?.recentResults || [],
+    lastResult: prior?.lastResult ?? null,
+    lastAnsweredAt: prior?.lastAnsweredAt || null,
+    learningTopic: prior?.learningTopic || fallback.learningTopic || null,
+  };
 }
 
 export function reconcile(stored = { questions: [] }) {
@@ -24,11 +44,12 @@ export function reconcile(stored = { questions: [] }) {
       qaNote: q.qaNote || 'Manually added question. Verify against the source material you used to create it.',
       flagged: Boolean(q.flagged),
       flaggedAt: q.flaggedAt || null,
+      ...learningProgress(q, { learningTopic: getLearningTopic(q) }),
     }));
 
   const seedQuestions = SEED.map((q) => {
     const prior = priorBySeedId.get(q.id);
-    return {
+    const base = {
       id: prior ? prior.id : uid(),
       seedId: q.id,
       moduleId: q.module,
@@ -45,10 +66,12 @@ export function reconcile(stored = { questions: [] }) {
       qaNote: q.qaNote || '',
       flagged: prior ? Boolean(prior.flagged) : false,
       flaggedAt: prior?.flaggedAt || null,
-      level: prior ? prior.level : 0,
-      due: prior ? prior.due : 0,
-      seen: prior ? prior.seen : 0,
-      correctCount: prior ? prior.correctCount : 0,
+    };
+    const learningTopic = getLearningTopic({ ...q, moduleId: q.module });
+    return {
+      ...base,
+      ...learningProgress(prior, { learningTopic }),
+      learningTopic,
     };
   });
 
@@ -63,17 +86,35 @@ export function moduleStats(questions, moduleId) {
   const ready = all.filter((q) => q.status === 'ready');
   const pending = all.length - ready.length;
   const now = Date.now();
-  const due = ready.filter((q) => q.due <= now).length;
+  const due = ready.filter((q) => q.seen > 0 && q.due <= now).length;
+  const newCount = ready.filter((q) => !q.seen).length;
   const seen = ready.filter((q) => q.seen > 0);
   const attempts = seen.reduce((sum, q) => sum + q.seen, 0);
   const correct = seen.reduce((sum, q) => sum + q.correctCount, 0);
   const accuracy = attempts ? Math.round((correct / attempts) * 100) : null;
-  const avgLevel = ready.length ? ready.reduce((sum, q) => sum + q.level, 0) / ready.length / 5 : 0;
+  const mastered = ready.filter((q) => masteryState(q) === 'mastered').length;
+  const learning = ready.filter((q) => masteryState(q) === 'learning').length;
+  const weak = ready.filter((q) => {
+    const recent = q.recentResults || [];
+    const recentAccuracy = recent.length ? recent.filter(Boolean).length / recent.length : null;
+    return q.lastResult === false || (recent.length >= 3 && recentAccuracy < 0.67);
+  }).length;
+
+  const masteryPoints = ready.reduce((sum, q) => {
+    if (!q.seen) return sum;
+    if (Number.isFinite(q.correctStreak)) return sum + Math.min(q.correctStreak, 3) / 3;
+    return sum + Math.min(q.level || 0, 5) / 5;
+  }, 0);
+
   return {
     total: ready.length,
     pending,
     due,
+    newCount,
+    learning,
+    mastered,
+    weak,
     accuracy,
-    mastery: Math.round(avgLevel * 100),
+    mastery: ready.length ? Math.round((masteryPoints / ready.length) * 100) : 0,
   };
 }
