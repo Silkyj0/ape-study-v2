@@ -77,7 +77,7 @@ export default function App() {
   }
 
   function startRevisedExamBank() {
-    const revisedSet = data.questions.filter((q) => ['source-audited', 'drive-source-verified', 'parc-external-verified'].includes(q.qaStatus) && q.status === 'ready');
+    const revisedSet = data.questions.filter((q) => ['source-audited', 'drive-source-verified'].includes(q.qaStatus) && q.status === 'ready');
     beginQueue(revisedSet);
   }
 
