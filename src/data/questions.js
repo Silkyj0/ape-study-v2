@@ -9,10 +9,12 @@ import { module08Questions } from './module08.js';
 import { module09Questions } from './module09.js';
 import { module10Questions } from './module10.js';
 import { module11Questions } from './module11.js';
-import { calibrationOverrides } from './calibrationOverrides.js';
-import { examOverridesBatch02 } from './examOverridesBatch02.js';
+import { calibrationOverrides, calibrationIds } from './calibrationOverrides.js';
+import { examOverridesBatch02, examBatch02Ids } from './examOverridesBatch02.js';
+import { examOverridesBatch03, examBatch03Ids } from './examOverridesBatch03.js';
+import { getQaMetadata, PARCS_SAMPLE_IDS, WITHHELD_QA_IDS } from './qaMetadata.js';
 
-export const SEED_VERSION = 16;
+export const SEED_VERSION = 17;
 
 const BASE_SEED = [
   ...module01Questions,
@@ -28,7 +30,29 @@ const BASE_SEED = [
   ...module11Questions,
 ];
 
-export const SEED = BASE_SEED.map((question) => {
-  const override = examOverridesBatch02[question.id] || calibrationOverrides[question.id];
-  return override ? { ...question, ...override } : question;
+// The original module files remain the archive/source bank. The live M1/M2 bank
+// is deliberately smaller: immutable PARCS samples plus questions that have
+// passed the exam-standard rewrite workflow. Known source-check items are held
+// back from study rather than guessed or silently corrected.
+export const CURATED_M1_M2_IDS = [
+  ...new Set([
+    ...PARCS_SAMPLE_IDS,
+    ...calibrationIds,
+    ...examBatch02Ids,
+    ...examBatch03Ids,
+  ].filter((id) => !WITHHELD_QA_IDS.has(id))),
+];
+
+const CURATED_M1_M2_SET = new Set(CURATED_M1_M2_IDS);
+
+const ACTIVE_BASE_SEED = BASE_SEED.filter((question) =>
+  question.module > 2 || CURATED_M1_M2_SET.has(question.id),
+);
+
+export const SEED = ACTIVE_BASE_SEED.map((question) => {
+  const override = examOverridesBatch03[question.id]
+    || examOverridesBatch02[question.id]
+    || calibrationOverrides[question.id];
+  const revised = override ? { ...question, ...override } : question;
+  return { ...revised, ...getQaMetadata(revised) };
 });
