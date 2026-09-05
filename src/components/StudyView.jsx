@@ -1,6 +1,13 @@
-import { CheckCircle2, ChevronLeft, XCircle } from 'lucide-react';
+import { CheckCircle2, ChevronLeft, Flag, ShieldCheck, XCircle } from 'lucide-react';
 
-export default function StudyView({ question, index, total, sessionCorrect, selected, revealed, onAnswer, onNext, onExit }) {
+function qaClasses(status) {
+  if (status === 'parcs-confirmed') return 'border-emerald-200 bg-emerald-50 text-emerald-800';
+  if (status === 'source-audited') return 'border-blue-200 bg-blue-50 text-blue-800';
+  if (status === 'needs-source-check' || status === 'legacy-placeholder') return 'border-amber-200 bg-amber-50 text-amber-800';
+  return 'border-slate-200 bg-slate-50 text-slate-600';
+}
+
+export default function StudyView({ question, index, total, sessionCorrect, selected, revealed, onAnswer, onNext, onExit, onToggleFlag }) {
   return (
     <div>
       <div className="mb-3 flex items-center justify-between text-xs text-slate-500">
@@ -31,10 +38,26 @@ export default function StudyView({ question, index, total, sessionCorrect, sele
         </div>
         {revealed && <div className="mt-4 border-t border-slate-200 pt-3">
           <p className="mb-3 text-xs leading-relaxed text-slate-600">{question.explanation}</p>
+
+          <div className={`mb-3 rounded-md border p-2 ${qaClasses(question.qaStatus)}`}>
+            <div className="flex items-center gap-2 text-[11px] font-semibold"><ShieldCheck size={14} /> {question.qaLabel || 'QA status unknown'}</div>
+            {question.qaNote && <p className="mt-1 text-[10px] leading-relaxed opacity-90">{question.qaNote}</p>}
+          </div>
+
           <div className="mb-3 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-400">
             <span>Source: {question.source}</span><span>Difficulty: {question.difficulty || 'unrated'}</span>
           </div>
-          <button onClick={onNext} className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white">{index + 1 < total ? 'Next card' : 'Finish session'}</button>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button onClick={onNext} className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white">{index + 1 < total ? 'Next card' : 'Finish session'}</button>
+            <button
+              onClick={() => onToggleFlag(question.id)}
+              className={`flex items-center gap-1.5 rounded-md border px-3 py-2 text-xs font-medium ${question.flagged ? 'border-amber-300 bg-amber-50 text-amber-800' : 'border-slate-200 text-slate-500 hover:border-amber-300 hover:text-amber-700'}`}
+            >
+              <Flag size={14} className={question.flagged ? 'fill-current' : ''} />
+              {question.flagged ? 'Flagged for QA' : 'Flag for QA'}
+            </button>
+          </div>
         </div>}
       </div>
     </div>
