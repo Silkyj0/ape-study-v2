@@ -25,3 +25,5 @@ export const module03Questions = [
   ...module03Part11,
   ...module03Part12,
 ];
+
+export const module03Ids = module03Questions.map((question) => question.id);
