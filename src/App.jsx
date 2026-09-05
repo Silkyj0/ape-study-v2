@@ -1,9 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AlertCircle, BarChart3, BookOpen, Database, FlaskConical, Loader2, Plus } from 'lucide-react';
 import { SEED_VERSION } from './data/questions.js';
-import { calibrationIds } from './data/calibrationOverrides.js';
-import { examBatch02Ids } from './data/examOverridesBatch02.js';
-import { examBatch03Ids } from './data/examOverridesBatch03.js';
 import AddQuestionView from './components/AddQuestionView.jsx';
 import DashboardView from './components/DashboardView.jsx';
 import DataPanel from './components/DataPanel.jsx';
@@ -15,7 +12,6 @@ import { prepareStudyQueue } from './lib/shuffle.js';
 import { downloadProgress, parseProgressFile, readStoredProgress, writeStoredProgress } from './lib/storage.js';
 
 const EMPTY_FORM = { moduleId: 1, scenarioText: '', prompt: '', options: ['', '', '', ''], correct: 0, unknownAnswer: false, explanation: '', difficulty: 'exam' };
-const REVISED_EXAM_IDS = [...calibrationIds, ...examBatch02Ids, ...examBatch03Ids];
 
 export default function App() {
   const [data, setData] = useState(null);
@@ -81,7 +77,7 @@ export default function App() {
   }
 
   function startRevisedExamBank() {
-    const revisedSet = data.questions.filter((q) => REVISED_EXAM_IDS.includes(q.seedId) && q.status === 'ready');
+    const revisedSet = data.questions.filter((q) => ['source-audited', 'drive-source-verified'].includes(q.qaStatus) && q.status === 'ready');
     beginQueue(revisedSet);
   }
 
