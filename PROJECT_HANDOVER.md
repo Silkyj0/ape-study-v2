@@ -2,114 +2,135 @@
 
 ## Purpose
 
-APE Part 2 study application for Patrick's Queensland Architectural Practice Examination preparation. The study program is based on PARCS modules, supplied Acumen readings, PARCS sample questions, and answer keys.
+APE Part 2 study application for Patrick's Queensland Architectural Practice Examination preparation. The study program is based on PARCS modules, supplied Acumen readings, PARCS sample questions and confirmed answer keys.
 
-## Current content state
+## Current live content
 
-- The original Module 1 and Module 2 source banks remain archived in the repository (M1 62; M2 146), but the **live curated M1/M2 bank is now 119 questions** rather than 208.
+### Modules 1–2
+
+- The original Module 1 and Module 2 source banks remain archived in the repository (M1 62; M2 146), but the **live curated M1/M2 bank is 119 questions** rather than 208.
 - Live Module 1: **44 questions**.
 - Live Module 2: **75 questions**.
-- Of the 119 live M1/M2 questions, **19 are immutable PARCS samples** and **100 are source-audited exam-standard rewrites**.
-- The exam-standard rewrites are implemented as reversible override layers so the original vetted source-bank wording remains recoverable.
-- Two inherited Module 1 items are currently withheld from normal study rather than guessed or silently corrected: `m1-woolcock` (ratio/emphasis source re-check) and `m1-introvigne` (court-attribution source re-check).
-- Lower-value, repetitive and recognition-heavy questions have been removed from the live M1/M2 study bank but remain in the archived source files.
-- Some procurement material previously tagged to Module 2 was deliberately not retained in the curated M2 bank because it belongs more naturally in the later procurement modules and can be rebuilt there from source.
-- Modules 3–11: only the small original placeholder/diagnostic set is present (M3 2, M4 2, M5 2, M6 4, M7 4; M8–M11 none). These are now visibly marked as **legacy placeholders** and must be replaced module-by-module from supplied source material.
-- Weakest self-identified areas: procurement and tendering (Modules 6 and 7).
+- Of these 119 questions, **19 are immutable PARCS samples** and **100 are source-audited exam-standard rewrites**.
+- Two inherited Module 1 items remain withheld rather than guessed: `m1-woolcock` and `m1-introvigne`, pending primary-source re-checks.
+- Lower-value, repetitive and recognition-heavy questions remain archived but are excluded from live study.
 
-## v2 architecture changes
+### Module 3
 
-The original single `ape_study_app.jsx` has been converted into a Vite/React project.
+- Module 3 has been fully rebuilt from Patrick's connected Google Drive Acumen folder:
+  `https://drive.google.com/drive/folders/1HSUBG11Qh7xaC18rii8FXF4BkTn2H9J5`
+- The folder contains **47 Acumen readings**.
+- Live Module 3: **60 curated exam-standard questions**.
+- The two original Module 3 placeholders were replaced rather than retained.
+- Module 3 uses several scenario clusters plus standalone application questions covering agreements/contract risk, commissions and selection, fees/profitability, partial services, subconsultancy, time/communications, quality systems and related practice controls.
+- **33 of the 47 readings are directly referenced by live questions.** Other readings were reviewed/consolidated or retained as inventory references rather than padded into low-value questions.
+- Every live M3 question retains the exact Drive source file ID, source URL and source-check date.
+- `MODULE03_SOURCE_MANIFEST.md` records the complete 47-reading inventory and the treatment of each source.
+- M3 authored correct-answer positions are exactly **15 A / 15 B / 15 C / 15 D**.
+- The M3 structural draft audit returned **0 uniquely-longest-correct flags, 0 high answer-length outliers and 0 major answer-shape flags** under the app's audit thresholds.
 
-- Questions are split into `src/data/module01.js` … `module11.js` and chunk files for the larger Modules 1 and 2 banks.
-- `src/data/questions.js` combines modules, applies reversible difficulty-rewrite overlays and filters M1/M2 to the curated active set.
-- `src/data/calibrationOverrides.js` contains the first 20 exam-standard rewrites (one is currently withheld by QA).
-- `src/data/examOverridesBatch02.js` contains the second 32-question rewrite batch.
-- `src/data/examOverridesBatch03.js` contains the final 49 retained-question rewrites used to complete the current M1/M2 consolidation.
-- `src/data/qaMetadata.js` defines immutable PARCS IDs, withheld source-check items and provenance QA labels.
-- Stable seed IDs are preserved.
-- `SEED_VERSION` is now **17** so stored progress safely reconciles to the smaller curated bank and new QA metadata.
-- Deliberately revised questions are tagged `exam`.
-- New manual questions can be tagged `foundation`, `exam`, or `challenge`.
-- Study presentation shuffles **question order and answer order** for every session. Correct positions are balanced across A–D per session and distractors are independently shuffled.
-- The underlying source option order and stored answer index are never mutated by runtime shuffling.
-- A dedicated **Exam-standard bank** mode studies only the 100 rewritten M1/M2 questions and excludes the locked PARCS samples.
-- The Quality screen now separates structural QA from information/provenance QA.
-- Structural scoring applies only to authored source-audited rewrites, not immutable PARCS samples or provisional later-module placeholders.
-- Users can **Flag for QA** from the study screen. Flags persist through local storage, progress export/import and seed reconciliation, and appear in a review queue on the Quality screen.
-- Browser `localStorage` is supported for independent hosting. If `window.storage` exists in an artifact environment, it is also read/written for compatibility.
-- Progress can be exported/imported as JSON, providing a bridge between Claude/ChatGPT-hosted artifact environments and the independent web app before Supabase is introduced.
+### Modules 4–11
+
+- Only the small legacy placeholder/diagnostic set remains for M4–M7 (M4 2, M5 2, M6 4, M7 4); M8–M11 are empty.
+- These later-module placeholders remain visibly labelled **Legacy placeholder** until their module is rebuilt directly from source.
+- Procurement and tendering (M6/7) are a priority area.
+
+## Current bank totals
+
+The live seed currently comprises:
+
+- M1: 44
+- M2: 75
+- M3: 60
+- M4: 2 legacy placeholders
+- M5: 2 legacy placeholders
+- M6: 4 legacy placeholders
+- M7: 4 legacy placeholders
+- M8–M11: 0
+
+Total live seed: **191 questions**.
+
+Verified/authored exam practice includes **160 questions**: 100 source-audited M1/M2 rewrites + 60 Drive-source-verified M3 questions. The 19 immutable PARCS samples remain available through normal module study but are excluded from the mixed Verified exam bank.
+
+## Architecture and question data
+
+- `src/data/questions.js` combines the modules, applies M1/M2 rewrite overlays and filters M1/M2 to their curated active set.
+- `src/data/module03.js` assembles the 12 small Module 3 question chunks.
+- `src/data/module03Sources.js` stores the Drive source registry used by M3 questions.
+- `src/data/module03Factory.js` attaches source metadata consistently to M3 questions.
+- `MODULE03_SOURCE_MANIFEST.md` records the 47-reading source inventory.
+- Stable seed IDs are used throughout.
+- `SEED_VERSION` is now **18** so stored progress reconciles safely to the rebuilt Module 3 bank.
+
+## Study presentation
+
+- Question order is shuffled for every session.
+- Answer order is shuffled and correct presentation positions are balanced across A–D.
+- Stored source answer indexes are never mutated.
+- Normal module study follows spaced-review eligibility.
+- The Modules page includes a **Verified exam bank** mode containing source-audited M1/M2 and Drive-verified M3 questions while excluding the immutable PARCS samples.
 
 ## Information QA model
 
-The application does not pretend to independently prove legal correctness without source material. It tracks provenance and review status instead.
+The application tracks provenance and review state rather than pretending a static question bank can independently prove legal correctness.
 
 Current QA statuses:
 
-- **PARCS confirmed** — supplied PARCS sample question; scenario, stem, options and confirmed answer key must remain unchanged.
-- **Source-audited rewrite** — substantive proposition, keyed answer, source and explanation come from the previously audited M1/M2 bank; wording/distractors were revised for exam quality.
-- **Needs source check** — a known ambiguity exists; withhold from normal study rather than guessing.
-- **Legacy placeholder** — later-module item not yet rebuilt under the source-audited workflow.
-- **User-added** — manually created question requiring source verification by the user.
+- **PARCS confirmed** — supplied PARCS sample; underlying scenario, stem, options and confirmed answer key are immutable.
+- **Source-audited rewrite** — retained M1/M2 proposition, key, source and explanation came from the previous audited bank; wording/distractors were deliberately improved.
+- **Drive source verified** — M3 question was built directly from a connected Acumen reading and retains the exact Drive file reference used for checking.
+- **Needs source check** — known source ambiguity; withhold rather than guess.
+- **Legacy placeholder** — later-module item not yet rebuilt under the source-first workflow.
+- **User-added** — manually created question requiring source verification.
 
-The QA engine also checks for missing source fields, missing explanations, answer-length clues, duplicate options and major answer-shape differences. These structural checks must never auto-correct legal content.
+The Quality screen separately reports provenance and structural QA. Structural checks include answer-length clues, duplicate options, option-shape differences and answer-position distribution. PARCS samples are excluded from structural scoring because their wording is immutable.
 
-## Data safety
+Users can **Flag for QA** from the study screen. Flags persist through local storage, export/import and seed reconciliation and appear in the Quality review queue.
 
-Question content and review progress are separate concerns.
+## Source discipline
 
-Every seed question has a stable `id`. Runtime progress records use `seedId` to map back to that content. `reconcile()`:
+Read and follow `QUESTION_WRITING_STANDARD.md` before creating or changing study content.
 
-- preserves review progress for seed IDs that still exist;
-- drops live progress records for questions deliberately removed from the curated seed bank;
-- starts genuinely new seed IDs fresh;
-- preserves manual questions sourced as `From your notes`;
-- preserves user QA flags for retained questions.
+Core rules:
 
-When seed content or its schema changes, bump `SEED_VERSION`.
-
-## Question-authoring process
-
-Read and follow `QUESTION_WRITING_STANDARD.md` before generating or revising questions.
-
-Core source rules remain:
-
-1. Only write from supplied source text or propositions already supported by the vetted bank; do not add unsupported legal specifics.
-2. Australian law/cases only; Queensland-specific where possible and supported.
-3. Every question retains a source.
-4. Quality over volume; curation and deletion from the live bank are legitimate QA tools.
-5. Lean into PARCS-style scenario + short stems, especially Modules 6–11.
-6. Record gaps rather than guessing.
-7. Do not rewrite PARCS sample questions or confirmed sample answer keys.
-8. Withhold a question if a source concern cannot be resolved confidently.
+1. Use supplied source material as the source of truth; do not fill gaps from memory.
+2. Australian law/cases only; prefer Queensland-specific material where the source supports it.
+3. Every question retains a precise source.
+4. Quality over volume; consolidation and exclusion are legitimate QA tools.
+5. Prefer application/scenario questions over recognition-only recall.
+6. PARCS sample questions and confirmed answer keys are immutable.
+7. Withhold uncertain questions rather than confidently guessing.
+8. Avoid jurisdiction-specific detail from another state where it is not useful to Patrick's Queensland exam preparation.
 
 ## Next content task
 
-**Move to Module 3.**
+**Build Module 4 directly from its connected Drive source folder using the Module 3 workflow.**
 
-Do not expand the two legacy Module 3 placeholders from memory. Build Module 3 from the supplied Module 3 Acumen/PARCS source material using the v2 standard from the outset:
+For each later module:
 
-- curate rather than maximise question count;
-- default to exam/application difficulty;
-- preserve precise sources and strong post-answer explanations;
-- create PARCS-style scenario sets where the material supports them;
-- run structural and provenance QA before merging;
-- replace/remove the existing M3 placeholders once the proper source-backed bank is ready.
+1. inventory the supplied readings;
+2. identify overlapping/high-value examinable themes;
+3. curate rather than maximise question count;
+4. build scenario clusters where appropriate;
+5. retain exact Drive source metadata;
+6. run structural/provenance QA;
+7. replace legacy placeholders rather than layering new questions over them;
+8. bump `SEED_VERSION` and verify the Vercel production build.
 
-After Module 3, repeat the same source-first workflow for Modules 4–11. Procurement/tendering (M6/7) should receive particular attention.
+M6/7 procurement and tendering should receive particular attention when reached.
 
 ## Deployment
 
-The project is hosted from the private GitHub repository `Silkyj0/ape-study-v2` and deployed automatically to Vercel at `https://ape-study-v2.vercel.app/` from the `main` branch.
+Private GitHub repository: `Silkyj0/ape-study-v2`
 
-Keep the vetted question bank in Git/version control. Add Supabase later for authentication and cross-device/user progress; do not move canonical question content into Supabase unless there is a deliberate reason.
+Production: `https://ape-study-v2.vercel.app/`
 
-## Source gaps carried forward from v1
+Vercel deploys automatically from the GitHub `main` branch.
 
-Module 2 had outstanding primary-source gaps around:
+## M2 source gaps carried forward
+
+Do not create unsupported questions for these until clean sources are available:
 
 - Asset planning (Trust) — status/count needs confirmation against the source manifest;
 - CAA2024 Section F — Intellectual Property, because the prior uploaded PDF was corrupted/unreadable;
 - CAA2024 Schedule B Item 5 — Form of Attribution.
-
-Do not invent questions for these gaps without clean source text.
