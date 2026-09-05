@@ -25,7 +25,7 @@ export default function QualityDashboard({ questions, onToggleFlag }) {
           <div>
             <p className="text-xs font-semibold text-emerald-900">Provenance QA is active</p>
             <p className="mt-1 text-xs leading-relaxed text-emerald-800">
-              PARCS samples are locked to their supplied content. Retained Modules 1–2 questions preserve propositions from the earlier audited bank. Modules 3–5 use connected readings and retain the exact Drive source reference used for checking. Module 5 deliberately excludes the external websites listed by PARC from its live authored bank.
+              PARCS samples are locked to their supplied content. Retained Modules 1–2 questions preserve propositions from the earlier audited bank. Modules 3–11 use connected readings and retain the exact Drive source reference used for checking. Module 5 deliberately excludes the external websites listed by PARC from its live authored bank.
             </p>
           </div>
         </div>
@@ -41,7 +41,7 @@ export default function QualityDashboard({ questions, onToggleFlag }) {
 
       {(qa['legacy-placeholder'] || 0) > 0 && (
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">
-          <strong>{qa['legacy-placeholder']} later-module questions are still legacy placeholders.</strong> They remain visible only until the remaining modules are rebuilt from supplied source material and should not be treated as having the same QA status as the curated bank.
+          <strong>{qa['legacy-placeholder']} questions remain legacy placeholders.</strong> They should not be treated as having the same QA status as the curated source-built bank.
         </div>
       )}
 
@@ -77,12 +77,12 @@ export default function QualityDashboard({ questions, onToggleFlag }) {
       <div>
         <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Structural audit · authored/verified exam bank</h3>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <Metric label="Correct is longest" value={`${authoredReport.correctLongestPercent}%`} warning={authoredReport.correctLongestPercent > 40} />
+          <Metric label="Material length clues" value={`${authoredReport.correctLongestPercent}%`} warning={authoredReport.correctLongestPercent > 40} />
           <Metric label="Length outliers" value={authoredReport.lengthOutliers} warning={authoredReport.lengthOutliers > 0} />
           <Metric label="Structurally flagged" value={authoredReport.flagged.length} warning={authoredReport.flagged.length > 0} />
           <Metric label="Info QA flags" value={sourceReport.informationFlagged.length} warning={sourceReport.informationFlagged.length > 0} />
         </div>
-        <p className="mt-2 text-[10px] leading-relaxed text-slate-400">Immutable PARCS samples and provisional later-module placeholders are excluded from structural scoring.</p>
+        <p className="mt-2 text-[10px] leading-relaxed text-slate-400">Length QA flags only material differences likely to create a clue; tiny character-count differences are ignored. Immutable PARCS samples are excluded from structural scoring.</p>
       </div>
 
       <div className="rounded-lg border border-slate-200 p-3">
