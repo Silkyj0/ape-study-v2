@@ -162,7 +162,7 @@ export default function App() {
       {view === 'study' && currentQuestion && <StudyView question={currentQuestion} index={qIdx} total={queue.length} sessionCorrect={sessionCorrect} selected={selected} revealed={revealed} onAnswer={answer} onNext={nextCard} onExit={() => setView('modules')} onToggleFlag={toggleFlag} />}
       {view === 'add' && <AddQuestionView form={form} setForm={setForm} formError={formError} questions={data.questions} onUpdateOption={updateOption} onSubmit={submitForm} onDelete={deleteQuestion} onResolve={resolveAnswer} />}
       {view === 'dashboard' && <DashboardView questions={data.questions} />}
-      {view === 'quality' && <QualityDashboard questions={data.questions} />}
+      {view === 'quality' && <QualityDashboard questions={data.questions} onToggleFlag={toggleFlag} />}
       {view === 'data' && <DataPanel data={data} storageBackend={storageBackend} onExport={() => downloadProgress(data)} onImport={importProgress} />}
     </main>
   </div></div>;
