@@ -2,7 +2,7 @@
 
 ## Purpose
 
-APE Part 2 study application for Patrick's Queensland Architectural Practice Examination preparation. The study program is based on PARCS modules, supplied Acumen readings, PARCS sample questions and confirmed answer keys.
+APE Part 2 study application for Patrick's Queensland Architectural Practice Examination preparation. The study program is based on PARCS modules, supplied Acumen/readings, PARCS-directed current resources, PARCS sample questions and confirmed answer keys.
 
 ## Current live content
 
@@ -13,104 +13,116 @@ APE Part 2 study application for Patrick's Queensland Architectural Practice Exa
 - Live Module 2: **75 questions**.
 - Of these 119 questions, **19 are immutable PARCS samples** and **100 are source-audited exam-standard rewrites**.
 - Two inherited Module 1 items remain withheld rather than guessed: `m1-woolcock` and `m1-introvigne`, pending primary-source re-checks.
-- Lower-value, repetitive and recognition-heavy questions remain archived but are excluded from live study.
 
 ### Module 3
 
-- Module 3 has been fully rebuilt from Patrick's connected Google Drive Acumen folder:
-  `https://drive.google.com/drive/folders/1HSUBG11Qh7xaC18rii8FXF4BkTn2H9J5`
-- The folder contains **47 Acumen readings**.
-- Live Module 3: **60 curated exam-standard questions**.
-- The two original Module 3 placeholders were replaced rather than retained.
-- Module 3 uses several scenario clusters plus standalone application questions covering agreements/contract risk, commissions and selection, fees/profitability, partial services, subconsultancy, time/communications, quality systems and related practice controls.
-- **33 of the 47 readings are directly referenced by live questions.** Other readings were reviewed/consolidated or retained as inventory references rather than padded into low-value questions.
-- Every live M3 question retains the exact Drive source file ID, source URL and source-check date.
-- `MODULE03_SOURCE_MANIFEST.md` records the complete 47-reading inventory and the treatment of each source.
-- M3 authored correct-answer positions are exactly **15 A / 15 B / 15 C / 15 D**.
-- The M3 structural draft audit returned **0 uniquely-longest-correct flags, 0 high answer-length outliers and 0 major answer-shape flags** under the app's audit thresholds.
+- Module 3 was rebuilt from the connected Google Drive Acumen folder.
+- Live Module 3: **60 curated Drive-source-verified exam questions**.
+- 33 of 47 reviewed readings are directly represented; overlapping/lower-value readings were consolidated rather than padded into questions.
+- `MODULE03_SOURCE_MANIFEST.md` records the source inventory and treatment.
+- M3 authored answer positions: **15 A / 15 B / 15 C / 15 D**.
 
 ### Module 4
 
-- Module 4 — Project Fundamentals, Planning & Consultants — has been fully rebuilt from the connected Drive readings.
+- Module 4 — Project Fundamentals, Planning & Consultants — has been fully rebuilt from connected Drive readings.
 - Live Module 4: **69 questions**:
   - **56 Drive-source-verified authored exam questions**;
   - **13 immutable PARCS-confirmed sample questions** from Scenarios 4.1–4.4.
-- The original two M4 placeholders were replaced rather than retained.
-- Authored M4 answer positions are exactly **14 A / 14 B / 14 C / 14 D**.
-- `MODULE04_SOURCE_MANIFEST.md` records the source strategy, covered themes and PARCS calibration.
-- Module 4 sample questions were attempted blind after the 56-question authored bank was completed. Result: **12/13 correct**.
-- Confirmed Module 4 sample key:
-  - Scenario 4.1: **C, D**
-  - Scenario 4.2: **A, C, A**
-  - Scenario 4.3: **D, A, D**
-  - Scenario 4.4: **C, A, C, D, D**
-- The only blind miss was Scenario 4.1 Question 1. Calibration rule: a consultant being engaged directly by the client does **not** mean the architect necessarily has zero liability. The specialist remains responsible for specialist advice, while the architect/principal consultant may still have exposure for its own selection, briefing, coordination, review, integration or other professional obligations.
-- A targeted QA review of all 56 authored M4 questions found **no question repeating this over-absolute liability error**, so the authored bank was left intact.
+- Authored M4 answer positions: **14 A / 14 B / 14 C / 14 D**.
+- Module 4 sample questions were attempted blind after the authored bank was completed: **12/13 correct**.
+- Confirmed key:
+  - 4.1: **C, D**
+  - 4.2: **A, C, A**
+  - 4.3: **D, A, D**
+  - 4.4: **C, A, C, D, D**
+- Calibration rule from the only miss: a consultant being engaged directly by the client does **not** mean the architect necessarily has zero liability. Separate the specialist's technical responsibility from the architect/principal consultant's own selection, briefing, coordination, review, integration and other obligations.
+- A targeted review of the 56 authored M4 questions found no repeat of that over-absolute logic.
+- `MODULE04_SOURCE_MANIFEST.md` records the source and sample-calibration workflow.
 
-### Modules 5–11
+### Module 5
 
-- Legacy placeholders remain for M5–M7 only: M5 2, M6 4, M7 4.
+- Module 5 — Responsible Design: Country, Environment, Equity, Safety & Amenity — has been rebuilt before opening its PARCS sample questions.
+- Root Drive folder: `https://drive.google.com/drive/folders/1DcoNkcK1jNuDCmutM1379XXaJbsL_fhS`
+- Live Module 5: **56 authored exam-standard questions** replacing the two legacy placeholders.
+- Seven groups of eight questions cover:
+  - Country, community engagement, native title, PBCs and NNTT;
+  - DDA / Premises Standards fundamentals and current NCC alignment;
+  - accessibility application, existing buildings, performance solutions and professional-advice boundaries;
+  - WHS model-law structure, designer/PCBU duties and reasonably practicable;
+  - safety-in-design lifecycle, consultation, risk control, safety reports and information transfer;
+  - embodied vs operational carbon/energy and life-cycle thinking;
+  - climate-responsive passive design, NatHERS and NABERS.
+- Authored M5 answer positions: **14 A / 14 B / 14 C / 14 D**.
+- Provenance is deliberately split:
+  - **39 Drive-source-verified** questions checked against supplied Module 5 PDFs;
+  - **17 PARC-external-source-verified** questions checked against current public resources explicitly directed by the supplied PARC Unit 5 guide.
+- The external source class is used particularly for Country and current rating/regulatory resources; it is not a licence to fill source gaps from general web knowledge.
+- NSW Connecting with Country material is treated as PARC-directed conceptual/good-practice guidance, **not Queensland law**.
+- The November 2024 Safe Work Australia Model Code is used as model-framework guidance; jurisdictional adoption/local law must still be checked. Victoria is not treated as the Queensland default.
+- One older `edg_71_rc_edited.pdf` file has garbled extracted text; precise LCEA propositions rely on the clean assigned LCEA summary rather than guessing from the corrupted extraction.
+- `MODULE05_SOURCE_MANIFEST.md` records the full source/provenance strategy.
+- The Module 5 Sample Questions folder remains deliberately unopened. Next calibration step is a blind attempt after the live build is verified.
+
+### Modules 6–11
+
+- Legacy placeholders remain only for M6 and M7: M6 4, M7 4.
 - M8–M11 are empty.
-- These later-module placeholders remain visibly labelled **Legacy placeholder** until each module is rebuilt directly from source.
 - Procurement and tendering (M6/7) remain a priority area.
 
 ## Current bank totals
-
-The live seed currently comprises:
 
 - M1: 44
 - M2: 75
 - M3: 60
 - M4: 69
-- M5: 2 legacy placeholders
+- M5: 56
 - M6: 4 legacy placeholders
 - M7: 4 legacy placeholders
 - M8–M11: 0
 
-Total live seed: **258 questions**.
+Total live seed: **312 questions**.
 
-Verified/authored exam practice includes **216 questions**: 100 source-audited M1/M2 rewrites + 60 Drive-source-verified M3 questions + 56 Drive-source-verified M4 questions.
+Verified/authored exam practice: **272 questions**:
+- 100 source-audited M1/M2 rewrites
+- 60 Drive-source-verified M3
+- 56 Drive-source-verified M4
+- 56 verified-source M5 (39 Drive + 17 PARC-directed external)
 
-There are currently **32 PARCS-confirmed questions** in the live seed: 19 from M1/M2 and 13 from M4. PARCS-confirmed questions remain available through normal module study but are excluded from the mixed Verified exam bank.
+There are **32 PARCS-confirmed questions** in the live seed: 19 from M1/M2 and 13 from M4. PARCS-confirmed questions remain available through normal module study but are excluded from the mixed Verified exam bank.
 
 ## Architecture and question data
 
-- `src/data/questions.js` combines the modules, applies M1/M2 rewrite overlays and filters M1/M2 to their curated active set.
-- `src/data/module03.js` assembles the 12 small Module 3 question chunks.
-- `src/data/module03Sources.js` stores the Drive source registry used by M3 questions.
-- `src/data/module03Factory.js` attaches source metadata consistently to M3 questions.
-- `MODULE03_SOURCE_MANIFEST.md` records the 47-reading M3 source inventory.
-- `src/data/module04.js` assembles seven authored M4 chunks plus `module04.parcs.js`.
-- `src/data/module04Sources.js` and `module04Factory.js` attach Drive provenance to authored M4 questions.
-- `MODULE04_SOURCE_MANIFEST.md` records M4 sources and sample calibration.
-- `src/data/qaMetadata.js` contains the immutable PARCS ID registry and provenance statuses.
+- `src/data/questions.js` combines modules and applies the M1/M2 curated overlay logic.
+- `src/data/module03.js`, `module03Sources.js`, `module03Factory.js` and `MODULE03_SOURCE_MANIFEST.md` contain M3.
+- `src/data/module04.js`, seven authored M4 chunks, `module04.parcs.js`, `module04Sources.js`, `module04Factory.js` and `MODULE04_SOURCE_MANIFEST.md` contain M4.
+- `src/data/module05.js` assembles seven authored M5 chunks.
+- `src/data/module05Sources.js` supports both Drive and PARC-directed external source records.
+- `src/data/module05Factory.js` attaches source metadata consistently.
+- `MODULE05_SOURCE_MANIFEST.md` records the M5 Drive inventory, external-source list and jurisdiction/source caveats.
+- `src/data/qaMetadata.js` contains immutable PARCS IDs and provenance statuses.
 - Stable seed IDs are used throughout.
-- `SEED_VERSION` is now **20** so stored progress reconciles safely to the Module 4 sample additions.
+- `SEED_VERSION` is **21** so existing local progress reconciles safely to the rebuilt M5 bank.
 
 ## Study presentation
 
-- Question order is shuffled for every session.
-- Answer order is shuffled and correct presentation positions are balanced across A–D.
-- Stored source answer indexes are never mutated.
-- Normal module study follows spaced-review eligibility.
-- The Modules page includes a **Verified exam bank** containing source-audited M1/M2 and Drive-verified M3/M4 authored questions while excluding immutable PARCS samples.
+- Question order and answer order are shuffled for every session.
+- Correct presentation positions are balanced across A–D without mutating stored canonical answers.
+- Normal module study uses spaced-review eligibility.
+- The **Verified exam bank** includes `source-audited`, `drive-source-verified` and `parc-external-verified` authored questions and excludes immutable PARCS samples.
 
 ## Information QA model
 
-The application tracks provenance and review state rather than pretending a static question bank can independently prove legal correctness.
-
 Current QA statuses:
 
-- **PARCS confirmed** — supplied PARCS sample; underlying scenario, stem, options and confirmed answer key are immutable.
-- **Source-audited rewrite** — retained M1/M2 proposition, key, source and explanation came from the previous audited bank; wording/distractors were deliberately improved.
-- **Drive source verified** — M3/M4 authored question was built directly from a connected Acumen reading and retains the exact Drive file reference used for checking.
-- **Needs source check** — known source ambiguity; withhold rather than guess.
-- **Legacy placeholder** — later-module item not yet rebuilt under the source-first workflow.
+- **PARCS confirmed** — supplied PARCS sample; scenario, stem, options and confirmed key are immutable.
+- **Source-audited rewrite** — retained M1/M2 proposition/key/source from the earlier audited bank with improved wording/distractors.
+- **Drive source verified** — authored question built directly from a connected reading and retaining the Drive file reference/check date.
+- **PARC external source verified** — M5 question built from a current public source explicitly directed by the supplied PARC Unit 5 guide, retaining exact URL/check date.
+- **Needs source check** — known ambiguity; withheld rather than guessed.
+- **Legacy placeholder** — later-module item not yet rebuilt.
 - **User-added** — manually created question requiring source verification.
 
-The Quality screen separately reports provenance and structural QA. Structural checks include answer-length clues, duplicate options, option-shape differences and answer-position distribution. PARCS samples are excluded from structural scoring because their wording is immutable.
-
-Users can **Flag for QA** from the study screen. Flags persist through local storage, export/import and seed reconciliation and appear in the Quality review queue.
+The Quality screen reports provenance and structural QA separately. Users can **Flag for QA** while studying; flags persist through local storage and export/import.
 
 ## Source discipline
 
@@ -119,34 +131,33 @@ Read and follow `QUESTION_WRITING_STANDARD.md` before creating or changing study
 Core rules:
 
 1. Use supplied source material as the source of truth; do not fill gaps from memory.
-2. Australian law/cases only; prefer Queensland-specific material where the source supports it.
-3. Every authored question retains a precise source.
-4. Quality over volume; consolidation and exclusion are legitimate QA tools.
-5. Prefer application/scenario questions over recognition-only recall.
-6. PARCS sample questions and confirmed answer keys are immutable.
-7. Withhold uncertain questions rather than confidently guessing.
-8. Avoid jurisdiction-specific detail from another state where it is not useful to Patrick's Queensland exam preparation.
-9. Do not infer that a specialist consultant's responsibility eliminates the architect's own coordination or professional liability; analyse each party's separate obligations.
+2. Where the supplied PARC guide explicitly directs a current external source, use that exact source and label the provenance separately.
+3. Australian law/cases only; prefer Queensland-specific material where the source supports it.
+4. Do not convert NSW guidance into Queensland law.
+5. Every authored question retains a precise source.
+6. Quality over volume; consolidation and exclusion are legitimate QA tools.
+7. Prefer application/scenario questions over recognition-only recall.
+8. PARCS sample questions and confirmed answer keys are immutable.
+9. Withhold uncertain questions rather than confidently guessing.
+10. Do not infer that a specialist consultant's responsibility eliminates the architect's own coordination or professional liability; analyse each party's separate obligations.
+11. For model WHS material, distinguish model guidance from the legislation actually enacted in the project jurisdiction.
 
 ## Next content task
 
-**Build Module 5 directly from its connected Drive source folder using the M3/M4 workflow, then undertake the Module 5 PARCS sample questions blind before locking the confirmed key.**
+**Attempt the Module 5 PARCS sample questions blind against the completed M5 source set.**
 
-For each later module:
+Workflow:
+1. user supplies the M5 sample screenshots/PDF in chat;
+2. answer blind from the assigned M5 readings/current PARC-directed sources;
+3. user provides the official answer key;
+4. compare any misses and extract calibration rules;
+5. review the 56 authored M5 questions for the identified issue(s);
+6. add confirmed samples as immutable PARCS questions;
+7. bump `SEED_VERSION` again if sample questions are added;
+8. verify Vercel production;
+9. then proceed to Module 6 — Building Procurement, Construction Contracts & Construction Documentation.
 
-1. inventory the supplied readings;
-2. identify overlapping/high-value examinable themes;
-3. curate rather than maximise question count;
-4. build scenario clusters where appropriate;
-5. retain exact Drive source metadata;
-6. run structural/provenance QA;
-7. attempt the supplied PARCS sample questions blind against the readings;
-8. compare with the confirmed official key and calibrate the authored bank;
-9. add the confirmed samples as immutable PARCS questions;
-10. replace legacy placeholders rather than layering new questions over them;
-11. bump `SEED_VERSION` and verify the Vercel production build.
-
-M6/7 procurement and tendering should receive particular attention when reached.
+M6/7 procurement and tendering should receive particular attention because they are Patrick's weaker study areas.
 
 ## Deployment
 
@@ -154,12 +165,11 @@ Private GitHub repository: `Silkyj0/ape-study-v2`
 
 Production: `https://ape-study-v2.vercel.app/`
 
-Vercel deploys automatically from the GitHub `main` branch.
+Vercel deploys automatically from GitHub `main`.
 
 ## M2 source gaps carried forward
 
 Do not create unsupported questions for these until clean sources are available:
-
 - Asset planning (Trust) — status/count needs confirmation against the source manifest;
-- CAA2024 Section F — Intellectual Property, because the prior uploaded PDF was corrupted/unreadable;
+- CAA2024 Section F — Intellectual Property, prior PDF corrupted/unreadable;
 - CAA2024 Schedule B Item 5 — Form of Attribution.
