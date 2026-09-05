@@ -14,7 +14,7 @@ import { examOverridesBatch02, examBatch02Ids } from './examOverridesBatch02.js'
 import { examOverridesBatch03, examBatch03Ids } from './examOverridesBatch03.js';
 import { getQaMetadata, PARCS_SAMPLE_IDS, WITHHELD_QA_IDS } from './qaMetadata.js';
 
-export const SEED_VERSION = 19;
+export const SEED_VERSION = 20;
 
 const BASE_SEED = [
   ...module01Questions,
