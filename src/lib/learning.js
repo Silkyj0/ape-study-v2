@@ -8,6 +8,7 @@ export const MAX_SAME_SESSION_RETRIES = 2;
 export const RECENT_RESULT_LIMIT = 8;
 
 const STREAK_INTERVAL_DAYS = [1, 3, 7, 14];
+const LOW_CONFIDENCE_REVIEW_HOURS = 12;
 
 function shuffleCopy(items) {
   const copy = [...items];
@@ -82,6 +83,7 @@ export function applyAnswerResult(question, isCorrect, now = Date.now()) {
   const correctStreak = isCorrect ? previousStreak + 1 : 0;
   const lapseCount = (question.lapseCount || 0) + (isCorrect ? 0 : 1);
   const recentResults = [...(question.recentResults || []), isCorrect].slice(-RECENT_RESULT_LIMIT);
+  const recentConfidence = [...(question.recentConfidence || []), null].slice(-RECENT_RESULT_LIMIT);
 
   let due;
   let level;
@@ -99,12 +101,36 @@ export function applyAnswerResult(question, isCorrect, now = Date.now()) {
     correctStreak,
     lapseCount,
     recentResults,
+    recentConfidence,
     lastResult: isCorrect,
+    lastConfidence: null,
     lastAnsweredAt: now,
     due,
     level,
     seen: (question.seen || 0) + 1,
     correctCount: (question.correctCount || 0) + (isCorrect ? 1 : 0),
+  };
+}
+
+export function applyLowConfidence(question, now = Date.now()) {
+  if (question.lastResult !== true) return question;
+
+  // Keep the answer correct, but undo the mastery-streak advancement from this
+  // attempt. A guessed answer should not earn the same snooze as confident recall.
+  const correctStreak = Math.max(0, (Number.isFinite(question.correctStreak) ? question.correctStreak : 1) - 1);
+  const recentConfidence = [...(question.recentConfidence || [])];
+  if (recentConfidence.length) recentConfidence[recentConfidence.length - 1] = false;
+  else recentConfidence.push(false);
+
+  return {
+    ...question,
+    correctStreak,
+    level: Math.min(correctStreak + 1, 4),
+    due: now + LOW_CONFIDENCE_REVIEW_HOURS * HOUR_MS,
+    lowConfidenceCount: (question.lowConfidenceCount || 0) + 1,
+    recentConfidence: recentConfidence.slice(-RECENT_RESULT_LIMIT),
+    lastConfidence: 'low',
+    lastConfidenceAt: now,
   };
 }
 
@@ -115,13 +141,19 @@ function recentAccuracy(question) {
   return 1;
 }
 
+function recentLowConfidenceCount(question) {
+  return (question.recentConfidence || []).filter((value) => value === false).length;
+}
+
 export function questionPriority(question, now = Date.now()) {
   if (!question.seen) return 0;
   const accuracy = recentAccuracy(question);
   const overdueDays = Math.max(0, now - (question.due || 0)) / DAY_MS;
   return (
     (question.lastResult === false ? 100 : 0)
+    + (question.lastConfidence === 'low' ? 18 : 0)
     + (1 - accuracy) * 60
+    + recentLowConfidenceCount(question) * 5
     + Math.min(question.lapseCount || 0, 5) * 6
     + Math.min(overdueDays, 14) * 2
     - Math.min(Number.isFinite(question.correctStreak) ? question.correctStreak : 0, 4) * 4
@@ -158,7 +190,7 @@ export function getWeakAreas(questions, limit = 5) {
 
   questions.filter((q) => q.status === 'ready' && q.seen > 0).forEach((question) => {
     const topic = getLearningTopic(question);
-    if (!groups.has(topic)) groups.set(topic, { topic, attempts: 0, correct: 0, questions: new Set(), recentMisses: 0, repeatedLapses: 0 });
+    if (!groups.has(topic)) groups.set(topic, { topic, attempts: 0, correct: 0, questions: new Set(), recentMisses: 0, repeatedLapses: 0, lowConfidence: 0 });
     const group = groups.get(topic);
     const recent = question.recentResults || [];
 
@@ -172,6 +204,7 @@ export function getWeakAreas(questions, limit = 5) {
       group.recentMisses += Math.max(0, (question.seen || 0) - (question.correctCount || 0));
     }
 
+    group.lowConfidence += recentLowConfidenceCount(question);
     group.questions.add(question.id);
     if ((question.lapseCount || 0) >= 2) group.repeatedLapses += 1;
   });
@@ -179,17 +212,18 @@ export function getWeakAreas(questions, limit = 5) {
   return [...groups.values()]
     .map((group) => {
       const accuracy = group.attempts ? group.correct / group.attempts : 1;
-      const score = (1 - accuracy) * 100 + Math.min(group.recentMisses, 6) * 4 + group.repeatedLapses * 8;
+      const score = (1 - accuracy) * 100 + Math.min(group.recentMisses, 6) * 4 + group.repeatedLapses * 8 + Math.min(group.lowConfidence, 6) * 3;
       return {
         topic: group.topic,
         attempts: group.attempts,
         accuracy: Math.round(accuracy * 100),
         questionCount: group.questions.size,
         recentMisses: group.recentMisses,
+        lowConfidence: group.lowConfidence,
         score,
       };
     })
-    .filter((area) => area.attempts >= 3 && (area.accuracy < 80 || area.recentMisses >= 2))
+    .filter((area) => area.attempts >= 3 && (area.accuracy < 80 || area.recentMisses >= 2 || area.lowConfidence >= 2))
     .sort((a, b) => b.score - a.score)
     .slice(0, limit);
 }
@@ -218,6 +252,14 @@ export function answerScheduleFeedback(question, isCorrect, repeatedInSession = 
   return {
     tone: streak >= 3 ? 'mastered' : 'success',
     title: streak >= 3 ? `${streak} correct in a row · snoozed` : `${streak} correct in a row`,
-    detail: `Next scheduled review in ${days} day${days === 1 ? '' : 's'}.`,
+    detail: `Next scheduled review in ${days} day${days === 1 ? '' : 's'}. If you guessed, mark it below so it returns sooner.`,
+  };
+}
+
+export function lowConfidenceFeedback() {
+  return {
+    tone: 'warning',
+    title: 'Correct, but not yet secure',
+    detail: `This answer still counts as correct, but it will return in about ${LOW_CONFIDENCE_REVIEW_HOURS} hours and will not advance your mastery streak.`,
   };
 }
