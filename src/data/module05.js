@@ -1,27 +1,19 @@
-// Source question content migrated unchanged from ape_study_app.jsx
+import { module05Part01 } from './module05.part01.js';
+import { module05Part02 } from './module05.part02.js';
+import { module05Part03 } from './module05.part03.js';
+import { module05Part04 } from './module05.part04.js';
+import { module05Part05 } from './module05.part05.js';
+import { module05Part06 } from './module05.part06.js';
+import { module05Part07 } from './module05.part07.js';
+
 export const module05Questions = [
-  {
-    "module": 5,
-    "prompt": "In the context of 'responsible design', what does considering Country typically involve?",
-    "options": [
-      "A purely symbolic gesture with no design implications",
-      "Engaging with Aboriginal and Torres Strait Islander knowledge, cultural values and connection to place as part of the design process",
-      "A requirement that applies only to remote-area projects",
-      "A step that occurs only after construction is complete"
-    ],
-    "correct": 1,
-    "explanation": "Considering Country involves genuine engagement with cultural heritage, knowledge, and connection to place, informing design decisions rather than being a token addition."
-  },
-  {
-    "module": 5,
-    "prompt": "Universal design/equity principles in architecture are primarily concerned with what?",
-    "options": [
-      "Meeting the bare minimum compliance code requirements only",
-      "Designing environments usable by the widest range of people, regardless of age or ability, beyond minimum compliance",
-      "Reducing construction cost above all else",
-      "Applying only to public buildings"
-    ],
-    "correct": 1,
-    "explanation": "Universal design aims for genuine usability and inclusion across the population, which is a broader ambition than simply satisfying minimum accessibility codes."
-  }
+  ...module05Part01,
+  ...module05Part02,
+  ...module05Part03,
+  ...module05Part04,
+  ...module05Part05,
+  ...module05Part06,
+  ...module05Part07,
 ];
+
+export const module05Ids = module05Questions.map((question) => question.id);
