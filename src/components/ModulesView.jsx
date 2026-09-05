@@ -14,8 +14,8 @@ export default function ModulesView({ questions, onStart, onCalibration }) {
         className="mb-4 flex w-full items-center justify-between gap-3 rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-left hover:border-indigo-400"
       >
         <div>
-          <div className="flex items-center gap-2 text-sm font-semibold text-indigo-950"><FlaskConical size={17} /> 20-question difficulty calibration</div>
-          <div className="mt-1 text-xs text-indigo-700">Only the deliberately rewritten exam-difficulty questions · shuffled each run</div>
+          <div className="flex items-center gap-2 text-sm font-semibold text-indigo-950"><FlaskConical size={17} /> Revised exam bank · 52 questions</div>
+          <div className="mt-1 text-xs text-indigo-700">The original 20-question calibration plus 32 newly rewritten exam-standard questions · shuffled each run</div>
         </div>
         <ChevronRight size={18} className="shrink-0 text-indigo-500" />
       </button>
