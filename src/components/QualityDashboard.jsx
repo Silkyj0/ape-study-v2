@@ -25,7 +25,7 @@ export default function QualityDashboard({ questions, onToggleFlag }) {
           <div>
             <p className="text-xs font-semibold text-emerald-900">Provenance QA is active</p>
             <p className="mt-1 text-xs leading-relaxed text-emerald-800">
-              PARCS samples are locked to their supplied content. Retained Modules 1–2 questions preserve propositions from the earlier audited bank. Module 3 questions are built directly from the connected Acumen readings and retain the exact Drive file reference used for verification.
+              PARCS samples are locked to their supplied content. Retained Modules 1–2 questions preserve propositions from the earlier audited bank. Modules 3–4 questions are built directly from the connected Acumen readings and retain the exact Drive file reference used for verification.
             </p>
           </div>
         </div>
