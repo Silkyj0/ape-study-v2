@@ -3,10 +3,13 @@ import { MODULES } from '../data/modules.js';
 import { moduleStats } from '../lib/progress.js';
 
 export default function ModulesView({ questions, onStart, onCalibration }) {
+  const examCount = questions.filter((q) => q.qaStatus === 'source-audited').length;
+  const parcsCount = questions.filter((q) => q.qaStatus === 'parcs-confirmed').length;
+
   return (
     <div>
       <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs leading-relaxed text-slate-600">
-        Question order and answer order are shuffled for every study session. PARCS sample questions remain unchanged in substance; only their presentation order may vary.
+        Question order and answer order are shuffled for every study session. Modules 1 and 2 now use a smaller curated bank: source-audited exam rewrites plus immutable PARCS sample questions. Removed questions remain archived in the repository rather than being deleted.
       </div>
 
       <button
@@ -14,8 +17,8 @@ export default function ModulesView({ questions, onStart, onCalibration }) {
         className="mb-4 flex w-full items-center justify-between gap-3 rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-left hover:border-indigo-400"
       >
         <div>
-          <div className="flex items-center gap-2 text-sm font-semibold text-indigo-950"><FlaskConical size={17} /> Revised exam bank · 52 questions</div>
-          <div className="mt-1 text-xs text-indigo-700">The original 20-question calibration plus 32 newly rewritten exam-standard questions · shuffled each run</div>
+          <div className="flex items-center gap-2 text-sm font-semibold text-indigo-950"><FlaskConical size={17} /> Exam-standard bank · {examCount} questions</div>
+          <div className="mt-1 text-xs text-indigo-700">Only rewritten M1/M2 questions · excludes the {parcsCount} locked PARCS samples · shuffled each run</div>
         </div>
         <ChevronRight size={18} className="shrink-0 text-indigo-500" />
       </button>
