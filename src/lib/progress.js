@@ -21,7 +21,11 @@ function learningProgress(prior, fallback = {}) {
     correctStreak: prior ? (prior.correctStreak ?? null) : 0,
     lapseCount: prior ? (prior.lapseCount ?? 0) : 0,
     recentResults: prior?.recentResults || [],
+    recentConfidence: prior?.recentConfidence || [],
+    lowConfidenceCount: prior?.lowConfidenceCount || 0,
     lastResult: prior?.lastResult ?? null,
+    lastConfidence: prior?.lastConfidence ?? null,
+    lastConfidenceAt: prior?.lastConfidenceAt || null,
     lastAnsweredAt: prior?.lastAnsweredAt || null,
     learningTopic: prior?.learningTopic || fallback.learningTopic || null,
   };
@@ -97,7 +101,8 @@ export function moduleStats(questions, moduleId) {
   const weak = ready.filter((q) => {
     const recent = q.recentResults || [];
     const recentAccuracy = recent.length ? recent.filter(Boolean).length / recent.length : null;
-    return q.lastResult === false || (recent.length >= 3 && recentAccuracy < 0.67);
+    const lowConfidence = (q.recentConfidence || []).filter((value) => value === false).length;
+    return q.lastResult === false || lowConfidence >= 2 || (recent.length >= 3 && recentAccuracy < 0.67);
   }).length;
 
   const masteryPoints = ready.reduce((sum, q) => {
