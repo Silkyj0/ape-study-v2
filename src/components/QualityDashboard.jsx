@@ -6,7 +6,7 @@ export default function QualityDashboard({ questions, onToggleFlag }) {
   const report = auditQuestionBank(questions);
   const sourceQuestions = questions.filter((q) => q.seedId);
   const sourceReport = auditQuestionBank(sourceQuestions);
-  const authoredQuestions = sourceQuestions.filter((q) => ['source-audited', 'drive-source-verified'].includes(q.qaStatus));
+  const authoredQuestions = sourceQuestions.filter((q) => ['source-audited', 'drive-source-verified', 'parc-external-verified'].includes(q.qaStatus));
   const authoredReport = auditQuestionBank(authoredQuestions);
   const qa = sourceReport.qaCounts;
 
@@ -15,7 +15,7 @@ export default function QualityDashboard({ questions, onToggleFlag }) {
       <div>
         <h2 className="text-sm font-semibold text-slate-900">Question quality assurance</h2>
         <p className="mt-1 text-xs leading-relaxed text-slate-500">
-          QA is split into provenance and structural checks. The app preserves confirmed PARCS keys, records source-audited rewrites, tracks questions built directly from connected source readings, detects known review issues and lets you flag suspect items. It does not silently replace source material with general knowledge.
+          QA is split into provenance and structural checks. The app preserves confirmed PARCS keys, records source-audited rewrites, tracks questions built directly from connected readings or PARC-directed current sources, detects known review issues and lets you flag suspect items. It does not silently replace source material with general knowledge.
         </p>
       </div>
 
@@ -25,17 +25,18 @@ export default function QualityDashboard({ questions, onToggleFlag }) {
           <div>
             <p className="text-xs font-semibold text-emerald-900">Provenance QA is active</p>
             <p className="mt-1 text-xs leading-relaxed text-emerald-800">
-              PARCS samples are locked to their supplied content. Retained Modules 1–2 questions preserve propositions from the earlier audited bank. Modules 3–4 questions are built directly from the connected Acumen readings and retain the exact Drive file reference used for verification.
+              PARCS samples are locked to their supplied content. Retained Modules 1–2 questions preserve propositions from the earlier audited bank. Modules 3–5 use connected readings; where the Module 5 PARC guide explicitly directs a current external resource, that exact public source and check date are retained separately.
             </p>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-6">
         <Metric label="Live seed questions" value={sourceReport.totalQuestions} />
         <Metric label="PARCS confirmed" value={qa['parcs-confirmed'] || 0} />
         <Metric label="Source-audited rewrites" value={qa['source-audited'] || 0} />
         <Metric label="Drive source verified" value={qa['drive-source-verified'] || 0} />
+        <Metric label="PARC external verified" value={qa['parc-external-verified'] || 0} />
         <Metric label="Flagged by you" value={report.userFlagged.length} warning={report.userFlagged.length > 0} />
       </div>
 
