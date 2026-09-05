@@ -139,3 +139,33 @@ Run `npm run audit` for structural checks. Structural flags are prompts for huma
 ## 12. Progressive re-audit of Modules 1 and 2
 
 Do not bulk-rewrite the existing bank mechanically. Work reading-by-reading or scenario-by-scenario using the original source material. Preserve stable question IDs where the concept is unchanged so study progress survives. Use a new ID when a question is replaced with a materially different concept.
+
+The September 2026 consolidation keeps the original M1/M2 module files as the archive/source bank but serves a smaller curated live bank. Only immutable PARCS samples and questions that have completed the exam-standard rewrite workflow should appear in normal M1/M2 study sessions.
+
+## 13. Curation is part of quality
+
+Do not assume more questions means better preparation. Where several questions test substantially the same proposition:
+
+- keep the version that best tests application and professional judgment;
+- keep separate questions only where they test materially different consequences, parties, timing or procedures;
+- archive redundant or low-value recall questions rather than deleting their source history;
+- move content to the module where it is most naturally examined rather than duplicating it across modules;
+- prefer one strong scenario question over several weak definition questions.
+
+The live bank can therefore be materially smaller than the archived source bank.
+
+## 14. Information QA and provenance
+
+The app distinguishes question provenance from structural quality. These are not the same thing.
+
+QA statuses used by the app are:
+
+- `PARCS confirmed`: supplied PARCS sample content with the confirmed answer key; underlying content is immutable.
+- `Source-audited rewrite`: the proposition, answer, source and explanation come from the previously audited source bank; wording/distractors may be revised for exam quality without changing the proposition.
+- `Needs source check`: a known source ambiguity exists; withhold the item from normal study rather than guessing.
+- `Legacy placeholder`: a later-module seed item that predates the source-audited rewrite workflow and should be treated as provisional.
+- `User-added`: manually entered material requiring the user to verify its source.
+
+The app may check for missing source fields, missing explanations, structural clues and known QA warnings. It must not claim to independently prove that a legal proposition is correct without checking the underlying source.
+
+A student can flag a question during study. User flags form a manual QA review queue and must survive normal progress reconciliation and seed-version updates.
