@@ -1,4 +1,4 @@
-import { CheckCircle2, ChevronLeft, Flag, ShieldCheck, XCircle } from 'lucide-react';
+import { CheckCircle2, ChevronLeft, CircleHelp, Flag, ShieldCheck, XCircle } from 'lucide-react';
 
 function qaClasses(status) {
   if (status === 'parcs-confirmed') return 'border-emerald-200 bg-emerald-50 text-emerald-800';
@@ -11,11 +11,14 @@ function qaClasses(status) {
 
 function learningClasses(tone) {
   if (tone === 'error') return 'border-red-200 bg-red-50 text-red-800';
+  if (tone === 'warning') return 'border-amber-200 bg-amber-50 text-amber-900';
   if (tone === 'mastered') return 'border-emerald-300 bg-emerald-50 text-emerald-900';
   return 'border-blue-200 bg-blue-50 text-blue-800';
 }
 
-export default function StudyView({ question, index, total, sessionCorrect, selected, revealed, answerFeedback, onAnswer, onNext, onExit, onToggleFlag }) {
+export default function StudyView({ question, index, total, sessionCorrect, selected, revealed, answerFeedback, confidenceMarked, onAnswer, onLowConfidence, onNext, onExit, onToggleFlag }) {
+  const answeredCorrectly = revealed && selected === question.presentationCorrect;
+
   return (
     <div>
       <div className="mb-3 flex items-center justify-between text-xs text-slate-500">
@@ -50,6 +53,18 @@ export default function StudyView({ question, index, total, sessionCorrect, sele
           {answerFeedback && <div className={`mb-3 rounded-md border p-2 ${learningClasses(answerFeedback.tone)}`}>
             <div className="text-[11px] font-semibold">{answerFeedback.title}</div>
             <p className="mt-1 text-[10px] leading-relaxed opacity-90">{answerFeedback.detail}</p>
+          </div>}
+
+          {answeredCorrectly && <div className="mb-3">
+            <button
+              disabled={confidenceMarked}
+              onClick={onLowConfidence}
+              className={`flex items-center gap-1.5 rounded-md border px-3 py-2 text-xs font-medium ${confidenceMarked ? 'cursor-default border-amber-300 bg-amber-50 text-amber-800' : 'border-slate-200 text-slate-600 hover:border-amber-300 hover:bg-amber-50 hover:text-amber-800'}`}
+            >
+              <CircleHelp size={14} />
+              {confidenceMarked ? 'Marked: guessed / not confident' : 'I guessed / not confident'}
+            </button>
+            {!confidenceMarked && <p className="mt-1 text-[10px] text-slate-400">Use this when you got it right by elimination, luck or uncertain recall. It stays correct but returns sooner.</p>}
           </div>}
 
           <div className={`mb-3 rounded-md border p-2 ${qaClasses(question.qaStatus)}`}>
