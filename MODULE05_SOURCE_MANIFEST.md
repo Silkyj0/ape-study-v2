@@ -7,23 +7,23 @@ Module 5 — Responsible Design: Country, Environment, Equity, Safety & Amenity
 - Unit folder: `https://drive.google.com/drive/folders/1DcoNkcK1jNuDCmutM1379XXaJbsL_fhS`
 - Acumen / supplied reference folder: `https://drive.google.com/drive/folders/11UBpaG_UqnaoPGMD_9M9gcmQtAD2tloV`
 - PARC reading-guide folder: `https://drive.google.com/drive/folders/1jYcTODamGwgCO5sYT1l3L9s6gqieRzgJ`
-- Sample Questions folder: deliberately excluded from authoring so the later PARCS sample exercise remains a blind calibration test.
+- Stored sample-question folder was not used before the blind attempt; samples were supplied by the user in chat and the official key was confirmed by the user afterward.
 
 ## Curation decision
-Module 5 is intentionally the smallest authored module.
+Module 5 is intentionally the smallest live module.
 
-The supplied PARC Unit 5 guide points candidates to many external websites because the topics are evolving. For this app, those external references are **not included in the live authored question bank**. The live bank is limited to propositions supported directly by the supplied Drive PDFs.
+The supplied PARC Unit 5 guide points candidates to many external websites because the topics are evolving. At the user's direction, those external references are **not included in the live authored bank**. The larger draft files remain archived in the repository.
 
-The larger draft question files are retained in the repository as archive material, but the live assembler filters them to the compact set below. This keeps the work reversible without exposing low-priority or external-source questions in study mode.
+After sample calibration, authored content was reduced from 20 to **10** to avoid duplication with the 13 official PARCS samples and to preserve M5 as the smallest module overall.
 
 ## Live question bank
-- **20 Drive-source-verified authored questions**
-- stored answer positions: **A 5 / B 5 / C 5 / D 5**
-- no PARCS sample questions have yet been added for Module 5
-- question IDs are stable `m5-*` IDs
-- source check date: 2026-09-05
+- **10 Drive-source-verified authored questions**
+- **13 immutable PARCS-confirmed sample questions**
+- **23 total live Module 5 questions**
+- source-backed authored set remains limited to supplied Drive files
+- external Country/native-title/rating-tool/passive-design website questions remain inactive
 
-### Live IDs
+### Live authored IDs
 Equity / access:
 - `m5-dda-01`
 - `m5-dda-02`
@@ -31,66 +31,66 @@ Equity / access:
 - `m5-dda-04`
 
 WHS / safety in design:
-- `m5-whs-08`
 - `m5-safe-01`
-- `m5-safe-02`
-- `m5-safe-05`
-- `m5-whs-03`
-- `m5-whs-06`
+- `m5-whs-08`
 - `m5-whs-04`
-- `m5-safe-04`
+- `m5-whs-06`
 
-Environment / whole-life energy and carbon:
-- `m5-carbon-01`
-- `m5-carbon-02`
+Environment / life-cycle analysis:
 - `m5-carbon-03`
 - `m5-carbon-04`
-- `m5-carbon-05`
-- `m5-carbon-06`
-- `m5-carbon-07`
-- `m5-carbon-08`
+
+### PARCS-confirmed IDs
+Scenario 5.1:
+- `m5-sc51-1`
+- `m5-sc51-2`
+- `m5-sc51-3`
+- `m5-sc51-4`
+
+Scenario 5.2:
+- `m5-sc52-1`
+- `m5-sc52-2`
+- `m5-sc52-3`
+- `m5-sc52-4`
+
+Scenario 5.3:
+- `m5-sc53-1`
+- `m5-sc53-2`
+- `m5-sc53-3`
+- `m5-sc53-4`
+- `m5-sc53-5`
+
+## Blind sample calibration
+Blind attempt score: **11/13**.
+
+Confirmed key:
+- 5.1: **A, D, C, D**
+- 5.2: **D, A, B, B**
+- 5.3: **D, C, A, B, A**
+
+The only misses were Scenario 5.2 Q3 and Q4.
+
+### Calibration rule
+PARCS treats the project-manager instruction to reduce the tanks as a change requiring a fee variation before proceeding. When the client later instructs reinstatement of the original number of tanks, that is another change from the then-current documented position and likewise requires the fee consequence to be addressed before proceeding.
+
+For exam purposes, do not overcomplicate these questions by substituting an authority-analysis answer when the offered answer set is testing administration of a change to services. The architect should recognise and document the additional service/fee consequence before carrying out the change.
+
+No live authored Module 5 question conflicted with this rule; the authored set did not contain an equivalent project-manager variation proposition. No keyed authored answer required correction.
 
 ## Direct source themes retained
 
 ### DDA / equitable access
-Primary supplied source: `DDA overview - building access`.
-
-The live questions focus on:
-- the distinction between the federal DDA complaint mechanism and building approval/certification;
-- the fact that the Access Code does not address every possible accessibility or fitout issue;
-- the continuing relevance of the DDA to existing buildings even when the Premises Standards are not triggered by building work; and
-- the boundary between architectural advice and legal conclusions such as unjustifiable hardship.
+The compact authored set retains four distinct high-value DDA/access principles from the supplied readings.
 
 ### WHS / safety in design
-Primary supplied sources:
-- `Safety in design guide`;
-- `Safe Work Australia Model Code of Practice - Safe Design of Structures, November 2024`.
-
-The live questions focus on:
-- starting safe design early in concept development;
-- lifecycle thinking;
-- hierarchy of controls and designing out hazards where reasonably practicable;
-- the meaning of reasonably practicable;
-- concurrent and overlapping WHS duties;
-- client/designer consultation and transfer of site hazard information;
-- focusing design risk management on matters the designer can influence; and
-- documenting and transferring residual risk information.
-
-The Model Code is used as supplied course material. Its own text notes that Safe Work Australia is a national policy body rather than the WHS regulator and that codes operate within the applicable jurisdictional WHS framework.
+The compact authored set retains:
+- starting safe design early;
+- client/designer transfer of relevant hazard information;
+- concurrent/overlapping WHS duties; and
+- the reasonably-practicable test.
 
 ### Environment / life-cycle thinking
-Primary supplied sources:
-- `Energy`;
-- `Embodied carbon in buildings`;
-- `Cutting lifetime residential greenhouse gas (GHG) emissions`;
-- `Life cycle energy analysis`.
-
-The live questions focus on:
-- operational versus embodied energy/carbon;
-- the growing significance of embodied carbon as operational performance improves;
-- early design/material decisions affecting emissions across the building life cycle;
-- Life Cycle Energy Analysis as assessment of embodied and operational energy over a building's lifetime; and
-- the limitation that an energy-focused analysis is narrower than a full environmental life-cycle assessment.
+The PARCS sample set now supplies substantial embodied-carbon coverage. The remaining two authored questions retain non-duplicative Life Cycle Energy Analysis application.
 
 ## Deliberately excluded from the live authored bank
 The PARC guide references external material on topics including:
@@ -103,17 +103,9 @@ The PARC guide references external material on topics including:
 - NABERS;
 - other environmental rating systems and climate-data websites.
 
-These references are useful study resources, particularly for discussion/interview preparation, but the user has requested that they **not be addressed in the Module 5 question bank**. No live M5 question currently relies on them.
+These remain useful source references but are not expanded into live authored questions unless the user changes that instruction.
 
-The Victoria-only OHS Safe Design reading is also not used as the default legal source for Queensland preparation.
+The Victoria-only OHS Safe Design reading is also not used as the Queensland default.
 
-## Source-quality note
-`edg_71_rc_edited.pdf` has poor/garbled extracted text. No live proposition depends on reconstructing that file. Clean, legible assigned readings are used instead.
-
-## Sample-question calibration
-The Module 5 Sample Questions folder remains unopened for answer-key purposes. The next step is:
-1. user supplies the M5 sample questions in chat;
-2. answer them blind from the supplied M5 source files;
-3. user confirms the official PARCS key;
-4. use any differences to calibrate the 20 authored questions; and
-5. add the confirmed samples as immutable `PARCS confirmed` questions if desired.
+## Next workflow
+Blind calibration continues with **Module 6**, then M7 → M8 → M9 → M10 → M11. For each module, answer the user-supplied samples blind first, obtain the official key, extract any PARCS-specific reasoning rules, review the authored bank, then add the confirmed samples as immutable PARCS questions.
