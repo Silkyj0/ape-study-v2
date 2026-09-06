@@ -1,4 +1,5 @@
 import { CheckCircle2, ChevronLeft, CircleHelp, Flag, ShieldCheck, XCircle } from 'lucide-react';
+import { getCalibrationTrap } from '../data/calibrationTraps.js';
 
 function qaClasses(status) {
   if (status === 'parcs-confirmed') return 'border-emerald-200 bg-emerald-50 text-emerald-800';
@@ -18,6 +19,7 @@ function learningClasses(tone) {
 
 export default function StudyView({ question, index, total, sessionCorrect, selected, revealed, answerFeedback, confidenceMarked, onAnswer, onLowConfidence, onNext, onExit, onToggleFlag }) {
   const answeredCorrectly = revealed && selected === question.presentationCorrect;
+  const calibrationTrap = getCalibrationTrap(question);
 
   return (
     <div>
@@ -49,6 +51,11 @@ export default function StudyView({ question, index, total, sessionCorrect, sele
         </div>
         {revealed && <div className="mt-4 border-t border-slate-200 pt-3">
           <p className="mb-3 text-xs leading-relaxed text-slate-600">{question.explanation}</p>
+
+          {calibrationTrap && <div className="mb-3 rounded-md border border-violet-200 bg-violet-50 p-2 text-violet-900">
+            <div className="text-[11px] font-semibold">PARCS calibration trap · Scenario {calibrationTrap.scenario} Q{calibrationTrap.questionNumber}</div>
+            <p className="mt-1 text-[10px] leading-relaxed">{calibrationTrap.lesson}</p>
+          </div>}
 
           {answerFeedback && <div className={`mb-3 rounded-md border p-2 ${learningClasses(answerFeedback.tone)}`}>
             <div className="text-[11px] font-semibold">{answerFeedback.title}</div>
