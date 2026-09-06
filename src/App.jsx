@@ -18,6 +18,7 @@ import {
   getExamBank,
 } from './lib/exam.js';
 import {
+  HOUR_MS,
   MAX_SAME_SESSION_RETRIES,
   MIXED_SESSION_LIMIT,
   MODULE_SESSION_LIMIT,
@@ -52,7 +53,7 @@ export default function App() {
   const [sessionCorrect, setSessionCorrect] = useState(0);
   const [sessionRetryCounts, setSessionRetryCounts] = useState({});
   const [answerFeedback, setAnswerFeedback] = useState(null);
-  const [confidenceMarked, setConfidenceMarked] = useState(false);
+  const [answerConfidence, setAnswerConfidence] = useState(null);
   const [scenarioSession, setScenarioSession] = useState(null);
   const [scenarioSelections, setScenarioSelections] = useState({});
   const [scenarioSubmitted, setScenarioSubmitted] = useState(false);
@@ -107,7 +108,7 @@ export default function App() {
     setSessionCorrect(0);
     setSessionRetryCounts({});
     setAnswerFeedback(null);
-    setConfidenceMarked(false);
+    setAnswerConfidence(null);
     setStudyReturnView(returnView);
     setView('study');
     return true;
@@ -281,18 +282,46 @@ export default function App() {
   }
 
   function answer(presentationIndex) {
-    if (revealed) return;
+    if (revealed || !answerConfidence) return;
     const question = queue[qIdx];
     const selectedSourceIndex = question.presentationOptions[presentationIndex].sourceIndex;
     const isCorrect = selectedSourceIndex === question.correct;
+    const now = Date.now();
     setSelected(presentationIndex);
     setRevealed(true);
-    setConfidenceMarked(false);
     if (isCorrect) setSessionCorrect((count) => count + 1);
 
     const current = data.questions.find((item) => item.id === question.id) || question;
-    const progress = applyAnswerResult(current, isCorrect);
-    const updatedQuestion = { ...current, ...progress };
+    const progress = applyAnswerResult(current, isCorrect, now);
+    const recentConfidence = [...(progress.recentConfidence || [])];
+    const confidenceIsHigh = answerConfidence === 'confident';
+    if (recentConfidence.length) recentConfidence[recentConfidence.length - 1] = confidenceIsHigh;
+    else recentConfidence.push(confidenceIsHigh);
+
+    const recentConfidenceLevels = [...(current.recentConfidenceLevels || []), answerConfidence].slice(-8);
+    const confidenceCounts = current.preAnswerConfidenceCounts || {};
+    let updatedQuestion = {
+      ...current,
+      ...progress,
+      recentConfidence,
+      recentConfidenceLevels,
+      preAnswerConfidenceCounts: {
+        confident: confidenceCounts.confident || 0,
+        unsure: confidenceCounts.unsure || 0,
+        guessing: confidenceCounts.guessing || 0,
+        [answerConfidence]: (confidenceCounts[answerConfidence] || 0) + 1,
+      },
+      confidentWrongCount: (current.confidentWrongCount || 0) + (!isCorrect && answerConfidence === 'confident' ? 1 : 0),
+      lastConfidence: confidenceIsHigh ? 'high' : 'low',
+      lastConfidenceAt: now,
+      lastPreAnswerConfidence: answerConfidence,
+      lastPreAnswerConfidenceAt: now,
+    };
+
+    if (isCorrect && !confidenceIsHigh) {
+      updatedQuestion = applyLowConfidence(updatedQuestion, now);
+      if (answerConfidence === 'guessing') updatedQuestion = { ...updatedQuestion, due: now + 4 * HOUR_MS };
+    }
 
     let retryQueued = false;
     if (!isCorrect) {
@@ -310,24 +339,28 @@ export default function App() {
       }
     }
 
-    setAnswerFeedback(answerScheduleFeedback(updatedQuestion, isCorrect, retryQueued));
+    let feedback;
+    if (isCorrect && answerConfidence !== 'confident') {
+      feedback = lowConfidenceFeedback();
+      feedback = answerConfidence === 'guessing'
+        ? { ...feedback, title: 'Correct guess · review soon', detail: 'This still counts as correct, but it will return in about 4 hours and will not advance your mastery streak.' }
+        : { ...feedback, title: 'Correct, but unsure', detail: 'This still counts as correct, but it will return in about 12 hours and will not advance your mastery streak.' };
+    } else {
+      feedback = answerScheduleFeedback(updatedQuestion, isCorrect, retryQueued);
+      if (isCorrect) {
+        feedback = { ...feedback, detail: feedback.detail.replace(' If you guessed, mark it below so it returns sooner.', '') };
+      } else if (answerConfidence === 'confident') {
+        feedback = {
+          ...feedback,
+          title: retryQueued ? 'Confident miss · retry queued' : 'Confident miss',
+          detail: `${feedback.detail} You marked this answer confident, so it is recorded as a likely misconception for later review.`,
+        };
+      }
+    }
+
+    setAnswerFeedback(feedback);
     const nextQuestions = data.questions.map((item) => item.id === question.id ? updatedQuestion : item);
     persist({ ...data, questions: nextQuestions });
-  }
-
-  async function markLowConfidence() {
-    if (!revealed || confidenceMarked) return;
-    const question = queue[qIdx];
-    if (selected !== question.presentationCorrect) return;
-
-    const current = data.questions.find((item) => item.id === question.id) || question;
-    const updatedQuestion = applyLowConfidence(current);
-    const nextQuestions = data.questions.map((item) => item.id === question.id ? updatedQuestion : item);
-
-    setConfidenceMarked(true);
-    setAnswerFeedback(lowConfidenceFeedback());
-    setQueue((items) => items.map((item, index) => index === qIdx ? { ...item, ...updatedQuestion } : item));
-    await persist({ ...data, questions: nextQuestions });
   }
 
   async function toggleFlag(id) {
@@ -351,7 +384,7 @@ export default function App() {
       setSelected(null);
       setRevealed(false);
       setAnswerFeedback(null);
-      setConfidenceMarked(false);
+      setAnswerConfidence(null);
     } else setView(studyReturnView);
   }
 
@@ -364,7 +397,7 @@ export default function App() {
     if (form.options.some((option) => !option.trim())) return setFormError('Fill in all four options.');
     setFormError('');
     const question = {
-      id: uid(), moduleId: form.moduleId, scenarioText: form.scenarioText.trim() || null, prompt: form.prompt.trim(), options: form.options.map((option) => option.trim()), correct: form.unknownAnswer ? null : form.correct, explanation: form.explanation.trim(), source: 'From your notes', difficulty: form.difficulty, status: form.unknownAnswer ? 'pending' : 'ready', qaStatus: 'user-added', qaLabel: 'User-added', qaNote: 'Manually added question. Verify against the source material you used to create it.', flagged: false, flaggedAt: null, level: 0, due: 0, seen: 0, correctCount: 0, correctStreak: 0, lapseCount: 0, recentResults: [], recentConfidence: [], lowConfidenceCount: 0, lastResult: null, lastConfidence: null, lastConfidenceAt: null, lastAnsweredAt: null, learningTopic: 'Your notes',
+      id: uid(), moduleId: form.moduleId, scenarioText: form.scenarioText.trim() || null, prompt: form.prompt.trim(), options: form.options.map((option) => option.trim()), correct: form.unknownAnswer ? null : form.correct, explanation: form.explanation.trim(), source: 'From your notes', difficulty: form.difficulty, status: form.unknownAnswer ? 'pending' : 'ready', qaStatus: 'user-added', qaLabel: 'User-added', qaNote: 'Manually added question. Verify against the source material you used to create it.', flagged: false, flaggedAt: null, level: 0, due: 0, seen: 0, correctCount: 0, correctStreak: 0, lapseCount: 0, recentResults: [], recentConfidence: [], recentConfidenceLevels: [], lowConfidenceCount: 0, preAnswerConfidenceCounts: { confident: 0, unsure: 0, guessing: 0 }, confidentWrongCount: 0, lastResult: null, lastConfidence: null, lastConfidenceAt: null, lastPreAnswerConfidence: null, lastPreAnswerConfidenceAt: null, lastAnsweredAt: null, learningTopic: 'Your notes',
     };
     await persist({ ...data, questions: [...data.questions, question] });
     setForm({ ...EMPTY_FORM, moduleId: form.moduleId, scenarioText: form.scenarioText, difficulty: form.difficulty, unknownAnswer: form.unknownAnswer });
@@ -394,7 +427,7 @@ export default function App() {
 
   return <div className="min-h-screen bg-slate-50 text-slate-800"><div className="mx-auto min-h-screen max-w-3xl bg-white shadow-sm">
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur"><div className="flex min-w-0 items-center justify-between gap-2">
-      <div className="min-w-0"><h1 className="truncate text-base font-semibold text-slate-900">APE Part 2 study</h1><p className="hidden truncate text-xs text-slate-500 sm:block">adaptive review · scenario practice · exam simulation · confidence-aware mastery · weak-area focus · provenance QA</p></div>
+      <div className="min-w-0"><h1 className="truncate text-base font-semibold text-slate-900">APE Part 2 study</h1><p className="hidden truncate text-xs text-slate-500 sm:block">adaptive review · scenario practice · exam simulation · pre-answer confidence · weak-area focus · provenance QA</p></div>
       <nav className="flex shrink-0 gap-0.5 sm:gap-1">{nav.map(([key, Icon, label]) => {
         const disabled = examInProgress && key !== 'exam';
         return <button key={key} disabled={disabled} onClick={() => setView(key)} className={`flex flex-col items-center rounded px-1.5 py-1 text-[10px] sm:px-2 sm:text-xs ${view === key ? 'bg-slate-900 text-white' : disabled ? 'cursor-not-allowed text-slate-300' : 'text-slate-500 hover:bg-slate-100'}`}><Icon size={16} /><span className="hidden sm:inline">{label}</span></button>;
@@ -407,7 +440,7 @@ export default function App() {
       {view === 'parcs' && <ParcsView questions={data.questions} onStartMixed={startParcsMixed} onStartModule={startParcsModule} onStartScenario={startParcsScenario} />}
       {view === 'exam' && <ExamView questions={examQuestions} currentIndex={examIndex} selections={examSelections} reviewFlags={examReviewFlags} endsAt={examEndsAt} submitted={examSubmitted} result={examResult} history={data.examHistory || []} bankCount={getExamBank(data.questions).length} onStart={startExam} onSelect={selectExamAnswer} onNavigate={setExamIndex} onToggleReview={toggleExamReview} onSubmit={submitExam} onExit={exitExam} />}
       {view === 'scenario-study' && scenarioSession && <ScenarioStudyView scenario={scenarioSession} selections={scenarioSelections} submitted={scenarioSubmitted} onSelect={selectScenarioAnswer} onSubmit={submitScenario} onFinish={finishScenario} onExit={finishScenario} onToggleFlag={toggleFlag} />}
-      {view === 'study' && currentQuestion && <StudyView question={currentQuestion} index={qIdx} total={queue.length} sessionCorrect={sessionCorrect} selected={selected} revealed={revealed} answerFeedback={answerFeedback} confidenceMarked={confidenceMarked} onAnswer={answer} onLowConfidence={markLowConfidence} onNext={nextCard} onExit={() => setView(studyReturnView)} onToggleFlag={toggleFlag} />}
+      {view === 'study' && currentQuestion && <StudyView question={currentQuestion} index={qIdx} total={queue.length} sessionCorrect={sessionCorrect} selected={selected} revealed={revealed} answerFeedback={answerFeedback} confidence={answerConfidence} onConfidence={setAnswerConfidence} onAnswer={answer} onNext={nextCard} onExit={() => setView(studyReturnView)} onToggleFlag={toggleFlag} />}
       {view === 'add' && <AddQuestionView form={form} setForm={setForm} formError={formError} questions={data.questions} onUpdateOption={updateOption} onSubmit={submitForm} onDelete={deleteQuestion} onResolve={resolveAnswer} />}
       {view === 'dashboard' && <DashboardView questions={data.questions} onStartFocus={startFocusArea} onStartCalibrationFocus={startCalibrationFocus} />}
       {view === 'quality' && <QualityDashboard questions={data.questions} onToggleFlag={toggleFlag} />}
