@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
-import { AlertCircle, BarChart3, BookOpen, Clock3, Database, FlaskConical, Loader2, Plus, ShieldCheck } from 'lucide-react';
+import { AlertCircle, BarChart3, BookOpen, Clock3, Database, FlaskConical, Layers3, Loader2, Plus, ShieldCheck } from 'lucide-react';
+import { FLASHCARD_SEED_VERSION } from './data/flashcards.js';
 import { SEED_VERSION } from './data/questions.js';
 import AddQuestionView from './components/AddQuestionView.jsx';
 import DashboardView from './components/DashboardView.jsx';
 import DataPanel from './components/DataPanel.jsx';
 import ExamView from './components/ExamView.jsx';
+import FlashcardsView from './components/FlashcardsView.jsx';
 import ModulesView from './components/ModulesView.jsx';
 import ParcsView from './components/ParcsView.jsx';
 import QualityDashboard from './components/QualityDashboard.jsx';
@@ -17,6 +19,14 @@ import {
   calculateExamResult,
   getExamBank,
 } from './lib/exam.js';
+import {
+  FLASHCARD_MAX_RETRIES,
+  FLASHCARD_RETRY_GAP,
+  FLASHCARD_SESSION_LIMIT,
+  applyFlashcardResult,
+  buildFlashcardFullSet,
+  buildFlashcardSession,
+} from './lib/flashcards.js';
 import {
   HOUR_MS,
   MAX_SAME_SESSION_RETRIES,
@@ -65,6 +75,10 @@ export default function App() {
   const [examEndsAt, setExamEndsAt] = useState(null);
   const [examSubmitted, setExamSubmitted] = useState(false);
   const [examResult, setExamResult] = useState(null);
+  const [flashcardQueue, setFlashcardQueue] = useState([]);
+  const [flashcardIndex, setFlashcardIndex] = useState(0);
+  const [flashcardFlipped, setFlashcardFlipped] = useState(false);
+  const [flashcardRetryCounts, setFlashcardRetryCounts] = useState({});
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState('');
 
@@ -76,8 +90,15 @@ export default function App() {
       setStorageBackend(res.backend);
       if (res.value) {
         const parsed = JSON.parse(res.value);
-        const next = parsed.seedVersion !== SEED_VERSION ? reconcile(parsed) : parsed;
-        setData({ ...next, examHistory: Array.isArray(next.examHistory) ? next.examHistory : [] });
+        const needsReconcile = parsed.seedVersion !== SEED_VERSION
+          || parsed.flashcardSeedVersion !== FLASHCARD_SEED_VERSION
+          || !Array.isArray(parsed.flashcards);
+        const next = needsReconcile ? reconcile(parsed) : parsed;
+        setData({
+          ...next,
+          flashcards: Array.isArray(next.flashcards) ? next.flashcards : [],
+          examHistory: Array.isArray(next.examHistory) ? next.examHistory : [],
+        });
         if (next !== parsed) setStorageBackend((await writeStoredProgress(JSON.stringify(next))).backend);
       } else {
         const next = reconcile({ questions: [] });
@@ -271,6 +292,79 @@ export default function App() {
     setView('exam');
   }
 
+  function startFlashcardAdaptive(moduleId = null) {
+    const session = buildFlashcardSession(data.flashcards || [], FLASHCARD_SESSION_LIMIT, moduleId);
+    if (!session.length) {
+      setNotice(moduleId ? `Nothing is due and there are no unseen flashcards in Module ${moduleId}. Use All to revisit the full set.` : 'Nothing is due and there are no unseen flashcards. Use All terms to revisit the full set.');
+      return;
+    }
+    setFlashcardQueue(session);
+    setFlashcardIndex(0);
+    setFlashcardFlipped(false);
+    setFlashcardRetryCounts({});
+  }
+
+  function startFlashcardFull(moduleId = null) {
+    const session = buildFlashcardFullSet(data.flashcards || [], moduleId);
+    if (!session.length) {
+      setNotice('No flashcards are available for that selection.');
+      return;
+    }
+    setFlashcardQueue(session);
+    setFlashcardIndex(0);
+    setFlashcardFlipped(false);
+    setFlashcardRetryCounts({});
+  }
+
+  function startFlashcardTopic(topic) {
+    const pool = (data.flashcards || []).filter((card) => card.topic === topic);
+    const session = buildFlashcardSession(pool, FLASHCARD_SESSION_LIMIT);
+    if (!session.length) {
+      const full = buildFlashcardFullSet(pool);
+      if (!full.length) return setNotice(`No flashcards are available for ${topic}.`);
+      setFlashcardQueue(full);
+    } else setFlashcardQueue(session);
+    setFlashcardIndex(0);
+    setFlashcardFlipped(false);
+    setFlashcardRetryCounts({});
+  }
+
+  function finishFlashcardSession() {
+    setFlashcardQueue([]);
+    setFlashcardIndex(0);
+    setFlashcardFlipped(false);
+    setFlashcardRetryCounts({});
+  }
+
+  async function rateFlashcard(rating) {
+    if (!flashcardFlipped || !flashcardQueue.length) return;
+    const card = flashcardQueue[flashcardIndex];
+    const current = (data.flashcards || []).find((item) => item.id === card.id) || card;
+    const updatedCard = { ...current, ...applyFlashcardResult(current, rating) };
+    const nextFlashcards = (data.flashcards || []).map((item) => item.id === card.id ? updatedCard : item);
+    let nextQueue = flashcardQueue.map((item, index) => index === flashcardIndex ? { ...item, ...updatedCard } : item);
+
+    if (rating === 'didnt-know') {
+      const retryCount = flashcardRetryCounts[card.id] || 0;
+      if (retryCount < FLASHCARD_MAX_RETRIES) {
+        setFlashcardRetryCounts((counts) => ({ ...counts, [card.id]: retryCount + 1 }));
+        const insertAt = Math.min(flashcardIndex + FLASHCARD_RETRY_GAP + 1, nextQueue.length);
+        nextQueue.splice(insertAt, 0, { ...card, ...updatedCard });
+      }
+    }
+
+    await persist({ ...data, flashcards: nextFlashcards });
+
+    if (flashcardIndex + 1 < nextQueue.length) {
+      setFlashcardQueue(nextQueue);
+      setFlashcardIndex((index) => index + 1);
+      setFlashcardFlipped(false);
+    } else {
+      finishFlashcardSession();
+      setNotice('Flashcard session complete. Your recall ratings have been saved for adaptive review.');
+    }
+  }
+
   function startFocusArea(topic) {
     const session = buildFocusSession(data.questions, topic);
     if (!beginQueue(session, 'dashboard')) setNotice(`No ready questions are available for ${topic}.`);
@@ -413,7 +507,7 @@ export default function App() {
       const imported = await parseProgressFile(file);
       if (!Array.isArray(imported?.questions)) throw new Error('No question progress found.');
       await persist(reconcile(imported));
-      setNotice(`Progress imported successfully and reconciled to question-bank version ${SEED_VERSION}.`);
+      setNotice(`Progress imported successfully and reconciled to question bank ${SEED_VERSION} and flashcard bank ${FLASHCARD_SEED_VERSION}.`);
       setView('modules');
     } catch (error) { setNotice(`Import failed: ${error.message || 'invalid progress file'}`); }
   }
@@ -422,12 +516,12 @@ export default function App() {
   const currentQuestion = queue[qIdx];
   const examInProgress = view === 'exam' && examQuestions.length > 0 && !examSubmitted;
   const nav = [
-    ['modules', BookOpen, 'Modules'], ['parcs', ShieldCheck, 'PARCS'], ['exam', Clock3, 'Exam'], ['add', Plus, 'Add'], ['dashboard', BarChart3, 'Stats'], ['quality', FlaskConical, 'Quality'], ['data', Database, 'Data'],
+    ['modules', BookOpen, 'Modules'], ['flashcards', Layers3, 'Cards'], ['parcs', ShieldCheck, 'PARCS'], ['exam', Clock3, 'Exam'], ['add', Plus, 'Add'], ['dashboard', BarChart3, 'Stats'], ['quality', FlaskConical, 'Quality'], ['data', Database, 'Data'],
   ];
 
   return <div className="min-h-screen bg-slate-50 text-slate-800"><div className="mx-auto min-h-screen max-w-3xl bg-white shadow-sm">
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur"><div className="flex min-w-0 items-center justify-between gap-2">
-      <div className="min-w-0"><h1 className="truncate text-base font-semibold text-slate-900">APE Part 2 study</h1><p className="hidden truncate text-xs text-slate-500 sm:block">adaptive review · scenario practice · exam simulation · pre-answer confidence · weak-area focus · provenance QA</p></div>
+      <div className="min-w-0"><h1 className="truncate text-base font-semibold text-slate-900">APE Part 2 study</h1><p className="hidden truncate text-xs text-slate-500 sm:block">adaptive review · Acumen flashcards · scenario practice · exam simulation · provenance QA</p></div>
       <nav className="flex shrink-0 gap-0.5 sm:gap-1">{nav.map(([key, Icon, label]) => {
         const disabled = examInProgress && key !== 'exam';
         return <button key={key} disabled={disabled} onClick={() => setView(key)} className={`flex flex-col items-center rounded px-1.5 py-1 text-[10px] sm:px-2 sm:text-xs ${view === key ? 'bg-slate-900 text-white' : disabled ? 'cursor-not-allowed text-slate-300' : 'text-slate-500 hover:bg-slate-100'}`}><Icon size={16} /><span className="hidden sm:inline">{label}</span></button>;
@@ -437,6 +531,7 @@ export default function App() {
       {saveError && <div className="mb-3 flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700"><AlertCircle size={15} className="mt-0.5 shrink-0" /> {saveError}</div>}
       {notice && <div className="mb-3 flex items-start justify-between gap-3 rounded-md border border-blue-200 bg-blue-50 p-2 text-xs text-blue-800"><span>{notice}</span><button onClick={() => setNotice(null)} className="font-medium">×</button></div>}
       {view === 'modules' && <ModulesView questions={data.questions} onStart={startStudy} onSmartReview={startSmartReview} onCalibration={startRevisedExamBank} />}
+      {view === 'flashcards' && <FlashcardsView cards={data.flashcards || []} queue={flashcardQueue} index={flashcardIndex} flipped={flashcardFlipped} onFlip={() => setFlashcardFlipped((value) => !value)} onStartAdaptive={startFlashcardAdaptive} onStartFull={startFlashcardFull} onStartTopic={startFlashcardTopic} onRate={rateFlashcard} onEndSession={finishFlashcardSession} />}
       {view === 'parcs' && <ParcsView questions={data.questions} onStartMixed={startParcsMixed} onStartModule={startParcsModule} onStartScenario={startParcsScenario} />}
       {view === 'exam' && <ExamView questions={examQuestions} currentIndex={examIndex} selections={examSelections} reviewFlags={examReviewFlags} endsAt={examEndsAt} submitted={examSubmitted} result={examResult} history={data.examHistory || []} bankCount={getExamBank(data.questions).length} onStart={startExam} onSelect={selectExamAnswer} onNavigate={setExamIndex} onToggleReview={toggleExamReview} onSubmit={submitExam} onExit={exitExam} />}
       {view === 'scenario-study' && scenarioSession && <ScenarioStudyView scenario={scenarioSession} selections={scenarioSelections} submitted={scenarioSubmitted} onSelect={selectScenarioAnswer} onSubmit={submitScenario} onFinish={finishScenario} onExit={finishScenario} onToggleFlag={toggleFlag} />}
