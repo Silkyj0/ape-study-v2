@@ -17,6 +17,9 @@ export const PARCS_SAMPLE_IDS = [
   'm7-sc71-1', 'm7-sc71-2', 'm7-sc71-3',
   'm7-sc72-1', 'm7-sc72-2', 'm7-sc72-3', 'm7-sc72-4',
   'm7-sc73-1', 'm7-sc73-2', 'm7-sc73-3',
+  'm8-sc81-1', 'm8-sc81-2', 'm8-sc81-3', 'm8-sc81-4',
+  'm8-sc82-1', 'm8-sc82-2', 'm8-sc82-3', 'm8-sc82-4',
+  'm8-sc83-1', 'm8-sc83-2', 'm8-sc83-3', 'm8-sc83-4',
 ];
 
 export const PARCS_SAMPLE_SET = new Set(PARCS_SAMPLE_IDS);
