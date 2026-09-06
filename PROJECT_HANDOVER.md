@@ -61,10 +61,26 @@ APE Part 2 study application for Patrick's Queensland Architectural Practice Exa
 - `src/data/module06.novation.js` contains the four authored novation questions.
 - `src/data/module06.parcs.js` contains the 11 immutable confirmed samples.
 
-### Modules 7–11
-All are rebuilt from connected Drive course readings. Stored sample-question folders remain unused so blind calibration can continue.
+### Module 7
+- Live M7: **42 questions** = **32 Drive-source-verified authored** + **10 PARCS-confirmed samples**.
+- Authored M7 answer positions remain exactly balanced: **8 A / 8 B / 8 C / 8 D**.
+- Blind sample score: **8/10**.
+- Confirmed key:
+  - 7.1: **D, C, D**
+  - 7.2: **B, C, A, D**
+  - 7.3: **B, A, B**
+- Blind misses:
+  - 7.1 Q1: answered A; official D.
+  - 7.2 Q1: answered C; official B.
+- Calibration rules:
+  - A possible external supply disruption does not automatically justify changing the tender basis. Until sufficient verified information establishes that the issued tender basis must change, PARCS expects tenderers to price the documents as issued while the architect separately advises the client of likely cost/time implications if the risk materialises.
+  - For a lowest tender that is non-conforming because of a proposed substitution, PARCS permits clarification by asking whether the tenderer will stand by its price using the specified conforming product before moving to recommendation.
+- The authored bank was reviewed against both rules. No keyed authored question conflicted, so no authored answer was changed or removed.
+- `src/data/module07.parcs.js` contains the 10 immutable confirmed samples.
 
-- M7: **32** — tendering and contract execution.
+### Modules 8–11
+All are rebuilt from connected Drive course readings. Their stored sample-question folders remain unused so blind calibration can continue.
+
 - M8: **24** — CA commencement.
 - M9: **28** — CA money.
 - M10: **32** — time, EOT costs, LDs.
@@ -82,23 +98,24 @@ Across authored M6–M11: **180 Drive-source-verified questions**, stored answer
 | M4 | 69 |
 | M5 | 23 |
 | M6 | 51 |
-| M7 | 32 |
+| M7 | 42 |
 | M8 | 24 |
 | M9 | 28 |
 | M10 | 32 |
 | M11 | 24 |
 
-Total live seed: **462 questions**.
+Total live seed: **472 questions**.
 
 Verified/authored exam practice: **406 questions**:
 - 100 source-audited M1/M2 rewrites;
 - 306 Drive-source-verified authored questions across M3–M11.
 
-PARCS-confirmed live questions: **56**:
+PARCS-confirmed live questions: **66**:
 - 19 from M1/M2;
 - 13 from M4;
 - 13 from M5;
-- 11 from M6.
+- 11 from M6;
+- 10 from M7.
 
 PARCS-confirmed questions are available in normal module study but excluded from the mixed Verified exam bank.
 
@@ -120,11 +137,11 @@ The app uses adaptive review rather than a simple deck:
 
 - `src/data/questions.js` assembles all modules and applies QA overlays.
 - `src/data/qaMetadata.js` owns PARCS IDs and provenance statuses.
-- `module04.parcs.js`, `module05.parcs.js` and `module06.parcs.js` contain immutable confirmed samples.
+- `module04.parcs.js`, `module05.parcs.js`, `module06.parcs.js` and `module07.parcs.js` contain immutable confirmed samples.
 - `module06.novation.js` contains the calibration-driven authored novation expansion.
 - `module06.legacy.js` and `module07.legacy.js` retain inherited placeholders but they are not live.
 - `laterModuleQaOverrides.js` contains distractor-only wording refinements and does not change keyed propositions.
-- `SEED_VERSION` is **26** after Module 6 sample integration.
+- `SEED_VERSION` is **27** after Module 7 sample integration.
 
 QA statuses:
 - `parcs-confirmed`
@@ -154,7 +171,7 @@ Core rules:
 ## Next task
 
 Proceed with blind sample calibration in order:
-**M7 → M8 → M9 → M10 → M11**.
+**M8 → M9 → M10 → M11**.
 
 For each module:
 1. user supplies screenshots/PDF;
@@ -165,8 +182,6 @@ For each module:
 6. add samples as immutable PARCS questions;
 7. bump `SEED_VERSION`;
 8. verify Vercel before moving on.
-
-M7 tendering remains a priority study area.
 
 ## Deployment
 
