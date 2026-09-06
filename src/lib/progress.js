@@ -82,6 +82,7 @@ export function reconcile(stored = { questions: [] }) {
   return {
     seedVersion: SEED_VERSION,
     questions: [...seedQuestions, ...userQuestions],
+    examHistory: Array.isArray(stored.examHistory) ? stored.examHistory.slice(-20) : [],
   };
 }
 
