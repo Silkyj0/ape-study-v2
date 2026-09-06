@@ -9,6 +9,7 @@ import { module06ParcsQuestions } from './module06.parcs.js';
 import { module07Questions } from './module07.js';
 import { module07ParcsQuestions } from './module07.parcs.js';
 import { module08Questions } from './module08.js';
+import { module08ParcsQuestions } from './module08.parcs.js';
 import { module09Questions } from './module09.js';
 import { module10Questions } from './module10.js';
 import { module11Questions } from './module11.js';
@@ -18,7 +19,7 @@ import { examOverridesBatch03, examBatch03Ids } from './examOverridesBatch03.js'
 import { laterModuleQaOverrides } from './laterModuleQaOverrides.js';
 import { getQaMetadata, PARCS_SAMPLE_IDS, WITHHELD_QA_IDS } from './qaMetadata.js';
 
-export const SEED_VERSION = 27;
+export const SEED_VERSION = 28;
 
 const BASE_SEED = [
   ...module01Questions,
@@ -32,6 +33,7 @@ const BASE_SEED = [
   ...module07Questions,
   ...module07ParcsQuestions,
   ...module08Questions,
+  ...module08ParcsQuestions,
   ...module09Questions,
   ...module10Questions,
   ...module11Questions,
