@@ -23,16 +23,18 @@ function materialLengthClue(lengths, correctIndex) {
 
 export function auditQuestion(question) {
   const flags = [];
+  const optionCount = Array.isArray(question.options) ? question.options.length : 0;
+  const validOptionCount = optionCount === 4 || (question.answerFormat === 'true-false' && optionCount === 2);
 
-  if (!Array.isArray(question.options) || question.options.length !== 4) {
-    flags.push({ type: 'options', severity: 'high', message: 'Question does not have exactly four options.' });
+  if (!validOptionCount) {
+    flags.push({ type: 'options', severity: 'high', message: 'Question must have four MCQ options or two options for a true/false item.' });
     return flags;
   }
 
   if (question.correct === null || question.correct === undefined) return flags;
 
-  if (question.correct < 0 || question.correct > 3) {
-    flags.push({ type: 'answer', severity: 'high', message: 'Correct-answer index is outside A–D.' });
+  if (question.correct < 0 || question.correct >= optionCount) {
+    flags.push({ type: 'answer', severity: 'high', message: 'Correct-answer index is outside the available answer options.' });
     return flags;
   }
 
