@@ -7,6 +7,7 @@ import DataPanel from './components/DataPanel.jsx';
 import ModulesView from './components/ModulesView.jsx';
 import ParcsView from './components/ParcsView.jsx';
 import QualityDashboard from './components/QualityDashboard.jsx';
+import ScenarioStudyView from './components/ScenarioStudyView.jsx';
 import StudyView from './components/StudyView.jsx';
 import {
   MAX_SAME_SESSION_RETRIES,
@@ -22,7 +23,8 @@ import {
   lowConfidenceFeedback,
 } from './lib/learning.js';
 import { reconcile, uid } from './lib/progress.js';
-import { prepareRepeatQuestion, prepareStudyQueue } from './lib/shuffle.js';
+import { getParcsScenarioGroups } from './lib/scenarios.js';
+import { prepareRepeatQuestion, prepareScenarioQueue, prepareStudyQueue } from './lib/shuffle.js';
 import { downloadProgress, parseProgressFile, readStoredProgress, writeStoredProgress } from './lib/storage.js';
 
 const EMPTY_FORM = { moduleId: 1, scenarioText: '', prompt: '', options: ['', '', '', ''], correct: 0, unknownAnswer: false, explanation: '', difficulty: 'exam' };
@@ -43,6 +45,9 @@ export default function App() {
   const [sessionRetryCounts, setSessionRetryCounts] = useState({});
   const [answerFeedback, setAnswerFeedback] = useState(null);
   const [confidenceMarked, setConfidenceMarked] = useState(false);
+  const [scenarioSession, setScenarioSession] = useState(null);
+  const [scenarioSelections, setScenarioSelections] = useState({});
+  const [scenarioSubmitted, setScenarioSubmitted] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState('');
 
@@ -123,6 +128,49 @@ export default function App() {
     if (!beginQueue(pool, 'parcs')) setNotice(`No PARCS supplied questions are available for Module ${moduleId}.`);
   }
 
+  function startParcsScenario(scenarioKey) {
+    const scenario = getParcsScenarioGroups(data.questions).find((group) => group.key === scenarioKey);
+    if (!scenario) {
+      setNotice('That PARCS scenario could not be found.');
+      return;
+    }
+
+    setScenarioSession({ ...scenario, questions: prepareScenarioQueue(scenario.questions) });
+    setScenarioSelections({});
+    setScenarioSubmitted(false);
+    setView('scenario-study');
+  }
+
+  function selectScenarioAnswer(questionId, presentationIndex) {
+    if (scenarioSubmitted) return;
+    setScenarioSelections((current) => ({ ...current, [questionId]: presentationIndex }));
+  }
+
+  async function submitScenario() {
+    if (!scenarioSession || scenarioSubmitted) return;
+    if (scenarioSession.questions.some((question) => scenarioSelections[question.id] === undefined)) return;
+
+    const updates = new Map();
+    scenarioSession.questions.forEach((question) => {
+      const selectedPresentationIndex = scenarioSelections[question.id];
+      const selectedSourceIndex = question.presentationOptions[selectedPresentationIndex].sourceIndex;
+      const isCorrect = selectedSourceIndex === question.correct;
+      const current = data.questions.find((item) => item.id === question.id) || question;
+      updates.set(question.id, { ...current, ...applyAnswerResult(current, isCorrect) });
+    });
+
+    const nextQuestions = data.questions.map((question) => updates.get(question.id) || question);
+    setScenarioSubmitted(true);
+    await persist({ ...data, questions: nextQuestions });
+  }
+
+  function finishScenario() {
+    setScenarioSession(null);
+    setScenarioSelections({});
+    setScenarioSubmitted(false);
+    setView('parcs');
+  }
+
   function startFocusArea(topic) {
     const session = buildFocusSession(data.questions, topic);
     if (!beginQueue(session, 'dashboard')) setNotice(`No ready questions are available for ${topic}.`);
@@ -191,6 +239,10 @@ export default function App() {
       return { ...item, flagged: nextFlagged, flaggedAt: nextFlagged ? Date.now() : null };
     });
     setQueue((items) => items.map((item) => item.id === id ? { ...item, flagged: nextFlagged, flaggedAt: nextFlagged ? Date.now() : null } : item));
+    setScenarioSession((session) => session ? {
+      ...session,
+      questions: session.questions.map((item) => item.id === id ? { ...item, flagged: nextFlagged, flaggedAt: nextFlagged ? Date.now() : null } : item),
+    } : session);
     await persist({ ...data, questions: nextQuestions });
   }
 
@@ -242,14 +294,15 @@ export default function App() {
 
   return <div className="min-h-screen bg-slate-50 text-slate-800"><div className="mx-auto min-h-screen max-w-3xl bg-white shadow-sm">
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur"><div className="flex items-center justify-between gap-3">
-      <div><h1 className="text-base font-semibold text-slate-900">APE Part 2 study</h1><p className="text-xs text-slate-500">adaptive review · confidence-aware mastery · weak-area focus · PARCS trap drills · provenance QA</p></div>
+      <div><h1 className="text-base font-semibold text-slate-900">APE Part 2 study</h1><p className="text-xs text-slate-500">adaptive review · scenario practice · confidence-aware mastery · weak-area focus · PARCS trap drills · provenance QA</p></div>
       <nav className="flex gap-1">{nav.map(([key, Icon, label]) => <button key={key} onClick={() => setView(key)} className={`flex flex-col items-center rounded px-2 py-1 text-[10px] sm:text-xs ${view === key ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-100'}`}><Icon size={16} /><span className="hidden sm:inline">{label}</span></button>)}</nav>
     </div></header>
     <main className="p-4 sm:p-5">
       {saveError && <div className="mb-3 flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700"><AlertCircle size={15} className="mt-0.5 shrink-0" /> {saveError}</div>}
       {notice && <div className="mb-3 flex items-start justify-between gap-3 rounded-md border border-blue-200 bg-blue-50 p-2 text-xs text-blue-800"><span>{notice}</span><button onClick={() => setNotice(null)} className="font-medium">×</button></div>}
       {view === 'modules' && <ModulesView questions={data.questions} onStart={startStudy} onSmartReview={startSmartReview} onCalibration={startRevisedExamBank} />}
-      {view === 'parcs' && <ParcsView questions={data.questions} onStartMixed={startParcsMixed} onStartModule={startParcsModule} />}
+      {view === 'parcs' && <ParcsView questions={data.questions} onStartMixed={startParcsMixed} onStartModule={startParcsModule} onStartScenario={startParcsScenario} />}
+      {view === 'scenario-study' && scenarioSession && <ScenarioStudyView scenario={scenarioSession} selections={scenarioSelections} submitted={scenarioSubmitted} onSelect={selectScenarioAnswer} onSubmit={submitScenario} onFinish={finishScenario} onExit={finishScenario} onToggleFlag={toggleFlag} />}
       {view === 'study' && currentQuestion && <StudyView question={currentQuestion} index={qIdx} total={queue.length} sessionCorrect={sessionCorrect} selected={selected} revealed={revealed} answerFeedback={answerFeedback} confidenceMarked={confidenceMarked} onAnswer={answer} onLowConfidence={markLowConfidence} onNext={nextCard} onExit={() => setView(studyReturnView)} onToggleFlag={toggleFlag} />}
       {view === 'add' && <AddQuestionView form={form} setForm={setForm} formError={formError} questions={data.questions} onUpdateOption={updateOption} onSubmit={submitForm} onDelete={deleteQuestion} onResolve={resolveAnswer} />}
       {view === 'dashboard' && <DashboardView questions={data.questions} onStartFocus={startFocusArea} onStartCalibrationFocus={startCalibrationFocus} />}
