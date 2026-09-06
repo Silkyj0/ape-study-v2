@@ -5,11 +5,13 @@ import { module05Part04 } from './module05.part04.js';
 import { module05Part05 } from './module05.part05.js';
 import { module05Part06 } from './module05.part06.js';
 import { module05Part07 } from './module05.part07.js';
+import { module05ParcsQuestions } from './module05.parcs.js';
 
-// Keep the larger draft bank archived in the source files, but expose only the
-// compact source-backed set requested for live study. PARC-directed external
-// website questions (Country, current rating tools, passive-design websites,
-// etc.) are intentionally excluded from the live Module 5 bank.
+// Keep the larger draft bank archived in the source files, but expose only a
+// deliberately compact source-backed authored set. Module 5 references many
+// external websites that the user does not want expanded into study questions.
+// After PARCS calibration the authored set is reduced further to avoid overlap
+// with the 13 official sample questions and to keep M5 the smallest module.
 const MODULE05_ARCHIVE = [
   ...module05Part01,
   ...module05Part02,
@@ -21,25 +23,26 @@ const MODULE05_ARCHIVE = [
 ];
 
 export const MODULE05_CURATED_IDS = [
-  // Equity / access: four distinct high-value DDA principles.
+  // Equity / access: retain four distinct high-value DDA principles.
   'm5-dda-01', 'm5-dda-02', 'm5-dda-03', 'm5-dda-04',
 
-  // WHS / safe design: lifecycle, hierarchy, concurrent duties, information
-  // transfer, reasonably practicable and client/designer coordination.
-  'm5-whs-08', 'm5-safe-01',
-  'm5-safe-02', 'm5-safe-05',
-  'm5-whs-03', 'm5-whs-06',
-  'm5-whs-04', 'm5-safe-04',
+  // WHS / safe design: early integration, client information, concurrent duties
+  // and the reasonably-practicable test.
+  'm5-safe-01', 'm5-whs-08', 'm5-whs-04', 'm5-whs-06',
 
-  // Environment: operational vs embodied impacts and whole-life energy/carbon.
-  'm5-carbon-01', 'm5-carbon-02', 'm5-carbon-03', 'm5-carbon-04',
-  'm5-carbon-05', 'm5-carbon-06', 'm5-carbon-07', 'm5-carbon-08',
+  // Environment: retain two non-duplicative life-cycle analysis questions; the
+  // PARCS samples now provide substantial additional embodied-carbon coverage.
+  'm5-carbon-03', 'm5-carbon-04',
 ];
 
 const MODULE05_CURATED_SET = new Set(MODULE05_CURATED_IDS);
-
-export const module05Questions = MODULE05_ARCHIVE.filter((question) =>
+const module05AuthoredQuestions = MODULE05_ARCHIVE.filter((question) =>
   MODULE05_CURATED_SET.has(question.id),
 );
+
+export const module05Questions = [
+  ...module05AuthoredQuestions,
+  ...module05ParcsQuestions,
+];
 
 export const module05Ids = module05Questions.map((question) => question.id);
