@@ -2,24 +2,24 @@
 
 ## Scope
 
-Modules 6–11 were rebuilt from the connected Google Drive course readings on 5 September 2026. The PARC sample-question folders for Modules 5–11 were deliberately not opened or used, preserving a later blind calibration exercise.
+Modules 6–11 were rebuilt from the connected Google Drive course readings on 5 September 2026. The PARC sample-question folders for Modules 5–11 were deliberately not opened or used before the blind attempts.
 
 ## Live authored counts
 
 | Module | Topic | Live authored questions | Stored answer positions |
 | --- | --- | ---: | --- |
-| 6 | Building Procurement, Construction Contracts, Construction Documentation | 36 | 9 A / 9 B / 9 C / 9 D |
+| 6 | Building Procurement, Construction Contracts, Construction Documentation | 40 | 10 A / 10 B / 10 C / 10 D |
 | 7 | Tendering and Construction Contract Execution | 32 | 8 A / 8 B / 8 C / 8 D |
 | 8 | Contract Administration — Construction Commencement | 24 | 6 A / 6 B / 6 C / 6 D |
 | 9 | Contract Administration — Money | 28 | 7 A / 7 B / 7 C / 7 D |
 | 10 | Contract Administration — Time, EOT Costs, Liquidated Damages | 32 | 8 A / 8 B / 8 C / 8 D |
 | 11 | Final Certificate, Dispute Resolution and Termination | 24 | 6 A / 6 B / 6 C / 6 D |
 
-Total M6–M11 authored questions: **176**. Stored correct-answer positions across the six modules are **44 A / 44 B / 44 C / 44 D**. Runtime presentation still shuffles answers independently.
+Total M6–M11 authored questions: **180**. Stored correct-answer positions across the six modules are **45 A / 45 B / 45 C / 45 D**. Runtime presentation still shuffles answers independently.
 
 ## Module 6 source focus
 
-Live questions concentrate on the supplied readings dealing with:
+Live authored questions concentrate on the supplied readings dealing with:
 - procurement structure and risk allocation;
 - traditional procurement and design and construct;
 - construction management and managing contractor;
@@ -28,10 +28,24 @@ Live questions concentrate on the supplied readings dealing with:
 - cost-plus and guaranteed maximum price arrangements;
 - building-contract selection;
 - construction documentation and shop drawings;
-- Performance Solutions; and
-- product conformity/compliance risk.
+- Performance Solutions;
+- product conformity/compliance risk; and
+- **novation**, including post-novation contractual relationships, PI/legal review of novation deeds, communications with the former principal and certification conflicts.
 
 The four inherited M6 placeholders are archived in `src/data/module06.legacy.js` and are not part of the live seed.
+
+### Module 6 PARCS calibration
+
+Blind sample attempt: **11/11 correct**.
+
+Confirmed key:
+- 6.1: **C, B, D, B, A**
+- 6.2: **C, B, D**
+- 6.3: **C, D, B**
+
+No keyed authored answer conflicted with the official sample framing. The sample set did reveal that novation deserved stronger representation in the Verified exam bank, so four source-verified novation questions were added from `Novation.pdf`, one at each stored answer position A–D.
+
+The 11 supplied sample questions are stored separately in `src/data/module06.parcs.js` and are marked `parcs-confirmed`. Their scenario, stem, options and confirmed answer key are preserved; only runtime presentation order may shuffle.
 
 ## Module 7 source focus
 
@@ -88,14 +102,13 @@ Live questions use the supplied readings on:
 
 ## QA treatment
 
-- Every live M6–M11 question retains a Drive source title, file ID and URL and is classified `drive-source-verified`.
+- Every authored M6–M11 question retains a Drive source title, file ID and URL and is classified `drive-source-verified`.
 - Question propositions and keyed answers are based on the supplied source material; unsupported detail is not added from general knowledge.
-- Correct-answer source positions are exactly balanced within each module.
+- Stored correct-answer positions remain exactly balanced within each authored module.
 - Distractor-only QA overlays in `src/data/laterModuleQaOverrides.js` remove material answer-length cues without changing keyed answers, explanations or provenance.
-- Under the current structural audit, the final 176-question M6–M11 set has **0 material answer-length flags, 0 high length outliers, 0 option-shape flags and 0 duplicate-option flags**.
-- `src/lib/audit.js` treats only material length differences as answer-length clues; trivial one-character differences are not counted as meaningful structural defects.
-- Sample questions remain outside the authored source pass until the user supplies them for blind answering and confirms the official PARC key.
+- The original 176-question M6–M11 build passed the structural audit with 0 material answer-length flags, 0 high length outliers, 0 option-shape flags and 0 duplicate-option flags. The four later novation questions were authored to the same structural standard and keep A–D balance intact.
+- Confirmed PARCS samples are excluded from the mixed Verified exam bank and remain available in normal module study.
 
 ## Next workflow
 
-Blind calibration should proceed in order: **M5 → M6 → M7 → M8 → M9 → M10 → M11**. After each official answer key is confirmed, review that module for any PARC-specific reasoning rule before locking sample questions into the app.
+Blind calibration continues in order: **M7 → M8 → M9 → M10 → M11**. After each official answer key is confirmed, review that module for any PARC-specific reasoning rule or source-coverage gap before locking the sample questions into the app.
