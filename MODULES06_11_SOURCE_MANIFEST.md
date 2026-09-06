@@ -92,6 +92,25 @@ Live questions use the supplied contract-administration readings on:
 - latent conditions; and
 - substitutions, including D&C substitution responsibility.
 
+### Module 8 PARCS calibration
+
+Blind sample attempt: **11/12 correct**.
+
+Confirmed key:
+- 8.1: **D, B, A, C**
+- 8.2: **C, A, D, B**
+- 8.3: **C, D, D, C**
+
+Blind miss:
+- **8.2 Q4** — answered D; official answer B.
+
+Calibration rule:
+- Where an urgent construction incident is causing continuing damage and the head contractor cannot be contacted, PARCS expects the architect to act promptly through the existing project delivery chain by contacting the relevant plumbing subcontractor, rather than waiting or independently engaging an unrelated replacement contractor. This is an emergency mitigation response and should not be generalised into a routine right to bypass the head contractor or direct subcontractors.
+
+The 24 authored questions were reviewed against this rule. No keyed authored answer conflicted with the confirmed PARCS framing, so no authored answer was changed or removed.
+
+The 12 supplied sample questions are stored separately in `src/data/module08.parcs.js` and are marked `parcs-confirmed`. Their scenario, stem, options and confirmed answer key are preserved; only runtime presentation order may shuffle.
+
 ## Module 9 source focus
 
 Live questions use the supplied readings on:
@@ -132,4 +151,4 @@ Live questions use the supplied readings on:
 
 ## Next workflow
 
-Blind calibration continues in order: **M8 → M9 → M10 → M11**. After each official answer key is confirmed, review that module for any PARC-specific reasoning rule or source-coverage gap before locking the sample questions into the app.
+Blind calibration continues in order: **M9 → M10 → M11**. After each official answer key is confirmed, review that module for any PARC-specific reasoning rule or source-coverage gap before locking the sample questions into the app.
