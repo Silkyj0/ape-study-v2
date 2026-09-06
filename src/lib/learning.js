@@ -1,3 +1,5 @@
+import { CALIBRATION_PATTERNS, getCalibrationTrap } from '../data/calibrationTraps.js';
+
 export const HOUR_MS = 60 * 60 * 1000;
 export const DAY_MS = 24 * HOUR_MS;
 export const MODULE_SESSION_LIMIT = 20;
@@ -29,6 +31,7 @@ function normaliseSource(source) {
 const TOPIC_RULES = [
   [/warrant|fitness for purpose|contractual liability|client-generated agreement|collateral/i, 'Agreements & professional liability'],
   [/partial services|core architectural services/i, 'Scope & partial services'],
+  [/specialist consultants|consultant scope|selection and engagement|briefing team|consultants during design/i, 'Consultants & coordination'],
   [/fee|profit|charge-out|low fees|salaries and overhead/i, 'Fees & practice economics'],
   [/project time|time performance/i, 'Project time management'],
   [/quality management|qms|filing|office administration|communications|report writing|email disclaimer/i, 'Practice administration & quality'],
@@ -64,6 +67,10 @@ const TOPIC_RULES = [
 
 export function getLearningTopic(question) {
   if (question?.learningTopic) return question.learningTopic;
+
+  const calibrationTrap = getCalibrationTrap(question);
+  if (calibrationTrap) return calibrationTrap.topic;
+
   if (question?.source === 'From your notes') return 'Your notes';
 
   const source = normaliseSource(question?.source);
@@ -156,6 +163,7 @@ export function questionPriority(question, now = Date.now()) {
     + recentLowConfidenceCount(question) * 5
     + Math.min(question.lapseCount || 0, 5) * 6
     + Math.min(overdueDays, 14) * 2
+    + (getCalibrationTrap(question) ? 16 : 0)
     - Math.min(Number.isFinite(question.correctStreak) ? question.correctStreak : 0, 4) * 4
   );
 }
@@ -168,8 +176,13 @@ export function buildAdaptiveSession(questions, limit = MODULE_SESSION_LIMIT, no
 
   const selected = dueReview.slice(0, limit);
   if (selected.length < limit) {
-    const unseen = shuffleCopy(ready.filter((q) => !q.seen));
-    selected.push(...unseen.slice(0, limit - selected.length));
+    // Official calibration traps are high-yield course-specific judgement items.
+    // Surface unseen trap cards before ordinary unseen cards, then randomise within
+    // each tier so their canonical answer positions still provide no cue.
+    const unseen = ready.filter((q) => !q.seen);
+    const unseenTraps = shuffleCopy(unseen.filter((q) => getCalibrationTrap(q)));
+    const unseenOrdinary = shuffleCopy(unseen.filter((q) => !getCalibrationTrap(q)));
+    selected.push(...[...unseenTraps, ...unseenOrdinary].slice(0, limit - selected.length));
   }
 
   return selected;
@@ -178,11 +191,56 @@ export function buildAdaptiveSession(questions, limit = MODULE_SESSION_LIMIT, no
 export function buildFocusSession(questions, topic, limit = FOCUS_SESSION_LIMIT, now = Date.now()) {
   const pool = questions
     .filter((q) => q.status === 'ready' && getLearningTopic(q) === topic)
-    .map((q) => ({ q, score: questionPriority(q, now) + (!q.seen ? 12 : 0) }))
+    .map((q) => ({ q, score: questionPriority(q, now) + (!q.seen ? 12 : 0) + (getCalibrationTrap(q) ? 20 : 0) }))
     .sort((a, b) => b.score - a.score)
     .map((entry) => entry.q);
 
   return pool.slice(0, limit);
+}
+
+export function buildCalibrationFocusSession(questions, patternId, limit = FOCUS_SESSION_LIMIT, now = Date.now()) {
+  const pattern = CALIBRATION_PATTERNS.find((entry) => entry.id === patternId);
+  if (!pattern) return [];
+
+  const trapIds = new Set(pattern.questionIds);
+  const ready = questions.filter((q) => q.status === 'ready');
+  const directTraps = ready
+    .filter((q) => trapIds.has(q.seedId || q.id))
+    .sort((a, b) => questionPriority(b, now) - questionPriority(a, now));
+
+  const related = ready
+    .filter((q) => !trapIds.has(q.seedId || q.id) && pattern.learningTopics.includes(getLearningTopic(q)))
+    .map((q) => ({ q, score: questionPriority(q, now) + (!q.seen ? 12 : 0) }))
+    .sort((a, b) => b.score - a.score)
+    .map((entry) => entry.q);
+
+  return [...directTraps, ...related].slice(0, limit);
+}
+
+export function getCalibrationPatternAreas(questions) {
+  return CALIBRATION_PATTERNS.map((pattern) => {
+    const idSet = new Set(pattern.questionIds);
+    const trapQuestions = questions.filter((q) => idSet.has(q.seedId || q.id));
+    const attempts = trapQuestions.reduce((sum, q) => sum + (q.seen || 0), 0);
+    const correct = trapQuestions.reduce((sum, q) => sum + (q.correctCount || 0), 0);
+    const recentMisses = trapQuestions.reduce((sum, q) => sum + (q.recentResults || []).filter((result) => !result).length, 0);
+    const mastered = trapQuestions.filter((q) => masteryState(q) === 'mastered').length;
+    const answered = trapQuestions.filter((q) => (q.seen || 0) > 0).length;
+    const modules = [...new Set(trapQuestions.map((q) => q.moduleId))].sort((a, b) => a - b);
+
+    return {
+      ...pattern,
+      trapCount: pattern.questionIds.length,
+      availableTrapCount: trapQuestions.length,
+      attempts,
+      accuracy: attempts ? Math.round((correct / attempts) * 100) : null,
+      recentMisses,
+      mastered,
+      answered,
+      modules,
+      score: recentMisses * 20 + (pattern.questionIds.length - mastered) * 10 + (attempts === 0 ? 8 : 0),
+    };
+  }).sort((a, b) => b.score - a.score);
 }
 
 export function getWeakAreas(questions, limit = 5) {
