@@ -1,3 +1,4 @@
+import { FLASHCARDS, FLASHCARD_SEED_VERSION } from '../data/flashcards.js';
 import { SEED, SEED_VERSION } from '../data/questions.js';
 import { DAY_MS, getLearningTopic, masteryState } from './learning.js';
 
@@ -40,10 +41,30 @@ function learningProgress(prior, fallback = {}) {
   };
 }
 
+function flashcardProgress(prior) {
+  return {
+    due: prior?.due ?? 0,
+    seen: prior?.seen ?? 0,
+    correctStreak: prior?.correctStreak ?? 0,
+    lapseCount: prior?.lapseCount ?? 0,
+    knewCount: prior?.knewCount ?? 0,
+    unsureCount: prior?.unsureCount ?? 0,
+    didntKnowCount: prior?.didntKnowCount ?? 0,
+    recentRatings: prior?.recentRatings || [],
+    lastRating: prior?.lastRating ?? null,
+    lastReviewedAt: prior?.lastReviewedAt || null,
+  };
+}
+
 export function reconcile(stored = { questions: [] }) {
   const priorBySeedId = new Map();
   (stored.questions || []).forEach((q) => {
     if (q.seedId) priorBySeedId.set(q.seedId, q);
+  });
+
+  const priorFlashcardsBySeedId = new Map();
+  (stored.flashcards || []).forEach((card) => {
+    if (card.seedId) priorFlashcardsBySeedId.set(card.seedId, card);
   });
 
   const userQuestions = (stored.questions || [])
@@ -88,9 +109,27 @@ export function reconcile(stored = { questions: [] }) {
     };
   });
 
+  const flashcards = FLASHCARDS.map((card) => {
+    const prior = priorFlashcardsBySeedId.get(card.id);
+    return {
+      id: prior ? prior.id : uid(),
+      seedId: card.id,
+      moduleId: card.module,
+      topic: card.topic,
+      term: card.term,
+      definition: card.definition,
+      examples: card.examples || [],
+      source: card.source,
+      sourceSection: card.sourceSection || null,
+      ...flashcardProgress(prior),
+    };
+  });
+
   return {
     seedVersion: SEED_VERSION,
+    flashcardSeedVersion: FLASHCARD_SEED_VERSION,
     questions: [...seedQuestions, ...userQuestions],
+    flashcards,
     examHistory: Array.isArray(stored.examHistory) ? stored.examHistory.slice(-20) : [],
   };
 }
