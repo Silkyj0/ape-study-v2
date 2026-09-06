@@ -10,6 +10,7 @@ import { module03Part09 } from './module03.part09.js';
 import { module03Part10 } from './module03.part10.js';
 import { module03Part11 } from './module03.part11.js';
 import { module03Part12 } from './module03.part12.js';
+import { module03ParcsQuestions } from './module03.parcs.js';
 
 export const module03Questions = [
   ...module03Part01,
@@ -24,6 +25,7 @@ export const module03Questions = [
   ...module03Part10,
   ...module03Part11,
   ...module03Part12,
+  ...module03ParcsQuestions,
 ];
 
 export const module03Ids = module03Questions.map((question) => question.id);
