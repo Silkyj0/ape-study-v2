@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { AlertCircle, BarChart3, BookOpen, Database, FlaskConical, Loader2, Plus } from 'lucide-react';
+import { AlertCircle, BarChart3, BookOpen, Database, FlaskConical, Loader2, Plus, ShieldCheck } from 'lucide-react';
 import { SEED_VERSION } from './data/questions.js';
 import AddQuestionView from './components/AddQuestionView.jsx';
 import DashboardView from './components/DashboardView.jsx';
 import DataPanel from './components/DataPanel.jsx';
 import ModulesView from './components/ModulesView.jsx';
+import ParcsView from './components/ParcsView.jsx';
 import QualityDashboard from './components/QualityDashboard.jsx';
 import StudyView from './components/StudyView.jsx';
 import {
@@ -33,6 +34,7 @@ export default function App() {
   const [notice, setNotice] = useState(null);
   const [storageBackend, setStorageBackend] = useState(null);
   const [view, setView] = useState('modules');
+  const [studyReturnView, setStudyReturnView] = useState('modules');
   const [queue, setQueue] = useState([]);
   const [qIdx, setQIdx] = useState(0);
   const [selected, setSelected] = useState(null);
@@ -75,7 +77,7 @@ export default function App() {
     } catch { setSaveError('Progress could not be saved.'); }
   }, []);
 
-  function beginQueue(questions) {
+  function beginQueue(questions, returnView = 'modules') {
     if (!questions.length) return false;
     setQueue(prepareStudyQueue(questions));
     setQIdx(0);
@@ -85,6 +87,7 @@ export default function App() {
     setSessionRetryCounts({});
     setAnswerFeedback(null);
     setConfidenceMarked(false);
+    setStudyReturnView(returnView);
     setView('study');
     return true;
   }
@@ -92,7 +95,7 @@ export default function App() {
   function startStudy(moduleId) {
     const pool = data.questions.filter((q) => q.moduleId === moduleId && q.status === 'ready');
     const session = buildAdaptiveSession(pool, MODULE_SESSION_LIMIT);
-    if (!beginQueue(session)) {
+    if (!beginQueue(session, 'modules')) {
       setNotice('Nothing is due in this module right now. Mastered questions are snoozed until their next review date.');
     }
   }
@@ -100,23 +103,34 @@ export default function App() {
   function startSmartReview() {
     const pool = data.questions.filter((q) => q.status === 'ready');
     const session = buildAdaptiveSession(pool, MODULE_SESSION_LIMIT);
-    if (!beginQueue(session)) setNotice('Nothing is due and there are no unseen questions available.');
+    if (!beginQueue(session, 'modules')) setNotice('Nothing is due and there are no unseen questions available.');
   }
 
   function startRevisedExamBank() {
     const revisedSet = data.questions.filter((q) => ['source-audited', 'drive-source-verified'].includes(q.qaStatus) && q.status === 'ready');
     const session = buildAdaptiveSession(revisedSet, MIXED_SESSION_LIMIT);
-    if (!beginQueue(session)) setNotice('Nothing is due in the verified exam bank right now.');
+    if (!beginQueue(session, 'modules')) setNotice('Nothing is due in the verified exam bank right now.');
+  }
+
+  function startParcsMixed() {
+    const pool = data.questions.filter((q) => q.qaStatus === 'parcs-confirmed' && q.status === 'ready');
+    const session = buildAdaptiveSession(pool, MIXED_SESSION_LIMIT);
+    if (!beginQueue(session, 'parcs')) setNotice('Nothing is due in the PARCS sample bank right now. Use a module full set to revisit snoozed samples.');
+  }
+
+  function startParcsModule(moduleId) {
+    const pool = data.questions.filter((q) => q.qaStatus === 'parcs-confirmed' && q.moduleId === moduleId && q.status === 'ready');
+    if (!beginQueue(pool, 'parcs')) setNotice(`No PARCS supplied questions are available for Module ${moduleId}.`);
   }
 
   function startFocusArea(topic) {
     const session = buildFocusSession(data.questions, topic);
-    if (!beginQueue(session)) setNotice(`No ready questions are available for ${topic}.`);
+    if (!beginQueue(session, 'dashboard')) setNotice(`No ready questions are available for ${topic}.`);
   }
 
   function startCalibrationFocus(patternId) {
     const session = buildCalibrationFocusSession(data.questions, patternId);
-    if (!beginQueue(session)) setNotice('No ready questions are available for this PARCS calibration pattern.');
+    if (!beginQueue(session, 'dashboard')) setNotice('No ready questions are available for this PARCS calibration pattern.');
   }
 
   function answer(presentationIndex) {
@@ -187,7 +201,7 @@ export default function App() {
       setRevealed(false);
       setAnswerFeedback(null);
       setConfidenceMarked(false);
-    } else setView('modules');
+    } else setView(studyReturnView);
   }
 
   function updateOption(index, value) {
@@ -223,7 +237,7 @@ export default function App() {
   if (loading || !data) return <div className="flex min-h-screen items-center justify-center p-12 text-slate-500"><Loader2 className="mr-2 animate-spin" size={20} /> Loading your progress...</div>;
   const currentQuestion = queue[qIdx];
   const nav = [
-    ['modules', BookOpen, 'Modules'], ['add', Plus, 'Add'], ['dashboard', BarChart3, 'Stats'], ['quality', FlaskConical, 'Quality'], ['data', Database, 'Data'],
+    ['modules', BookOpen, 'Modules'], ['parcs', ShieldCheck, 'PARCS'], ['add', Plus, 'Add'], ['dashboard', BarChart3, 'Stats'], ['quality', FlaskConical, 'Quality'], ['data', Database, 'Data'],
   ];
 
   return <div className="min-h-screen bg-slate-50 text-slate-800"><div className="mx-auto min-h-screen max-w-3xl bg-white shadow-sm">
@@ -235,7 +249,8 @@ export default function App() {
       {saveError && <div className="mb-3 flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700"><AlertCircle size={15} className="mt-0.5 shrink-0" /> {saveError}</div>}
       {notice && <div className="mb-3 flex items-start justify-between gap-3 rounded-md border border-blue-200 bg-blue-50 p-2 text-xs text-blue-800"><span>{notice}</span><button onClick={() => setNotice(null)} className="font-medium">×</button></div>}
       {view === 'modules' && <ModulesView questions={data.questions} onStart={startStudy} onSmartReview={startSmartReview} onCalibration={startRevisedExamBank} />}
-      {view === 'study' && currentQuestion && <StudyView question={currentQuestion} index={qIdx} total={queue.length} sessionCorrect={sessionCorrect} selected={selected} revealed={revealed} answerFeedback={answerFeedback} confidenceMarked={confidenceMarked} onAnswer={answer} onLowConfidence={markLowConfidence} onNext={nextCard} onExit={() => setView('modules')} onToggleFlag={toggleFlag} />}
+      {view === 'parcs' && <ParcsView questions={data.questions} onStartMixed={startParcsMixed} onStartModule={startParcsModule} />}
+      {view === 'study' && currentQuestion && <StudyView question={currentQuestion} index={qIdx} total={queue.length} sessionCorrect={sessionCorrect} selected={selected} revealed={revealed} answerFeedback={answerFeedback} confidenceMarked={confidenceMarked} onAnswer={answer} onLowConfidence={markLowConfidence} onNext={nextCard} onExit={() => setView(studyReturnView)} onToggleFlag={toggleFlag} />}
       {view === 'add' && <AddQuestionView form={form} setForm={setForm} formError={formError} questions={data.questions} onUpdateOption={updateOption} onSubmit={submitForm} onDelete={deleteQuestion} onResolve={resolveAnswer} />}
       {view === 'dashboard' && <DashboardView questions={data.questions} onStartFocus={startFocusArea} onStartCalibrationFocus={startCalibrationFocus} />}
       {view === 'quality' && <QualityDashboard questions={data.questions} onToggleFlag={toggleFlag} />}
