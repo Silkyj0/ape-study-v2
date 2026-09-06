@@ -1,14 +1,22 @@
 import { useCallback, useEffect, useState } from 'react';
-import { AlertCircle, BarChart3, BookOpen, Database, FlaskConical, Loader2, Plus, ShieldCheck } from 'lucide-react';
+import { AlertCircle, BarChart3, BookOpen, Clock3, Database, FlaskConical, Loader2, Plus, ShieldCheck } from 'lucide-react';
 import { SEED_VERSION } from './data/questions.js';
 import AddQuestionView from './components/AddQuestionView.jsx';
 import DashboardView from './components/DashboardView.jsx';
 import DataPanel from './components/DataPanel.jsx';
+import ExamView from './components/ExamView.jsx';
 import ModulesView from './components/ModulesView.jsx';
 import ParcsView from './components/ParcsView.jsx';
 import QualityDashboard from './components/QualityDashboard.jsx';
 import ScenarioStudyView from './components/ScenarioStudyView.jsx';
 import StudyView from './components/StudyView.jsx';
+import {
+  EXAM_DURATION_MS,
+  EXAM_QUESTION_COUNT,
+  buildExamQuestionSet,
+  calculateExamResult,
+  getExamBank,
+} from './lib/exam.js';
 import {
   MAX_SAME_SESSION_RETRIES,
   MIXED_SESSION_LIMIT,
@@ -48,6 +56,14 @@ export default function App() {
   const [scenarioSession, setScenarioSession] = useState(null);
   const [scenarioSelections, setScenarioSelections] = useState({});
   const [scenarioSubmitted, setScenarioSubmitted] = useState(false);
+  const [examQuestions, setExamQuestions] = useState([]);
+  const [examIndex, setExamIndex] = useState(0);
+  const [examSelections, setExamSelections] = useState({});
+  const [examReviewFlags, setExamReviewFlags] = useState({});
+  const [examStartedAt, setExamStartedAt] = useState(null);
+  const [examEndsAt, setExamEndsAt] = useState(null);
+  const [examSubmitted, setExamSubmitted] = useState(false);
+  const [examResult, setExamResult] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState('');
 
@@ -60,7 +76,7 @@ export default function App() {
       if (res.value) {
         const parsed = JSON.parse(res.value);
         const next = parsed.seedVersion !== SEED_VERSION ? reconcile(parsed) : parsed;
-        setData(next);
+        setData({ ...next, examHistory: Array.isArray(next.examHistory) ? next.examHistory : [] });
         if (next !== parsed) setStorageBackend((await writeStoredProgress(JSON.stringify(next))).backend);
       } else {
         const next = reconcile({ questions: [] });
@@ -169,6 +185,89 @@ export default function App() {
     setScenarioSelections({});
     setScenarioSubmitted(false);
     setView('parcs');
+  }
+
+  function startExam() {
+    const selectedQuestions = buildExamQuestionSet(data.questions, EXAM_QUESTION_COUNT);
+    if (selectedQuestions.length < EXAM_QUESTION_COUNT) {
+      setNotice(`The trusted exam bank currently has only ${selectedQuestions.length} eligible questions. ${EXAM_QUESTION_COUNT} are required for this simulation.`);
+      return;
+    }
+
+    const startedAt = Date.now();
+    setExamQuestions(prepareStudyQueue(selectedQuestions));
+    setExamIndex(0);
+    setExamSelections({});
+    setExamReviewFlags({});
+    setExamStartedAt(startedAt);
+    setExamEndsAt(startedAt + EXAM_DURATION_MS);
+    setExamSubmitted(false);
+    setExamResult(null);
+    setView('exam');
+  }
+
+  function selectExamAnswer(questionId, presentationIndex) {
+    if (examSubmitted) return;
+    setExamSelections((current) => ({ ...current, [questionId]: presentationIndex }));
+  }
+
+  function toggleExamReview(questionId) {
+    if (examSubmitted) return;
+    setExamReviewFlags((current) => ({ ...current, [questionId]: !current[questionId] }));
+  }
+
+  const submitExam = useCallback(async (timedOut = false) => {
+    if (!examQuestions.length || examSubmitted || !examStartedAt) return;
+    const unanswered = examQuestions.filter((question) => examSelections[question.id] === undefined).length;
+    if (!timedOut && unanswered > 0 && !window.confirm(`${unanswered} question${unanswered === 1 ? '' : 's'} remain unanswered. Submit anyway?`)) return;
+
+    const submittedAt = Date.now();
+    const result = calculateExamResult(examQuestions, examSelections, examStartedAt, submittedAt);
+    const updates = new Map();
+
+    examQuestions.forEach((question) => {
+      const selectedPresentationIndex = examSelections[question.id];
+      const answered = selectedPresentationIndex !== undefined;
+      const selectedSourceIndex = answered ? question.presentationOptions[selectedPresentationIndex]?.sourceIndex : null;
+      const isCorrect = answered && selectedSourceIndex === question.correct;
+      const current = data.questions.find((item) => item.id === question.id) || question;
+      updates.set(question.id, { ...current, ...applyAnswerResult(current, isCorrect, submittedAt) });
+    });
+
+    const nextQuestions = data.questions.map((question) => updates.get(question.id) || question);
+    const historyEntry = {
+      id: uid(),
+      startedAt: result.startedAt,
+      submittedAt: result.submittedAt,
+      score: result.score,
+      total: result.total,
+      percentage: result.percentage,
+      unanswered: result.unanswered,
+      timeSpentMs: result.timeSpentMs,
+      timedOut,
+      moduleBreakdown: result.moduleBreakdown,
+    };
+    const examHistory = [...(data.examHistory || []), historyEntry].slice(-20);
+
+    setExamResult(result);
+    setExamSubmitted(true);
+    await persist({ ...data, questions: nextQuestions, examHistory });
+  }, [data, examQuestions, examSelections, examStartedAt, examSubmitted, persist]);
+
+  function exitExam() {
+    if (examQuestions.length && !examSubmitted) {
+      const shouldExit = window.confirm('Exit this exam? Your current answers will be discarded and will not affect your study progress.');
+      if (!shouldExit) return;
+    }
+    setExamQuestions([]);
+    setExamIndex(0);
+    setExamSelections({});
+    setExamReviewFlags({});
+    setExamStartedAt(null);
+    setExamEndsAt(null);
+    setExamSubmitted(false);
+    setExamResult(null);
+    setView('exam');
   }
 
   function startFocusArea(topic) {
@@ -288,20 +387,25 @@ export default function App() {
 
   if (loading || !data) return <div className="flex min-h-screen items-center justify-center p-12 text-slate-500"><Loader2 className="mr-2 animate-spin" size={20} /> Loading your progress...</div>;
   const currentQuestion = queue[qIdx];
+  const examInProgress = view === 'exam' && examQuestions.length > 0 && !examSubmitted;
   const nav = [
-    ['modules', BookOpen, 'Modules'], ['parcs', ShieldCheck, 'PARCS'], ['add', Plus, 'Add'], ['dashboard', BarChart3, 'Stats'], ['quality', FlaskConical, 'Quality'], ['data', Database, 'Data'],
+    ['modules', BookOpen, 'Modules'], ['parcs', ShieldCheck, 'PARCS'], ['exam', Clock3, 'Exam'], ['add', Plus, 'Add'], ['dashboard', BarChart3, 'Stats'], ['quality', FlaskConical, 'Quality'], ['data', Database, 'Data'],
   ];
 
   return <div className="min-h-screen bg-slate-50 text-slate-800"><div className="mx-auto min-h-screen max-w-3xl bg-white shadow-sm">
-    <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur"><div className="flex items-center justify-between gap-3">
-      <div><h1 className="text-base font-semibold text-slate-900">APE Part 2 study</h1><p className="text-xs text-slate-500">adaptive review · scenario practice · confidence-aware mastery · weak-area focus · PARCS trap drills · provenance QA</p></div>
-      <nav className="flex gap-1">{nav.map(([key, Icon, label]) => <button key={key} onClick={() => setView(key)} className={`flex flex-col items-center rounded px-2 py-1 text-[10px] sm:text-xs ${view === key ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-100'}`}><Icon size={16} /><span className="hidden sm:inline">{label}</span></button>)}</nav>
+    <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur"><div className="flex min-w-0 items-center justify-between gap-2">
+      <div className="min-w-0"><h1 className="truncate text-base font-semibold text-slate-900">APE Part 2 study</h1><p className="hidden truncate text-xs text-slate-500 sm:block">adaptive review · scenario practice · exam simulation · confidence-aware mastery · weak-area focus · provenance QA</p></div>
+      <nav className="flex shrink-0 gap-0.5 sm:gap-1">{nav.map(([key, Icon, label]) => {
+        const disabled = examInProgress && key !== 'exam';
+        return <button key={key} disabled={disabled} onClick={() => setView(key)} className={`flex flex-col items-center rounded px-1.5 py-1 text-[10px] sm:px-2 sm:text-xs ${view === key ? 'bg-slate-900 text-white' : disabled ? 'cursor-not-allowed text-slate-300' : 'text-slate-500 hover:bg-slate-100'}`}><Icon size={16} /><span className="hidden sm:inline">{label}</span></button>;
+      })}</nav>
     </div></header>
     <main className="p-4 sm:p-5">
       {saveError && <div className="mb-3 flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700"><AlertCircle size={15} className="mt-0.5 shrink-0" /> {saveError}</div>}
       {notice && <div className="mb-3 flex items-start justify-between gap-3 rounded-md border border-blue-200 bg-blue-50 p-2 text-xs text-blue-800"><span>{notice}</span><button onClick={() => setNotice(null)} className="font-medium">×</button></div>}
       {view === 'modules' && <ModulesView questions={data.questions} onStart={startStudy} onSmartReview={startSmartReview} onCalibration={startRevisedExamBank} />}
       {view === 'parcs' && <ParcsView questions={data.questions} onStartMixed={startParcsMixed} onStartModule={startParcsModule} onStartScenario={startParcsScenario} />}
+      {view === 'exam' && <ExamView questions={examQuestions} currentIndex={examIndex} selections={examSelections} reviewFlags={examReviewFlags} endsAt={examEndsAt} submitted={examSubmitted} result={examResult} history={data.examHistory || []} bankCount={getExamBank(data.questions).length} onStart={startExam} onSelect={selectExamAnswer} onNavigate={setExamIndex} onToggleReview={toggleExamReview} onSubmit={submitExam} onExit={exitExam} />}
       {view === 'scenario-study' && scenarioSession && <ScenarioStudyView scenario={scenarioSession} selections={scenarioSelections} submitted={scenarioSubmitted} onSelect={selectScenarioAnswer} onSubmit={submitScenario} onFinish={finishScenario} onExit={finishScenario} onToggleFlag={toggleFlag} />}
       {view === 'study' && currentQuestion && <StudyView question={currentQuestion} index={qIdx} total={queue.length} sessionCorrect={sessionCorrect} selected={selected} revealed={revealed} answerFeedback={answerFeedback} confidenceMarked={confidenceMarked} onAnswer={answer} onLowConfidence={markLowConfidence} onNext={nextCard} onExit={() => setView(studyReturnView)} onToggleFlag={toggleFlag} />}
       {view === 'add' && <AddQuestionView form={form} setForm={setForm} formError={formError} questions={data.questions} onUpdateOption={updateOption} onSubmit={submitForm} onDelete={deleteQuestion} onResolve={resolveAnswer} />}
