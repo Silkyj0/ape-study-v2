@@ -49,7 +49,7 @@ The 11 supplied sample questions are stored separately in `src/data/module06.par
 
 ## Module 7 source focus
 
-Live questions concentrate on:
+Live authored questions concentrate on:
 - competitive tender principles and fairness;
 - tender information, conditions, addenda and selection criteria;
 - conforming/non-conforming and late tenders;
@@ -60,6 +60,27 @@ Live questions concentrate on:
 - building-contract execution and document identification.
 
 The four inherited M7 placeholders are archived in `src/data/module07.legacy.js` and are not part of the live seed.
+
+### Module 7 PARCS calibration
+
+Blind sample attempt: **8/10 correct**.
+
+Confirmed key:
+- 7.1: **D, C, D**
+- 7.2: **B, C, A, D**
+- 7.3: **B, A, B**
+
+Blind misses:
+- **7.1 Q1** — answered A; official answer D.
+- **7.2 Q1** — answered C; official answer B.
+
+Calibration rules:
+- An external event that may later affect supply or design does not by itself justify changing the common tender basis. Until sufficient verified information establishes that the issued basis must change, PARCS expects tenderers to price the documents as issued while the architect separately advises the client of likely cost/time consequences if the risk materialises.
+- When the lowest tender is non-conforming because it substitutes an alternative product, PARCS permits a clarification asking whether that tenderer will stand by its price using the specified conforming product. This is distinct from immediately adopting the alternative or changing the tender basis for all tenderers.
+
+The 32 authored questions were reviewed against both rules. No keyed authored answer conflicted with the confirmed PARCS framing, so no authored answer was changed or removed.
+
+The 10 supplied sample questions are stored separately in `src/data/module07.parcs.js` and are marked `parcs-confirmed`. Their scenario, stem, options and confirmed answer key are preserved; only runtime presentation order may shuffle.
 
 ## Module 8 source focus
 
@@ -111,4 +132,4 @@ Live questions use the supplied readings on:
 
 ## Next workflow
 
-Blind calibration continues in order: **M7 → M8 → M9 → M10 → M11**. After each official answer key is confirmed, review that module for any PARC-specific reasoning rule or source-coverage gap before locking the sample questions into the app.
+Blind calibration continues in order: **M8 → M9 → M10 → M11**. After each official answer key is confirmed, review that module for any PARC-specific reasoning rule or source-coverage gap before locking the sample questions into the app.
