@@ -20,9 +20,10 @@ import { calibrationOverrides, calibrationIds } from './calibrationOverrides.js'
 import { examOverridesBatch02, examBatch02Ids } from './examOverridesBatch02.js';
 import { examOverridesBatch03, examBatch03Ids } from './examOverridesBatch03.js';
 import { laterModuleQaOverrides } from './laterModuleQaOverrides.js';
+import { laterModuleDifficultyOverrides } from './laterModuleDifficultyOverrides.js';
 import { getQaMetadata, PARCS_SAMPLE_IDS, WITHHELD_QA_IDS } from './qaMetadata.js';
 
-export const SEED_VERSION = 33;
+export const SEED_VERSION = 34;
 
 const BASE_SEED = [
   ...module01Questions,
@@ -65,7 +66,8 @@ const ACTIVE_BASE_SEED = BASE_SEED.filter((question) =>
 );
 
 export const SEED = ACTIVE_BASE_SEED.map((question) => {
-  const override = laterModuleQaOverrides[question.id]
+  const override = laterModuleDifficultyOverrides[question.id]
+    || laterModuleQaOverrides[question.id]
     || examOverridesBatch03[question.id]
     || examOverridesBatch02[question.id]
     || calibrationOverrides[question.id];
