@@ -16,6 +16,7 @@ import {
   applyAnswerResult,
   applyLowConfidence,
   buildAdaptiveSession,
+  buildCalibrationFocusSession,
   buildFocusSession,
   lowConfidenceFeedback,
 } from './lib/learning.js';
@@ -111,6 +112,11 @@ export default function App() {
   function startFocusArea(topic) {
     const session = buildFocusSession(data.questions, topic);
     if (!beginQueue(session)) setNotice(`No ready questions are available for ${topic}.`);
+  }
+
+  function startCalibrationFocus(patternId) {
+    const session = buildCalibrationFocusSession(data.questions, patternId);
+    if (!beginQueue(session)) setNotice('No ready questions are available for this PARCS calibration pattern.');
   }
 
   function answer(presentationIndex) {
@@ -222,7 +228,7 @@ export default function App() {
 
   return <div className="min-h-screen bg-slate-50 text-slate-800"><div className="mx-auto min-h-screen max-w-3xl bg-white shadow-sm">
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur"><div className="flex items-center justify-between gap-3">
-      <div><h1 className="text-base font-semibold text-slate-900">APE Part 2 study</h1><p className="text-xs text-slate-500">adaptive review · confidence-aware mastery · weak-area focus · provenance QA</p></div>
+      <div><h1 className="text-base font-semibold text-slate-900">APE Part 2 study</h1><p className="text-xs text-slate-500">adaptive review · confidence-aware mastery · weak-area focus · PARCS trap drills · provenance QA</p></div>
       <nav className="flex gap-1">{nav.map(([key, Icon, label]) => <button key={key} onClick={() => setView(key)} className={`flex flex-col items-center rounded px-2 py-1 text-[10px] sm:text-xs ${view === key ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-100'}`}><Icon size={16} /><span className="hidden sm:inline">{label}</span></button>)}</nav>
     </div></header>
     <main className="p-4 sm:p-5">
@@ -231,7 +237,7 @@ export default function App() {
       {view === 'modules' && <ModulesView questions={data.questions} onStart={startStudy} onSmartReview={startSmartReview} onCalibration={startRevisedExamBank} />}
       {view === 'study' && currentQuestion && <StudyView question={currentQuestion} index={qIdx} total={queue.length} sessionCorrect={sessionCorrect} selected={selected} revealed={revealed} answerFeedback={answerFeedback} confidenceMarked={confidenceMarked} onAnswer={answer} onLowConfidence={markLowConfidence} onNext={nextCard} onExit={() => setView('modules')} onToggleFlag={toggleFlag} />}
       {view === 'add' && <AddQuestionView form={form} setForm={setForm} formError={formError} questions={data.questions} onUpdateOption={updateOption} onSubmit={submitForm} onDelete={deleteQuestion} onResolve={resolveAnswer} />}
-      {view === 'dashboard' && <DashboardView questions={data.questions} onStartFocus={startFocusArea} />}
+      {view === 'dashboard' && <DashboardView questions={data.questions} onStartFocus={startFocusArea} onStartCalibrationFocus={startCalibrationFocus} />}
       {view === 'quality' && <QualityDashboard questions={data.questions} onToggleFlag={toggleFlag} />}
       {view === 'data' && <DataPanel data={data} storageBackend={storageBackend} onExport={() => downloadProgress(data)} onImport={importProgress} />}
     </main>
