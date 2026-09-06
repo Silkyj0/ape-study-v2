@@ -2,225 +2,248 @@
 
 ## Purpose
 
-APE Part 2 study application for Patrick's Queensland Architectural Practice Examination preparation. The study program is based on PARCS modules, supplied readings, PARCS sample questions and confirmed answer keys.
+APE Part 2 study application for Patrick's Queensland Architectural Practice Examination preparation. The study program is based on PARCS modules, supplied readings, PARCS sample questions and user-confirmed official answer keys.
 
-## Current live content
+Production: `https://ape-study-v2.vercel.app/`
 
-### Modules 1–2
-- Live M1: **44 questions**.
-- Live M2: **75 questions**.
-- Across M1/M2: **19 immutable PARCS samples** + **100 source-audited rewrites**.
-- `m1-woolcock` and `m1-introvigne` remain withheld pending source re-checks.
+Private repo: `Silkyj0/ape-study-v2`
 
-### Module 3
-- **60 Drive-source-verified authored questions**.
-- Stored authored answers: 15 A / 15 B / 15 C / 15 D.
-- Blind PARCS sample attempt completed previously: **11/12**; samples are not yet locked into the live M3 bank.
+## Current live bank
 
-### Module 4
-- **69 live questions** = 56 authored + 13 PARCS-confirmed.
-- Blind sample score: **12/13**.
-- Confirmed key:
-  - 4.1: C, D
-  - 4.2: A, C, A
-  - 4.3: D, A, D
-  - 4.4: C, A, C, D, D
-- Calibration rule: a client-engaged specialist consultant does not automatically remove the architect's own liability; distinguish specialist technical responsibility from the architect/principal consultant's own briefing, coordination, review and integration duties.
+| Module | Live | Composition |
+| --- | ---: | --- |
+| M1 | 44 | source-audited + PARCS |
+| M2 | 75 | source-audited + PARCS |
+| M3 | 72 | 60 Drive-source-verified + 12 PARCS |
+| M4 | 69 | 56 authored + 13 PARCS |
+| M5 | 23 | 10 authored + 13 PARCS |
+| M6 | 51 | 40 authored + 11 PARCS |
+| M7 | 42 | 32 authored + 10 PARCS |
+| M8 | 36 | 24 authored + 12 PARCS |
+| M9 | 42 | 28 authored + 14 PARCS answer points |
+| M10 | 44 | 32 authored + 12 PARCS answer points |
+| M11 | 36 | 24 authored + 12 PARCS answer points |
 
-### Module 5
-- Module 5 is deliberately the **smallest live module**.
-- External PARC-linked Country/native-title/rating-tool/passive-design websites are not expanded into authored questions at the user's direction.
-- Live M5: **23 questions** = **10 Drive-source-verified authored** + **13 PARCS-confirmed samples**.
-- Blind sample score: **11/13**.
-- Confirmed key:
-  - 5.1: A, D, C, D
-  - 5.2: D, A, B, B
-  - 5.3: D, C, A, B, A
-- Only misses: 5.2 Q3 and Q4.
-- Calibration rule: when the PM/client instructs a change to the current brief/documented position, PARCS expects the architect to identify the additional-service/fee consequence before proceeding. Reinstating an earlier arrangement after an intervening instructed change is still another change from the current position.
+Total live seed: **534 questions**.
 
-### Module 6
-- Live M6: **51 questions** = **40 Drive-source-verified authored** + **11 PARCS-confirmed samples**.
-- Original source-built M6 set: 36 questions.
-- Four additional source-verified novation questions were added after calibration because the official sample set exposed a useful Verified-bank coverage gap.
-- Authored M6 answer positions remain exactly balanced: **10 A / 10 B / 10 C / 10 D**.
-- Blind sample score: **11/11**.
-- Confirmed key:
-  - 6.1: **C, B, D, B, A**
-  - 6.2: **C, B, D**
-  - 6.3: **C, D, B**
-- No official-answer mismatch required a keyed authored correction.
-- M6 calibration themes reinforced:
-  - material construction-stage design changes may require amended approval;
-  - Performance Solutions are valid NCC compliance pathways and fire solutions ordinarily require suitably qualified fire-engineering input;
-  - architects retain their own NCC/compliance exposure rather than shifting it entirely to certifiers or contractors;
-  - NCC Assessment Methods do not include “performance analysis” as a named method;
-  - after novation the architect’s contractual relationship is with the contractor, not the former principal;
-  - non-compliant substitutions must be rejected/advised against in the architect’s current contractual chain;
-  - genuinely indeterminate heritage-recovery scope may suit cost-plus, while the separately documented dwelling may suit traditional fixed-price lump sum and architect-administered ABIC SW Housing.
-- `src/data/module06.novation.js` contains the four authored novation questions.
-- `src/data/module06.parcs.js` contains the 11 immutable confirmed samples.
+- Verified/source-audited authored bank: **406**
+- PARCS-confirmed: **128**
+- `SEED_VERSION = 34`
 
-### Module 7
-- Live M7: **42 questions** = **32 Drive-source-verified authored** + **10 PARCS-confirmed samples**.
-- Authored M7 answer positions remain exactly balanced: **8 A / 8 B / 8 C / 8 D**.
-- Blind sample score: **8/10**.
-- Confirmed key:
-  - 7.1: **D, C, D**
-  - 7.2: **B, C, A, D**
-  - 7.3: **B, A, B**
-- Blind misses:
-  - 7.1 Q1: answered A; official D.
-  - 7.2 Q1: answered C; official B.
-- Calibration rules:
-  - A possible external supply disruption does not automatically justify changing the tender basis. Until sufficient verified information establishes that the issued tender basis must change, PARCS expects tenderers to price the documents as issued while the architect separately advises the client of likely cost/time implications if the risk materialises.
-  - For a lowest tender that is non-conforming because of a proposed substitution, PARCS permits clarification by asking whether the tenderer will stand by its price using the specified conforming product before moving to recommendation.
-- The authored bank was reviewed against both rules. No keyed authored question conflicted, so no authored answer was changed or removed.
-- `src/data/module07.parcs.js` contains the 10 immutable confirmed samples.
+The two M1 items `m1-woolcock` and `m1-introvigne` remain withheld pending source re-checks.
 
-### Module 8
-- Live M8: **36 questions** = **24 Drive-source-verified authored** + **12 PARCS-confirmed samples**.
-- Blind sample score: **11/12**.
-- Confirmed key:
-  - 8.1: **D, B, A, C**
-  - 8.2: **C, A, D, B**
-  - 8.3: **C, D, D, C**
-- Only miss: 8.2 Q4; answered D, official B.
-- Calibration rule: where continuing construction damage is occurring and the head contractor cannot be contacted, PARCS expects prompt emergency mitigation through the existing project chain by contacting the relevant subcontractor rather than waiting or independently engaging an unrelated contractor. This is an emergency exception, not a general right to bypass the head contractor.
-- The authored bank was reviewed and no keyed question conflicted.
-- `src/data/module08.parcs.js` contains the 12 immutable confirmed samples.
+## PARCS blind calibration summary
 
-### Module 9
-- Live M9: **42 questions** = **28 Drive-source-verified authored** + **14 PARCS-confirmed answer points**.
-- Blind sample score: **13/14**.
-- Confirmed key:
-  - 9.1: **D, B, A, FALSE, FALSE**
-  - 9.2: **D, A, D, TRUE, FALSE**
-  - 9.3: **C, D, B, A**
-- Only miss: Scenario 9.1 second true/false statement. The blind answer was TRUE; official PARCS answer is FALSE.
-- Calibration rule: when an inspection is undertaken specifically as part of assessing, valuing or certifying a progress claim, PARCS treats that activity as part of the architect’s independent administrator function rather than as an owner-agent function. The independent role therefore extends beyond the final act of signing the certificate to the assessment activities directly supporting that valuation.
-- The 28 authored M9 questions were reviewed and no keyed question conflicted with this distinction.
-- `src/data/module09.parcs.js` contains the 14 confirmed answer points.
-- Four supplied true/false statements are preserved as two-option, fixed-order TRUE/FALSE cards; the shuffle and audit utilities now support this format without changing ordinary four-option MCQs.
+Modules 3–11 blind calibration total: **98/109 (89.9%)**.
 
-### Modules 10–11
-Both remain rebuilt from connected Drive course readings and await blind sample calibration.
+| Module | Blind result | Confirmed misses |
+| --- | ---: | --- |
+| M3 | 11/12 | 3.2 Q4 |
+| M4 | 12/13 | 4.1 Q1 |
+| M5 | 11/13 | 5.2 Q3, 5.2 Q4 |
+| M6 | 11/11 | none |
+| M7 | 8/10 | 7.1 Q1, 7.2 Q1 |
+| M8 | 11/12 | 8.2 Q4 |
+| M9 | 13/14 | 9.1 Q5 |
+| M10 | 10/12 | 10.1 Q2, 10.3 Q2 |
+| M11 | 11/12 | 11.1 Q3 |
 
-- M10: **32 authored** — time, EOT costs, LDs.
-- M11: **24 authored** — final certificate, disputes, termination.
+`PARCS_CALIBRATION_AUDIT.md` records the recurring course-specific reasoning patterns. `src/data/calibrationTraps.js` feeds those traps into adaptive study.
 
-Across authored M6–M11: **180 Drive-source-verified questions**, stored answers exactly **45 A / 45 B / 45 C / 45 D**.
+Important calibration themes include:
 
-## Current bank totals
+- exact professional role at the relevant moment: client agent vs independent assessor/certifier;
+- consultant/contractor responsibility does not automatically erase the architect's own coordination or professional duty;
+- change control is measured against the current documented position, including reinstating an earlier design after an intervening change;
+- preserve a fair common tender basis before changing it;
+- urgent mitigation should preserve the existing project delivery chain where possible;
+- separate EOT entitlement, critical-path effect, overlap/concurrency and cost entitlement;
+- distinguish contractor workmanship defects from architect design/detailing errors;
+- preserve the official M11 Scenario 11.1 Q3 PARCS key exactly as a course-specific calibration answer rather than generalising it into a universal ABIC rule.
 
-| Module | Live questions |
-| --- | ---: |
-| M1 | 44 |
-| M2 | 75 |
-| M3 | 60 |
-| M4 | 69 |
-| M5 | 23 |
-| M6 | 51 |
-| M7 | 42 |
-| M8 | 36 |
-| M9 | 42 |
-| M10 | 32 |
-| M11 | 24 |
+## Modules 5–11 QA audit — completed 7 September 2026
 
-Total live seed: **498 questions**.
+`MODULES05_11_QUALITY_AUDIT.md` is the current detailed audit.
 
-Verified/authored exam practice: **406 questions**:
-- 100 source-audited M1/M2 rewrites;
-- 306 Drive-source-verified authored questions across M3–M11.
+Main finding: **source fidelity and keyed answers were materially sound; the weakness was uneven authored-question difficulty.** Modules 6, 7 and 11 in particular contained too many one-step recall questions compared with the official PARCS style.
 
-PARCS-confirmed live questions: **92**:
-- 19 from M1/M2;
-- 13 from M4;
-- 13 from M5;
-- 11 from M6;
-- 10 from M7;
-- 12 from M8;
-- 14 from M9.
+A targeted **33 authored questions** across M5–M11 were upgraded in `src/data/laterModuleDifficultyOverrides.js` without changing the underlying source proposition or stored correct-answer position:
 
-PARCS-confirmed questions are available in normal module study but excluded from the mixed Verified exam bank.
+- M5: 3
+- M6: 6
+- M7: 6
+- M8: 4
+- M9: 4
+- M10: 4
+- M11: 6
 
-## Adaptive learning model
+The upgraded items now use richer project facts, plausible competing duties/answers and post-answer `examTip` guidance. `StudyView.jsx` displays this as **Exam reasoning** only after the learner commits to an answer.
 
-The app uses adaptive review rather than a simple deck:
-- module sessions up to 20 cards; mixed verified bank up to 25; focus sessions up to 15;
-- due/weak questions are prioritised before unseen questions;
-- wrong answers return after about five other cards, up to two same-session retries, and are due again later that day;
-- consecutive correct answers snooze progressively: roughly 1, 3, 7 and 14 days;
-- 3 consecutive confident correct answers = mastered;
-- a correct answer marked **Not confident / I guessed** still counts for accuracy but rolls mastery back one step, returns in about 12 hours, and contributes to weak-area detection;
-- Stats identifies weak source topics from recent accuracy, repeated misses, lapses and low-confidence correct answers, and can launch a focused topic session;
-- ordinary MCQ answer positions and question order remain shuffled, including retries;
-- supplied true/false PARCS cards preserve fixed TRUE/FALSE order.
+PARCS-confirmed wording and official keys were not altered.
 
-`ADAPTIVE_LEARNING.md` records the main learning logic.
+Source spot-checks during the QA audit included the supplied readings on tender receiving/selection, inspections/opening up, defects/post-occupancy responsibility, variations and final completion. No new authored keyed-answer conflict was identified.
 
-## QA / architecture
+## Module-specific calibration state
 
-- `src/data/questions.js` assembles all modules and applies QA overlays.
-- `src/data/qaMetadata.js` owns PARCS IDs and provenance statuses.
-- `module04.parcs.js` through `module09.parcs.js` contain the live immutable confirmed sample sets where integrated.
-- `module06.novation.js` contains the calibration-driven authored novation expansion.
-- `module06.legacy.js` and `module07.legacy.js` retain inherited placeholders but they are not live.
-- `laterModuleQaOverrides.js` contains distractor-only wording refinements and does not change keyed propositions.
-- `src/lib/shuffle.js` supports both ordinary four-option shuffled MCQs and fixed-order true/false questions.
-- `src/lib/audit.js` recognises two-option cards only where `answerFormat: 'true-false'` is explicitly set.
-- `SEED_VERSION` is **29** after Module 9 sample integration.
+### M3
+- 60 authored + 12 immutable PARCS samples.
+- Official sample key:
+  - 3.1: **D, C, D, C**
+  - 3.2: **D, A, B, C**
+  - 3.3: **B, B, B, C**
+- Confirmed miss: 3.2 Q4, conflict created by accepting an apartment as part of fees.
 
-QA statuses:
+### M4
+- 56 authored + 13 PARCS.
+- Blind 12/13.
+- Calibration: client-engaged specialist consultant does not eliminate architect briefing/coordination/review/integration responsibility.
+
+### M5
+- Deliberately compact at 10 authored + 13 PARCS.
+- External PARC-linked websites are not expanded into a large authored bank at the user's direction.
+- Blind 11/13.
+- Calibration: PM/client instruction changing the current documented position can be an additional service; reinstating an earlier arrangement can itself be a new change.
+
+### M6
+- 40 authored + 11 PARCS; blind 11/11.
+- Four authored novation questions were added post-calibration in `module06.novation.js`.
+- Key themes: procurement structure, D&C, novation, Performance Solutions, documentation/shop drawings and product compliance.
+
+### M7
+- 32 authored + 10 PARCS; blind 8/10.
+- Calibration: possible future supply disruption does not automatically justify changing tender basis; a non-conforming lowest tender may first be asked whether it stands by its price on the specified conforming basis.
+
+### M8
+- 24 authored + 12 PARCS; blind 11/12.
+- Calibration: urgent ongoing damage + head contractor unavailable -> contact the existing relevant subcontractor rather than waiting or independently engaging an unrelated replacement.
+
+### M9
+- 28 authored + 14 PARCS answer points; blind 13/14.
+- T/F cards are supported as fixed TRUE/FALSE option order.
+- Calibration: an inspection undertaken specifically to assess a progress claim belongs to the independent assessment/certification function rather than ordinary client-agency administration.
+
+### M10
+- 32 authored + 12 PARCS answer points; blind 10/12.
+- Official key:
+  - 10.1: **D, B, C, FALSE, FALSE**
+  - 10.2: **B, D, C**
+  - 10.3: **D, B, B, B**
+- Misses:
+  - 10.1 Q2: late site possession earns the time adjustment; do not simply deny it because another delay overlaps.
+  - 10.3 Q2: contractor is not obliged to rectify an architect design/detailing defect as though it were contractor defective workmanship.
+
+### M11
+- 24 authored + 12 PARCS answer points; blind 11/12.
+- Official key:
+  - 11.1: **B, C, C, TRUE, FALSE**
+  - 11.2: **C, A, C, A**
+  - 11.3: **B, C, D**
+- Only miss: 11.1 Q3. Preserve the official PARCS answer as authoritative and course-specific.
+
+## Study modes now live
+
+### Normal adaptive study
+- Module sessions up to 20 cards.
+- Due/weak items before unseen items.
+- Wrong answers reappear after about five cards, up to two same-session retries.
+- Correct streak spacing roughly 1, 3, 7 and 14 days.
+- Three consecutive confident correct answers = mastered.
+- A correct answer marked **I guessed / not confident** returns sooner and does not advance mastery normally.
+
+### PARCS-only section
+Dedicated **PARCS** tab contains only supplied confirmed PARCS questions.
+
+- mixed PARCS review;
+- PARCS by module;
+- immutable confirmed answer keys.
+
+### PARCS Scenario Mode
+Official PARCS scenarios can be sat as grouped scenarios:
+
+- scenario remains visible;
+- all linked questions answered before reveal;
+- no answers/explanations until whole scenario is submitted;
+- scenario score and post-submit review.
+
+### PARCS calibration trap drills
+Stats includes dedicated drills for recurring patterns exposed by blind calibration. Exact official trap questions appear first, followed by related source-verified questions.
+
+### Exam Simulation
+Dedicated **Exam** tab:
+
+- **40 questions**;
+- **60-minute countdown**;
+- trusted bank only;
+- spread across Modules 1–11;
+- no feedback or source information during the sitting;
+- previous/next navigation and 1–40 navigator;
+- flag-for-review;
+- unanswered warning;
+- auto-submit at 00:00;
+- score, module breakdown and detailed review after submission;
+- exam results feed adaptive learning only after submission.
+
+No arbitrary pass/fail threshold is displayed.
+
+## QA architecture
+
+Key files:
+
+- `src/data/questions.js` — live seed assembly, currently seed v34.
+- `src/data/qaMetadata.js` — PARCS sample IDs and QA labels.
+- `src/data/laterModuleQaOverrides.js` — earlier distractor/shape refinements.
+- `src/data/laterModuleDifficultyOverrides.js` — 33 M5–M11 targeted difficulty upgrades and exam reasoning notes.
+- `src/data/calibrationTraps.js` — official blind-calibration trap patterns.
+- `src/lib/audit.js` — structural option/answer/source QA checks.
+- `src/lib/learning.js` — adaptive learning and focus logic.
+- `src/lib/scenarios.js` — PARCS scenario grouping.
+- `src/lib/exam.js` — 40-question/60-minute exam simulation logic.
+- `src/components/StudyView.jsx` — post-answer explanations, Exam reasoning, QA provenance and confidence controls.
+- `src/components/ExamView.jsx` — closed-feedback simulation UI and post-submit review.
+
+QA statuses in use:
+
 - `parcs-confirmed`
 - `source-audited`
 - `drive-source-verified`
+- `parc-external-verified`
 - `needs-source-check`
 - `legacy-placeholder`
 - `user-added`
 
 ## Source discipline
 
-Read and follow `QUESTION_WRITING_STANDARD.md` before changing study content.
+Read `QUESTION_WRITING_STANDARD.md` before changing study content.
 
 Core rules:
-1. Use supplied course material as source of truth; do not fill gaps from memory.
-2. Prefer Australian / Queensland framing where supported.
-3. Every live authored question retains precise provenance.
-4. Quality over volume; pruning is valid QA.
-5. Prefer application/scenario decisions over recall-only questions.
-6. PARCS supplied samples and confirmed keys are immutable.
-7. Withhold uncertainty rather than guessing.
-8. Do not infer that consultant responsibility eliminates the architect's own coordination/professional duties.
-9. Distinguish model WHS guidance from legislation actually adopted in the project jurisdiction.
-10. Do not expand M5 from external PARC-linked websites unless the user changes that instruction.
-11. For PARCS calibration, preserve the course's tested framing even where a broader real-world analysis could identify additional issues.
 
-## Next task
+1. Supplied course material is the source of truth for authored study content.
+2. Do not silently fill gaps from general knowledge.
+3. Prefer Australian/Queensland framing where the source supports it.
+4. Every authored live question needs precise provenance.
+5. Quality over volume; pruning is valid QA.
+6. Prefer scenario/application judgement over definition recognition.
+7. Confirmed PARCS samples and official keys are immutable.
+8. Withhold uncertainty rather than guessing.
+9. Keep course-specific PARCS framing even where broader real-world legal analysis could be more nuanced.
+10. Do not expand M5 PARC-linked external website material unless the user changes that instruction.
 
-Proceed with blind sample calibration in order:
-**M10 → M11**.
+## Recommended next work
 
-For each module:
-1. user supplies screenshots/PDF;
-2. answer blind from the supplied readings without using stored sample-answer material;
-3. user confirms the official key;
-4. record score and calibration rules;
-5. review authored questions for conflicts or coverage gaps;
-6. add samples as immutable PARCS questions;
-7. bump `SEED_VERSION`;
-8. verify Vercel before moving on.
+The content bank is now mature. Do **not** default to adding more volume.
+
+Recommended next steps should be driven by actual study performance:
+
+1. use normal mixed study and Exam Simulation;
+2. watch confident-wrong / repeated-lapse patterns;
+3. use user QA flags for any question that feels off;
+4. create new shadow/variant questions only where performance shows memorisation rather than concept transfer;
+5. continue refining difficulty only where the learner can identify answers from wording rather than reasoning.
+
+The next planned learning-system feature from earlier discussion was **pre-answer confidence (Confident / Unsure / Guessing)** followed later by concept-level mastery/mistake analysis, but this has not yet been implemented.
 
 ## Deployment
 
-Private repo: `Silkyj0/ape-study-v2`
-
-Production: `https://ape-study-v2.vercel.app/`
-
 Vercel deploys automatically from `main`.
 
-## M2 source gaps carried forward
-Do not create unsupported questions for these until clean sources are available:
-- Asset planning (Trust) — status/count needs confirmation against the source manifest;
-- CAA2024 Section F — Intellectual Property, prior PDF corrupted/unreadable;
-- CAA2024 Schedule B Item 5 — Form of Attribution.
+Production URL: `https://ape-study-v2.vercel.app/`
