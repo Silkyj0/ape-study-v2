@@ -120,6 +120,25 @@ Live questions use the supplied readings on:
 - variations and contingency; and
 - errors, ambiguities or omissions and allocation of correction/consequential cost.
 
+### Module 9 PARCS calibration
+
+Blind sample attempt: **13/14 correct**.
+
+Confirmed key:
+- 9.1: **D, B, A, FALSE, FALSE**
+- 9.2: **D, A, D, TRUE, FALSE**
+- 9.3: **C, D, B, A**
+
+Blind miss:
+- **9.1 T/F — “The architect is acting as the client's agent when inspecting the equipment”** — answered TRUE; official answer FALSE.
+
+Calibration rule:
+- PARCS treats activities undertaken as part of assessing, valuing or certifying a progress claim as part of the architect’s independent administrator function. In Scenario 9.1, the warehouse inspection was undertaken specifically to assess the medical-equipment component of the progress claim, so the architect was not acting as the owner’s agent during that inspection.
+
+The 28 authored questions were reviewed against this rule. None states that an inspection undertaken as part of progress-claim assessment is an owner-agent function, so no authored answer was changed or removed.
+
+The 14 supplied answer points are stored separately in `src/data/module09.parcs.js` and are marked `parcs-confirmed`. The four PARCS true/false statements are represented as two-option fixed-order questions so the supplied TRUE/FALSE format and confirmed key are preserved.
+
 ## Module 10 source focus
 
 Live questions use the supplied readings on:
@@ -148,7 +167,8 @@ Live questions use the supplied readings on:
 - Distractor-only QA overlays in `src/data/laterModuleQaOverrides.js` remove material answer-length cues without changing keyed answers, explanations or provenance.
 - The original 176-question M6–M11 build passed the structural audit with 0 material answer-length flags, 0 high length outliers, 0 option-shape flags and 0 duplicate-option flags. The four later novation questions were authored to the same structural standard and keep A–D balance intact.
 - Confirmed PARCS samples are excluded from the mixed Verified exam bank and remain available in normal module study.
+- The study/presentation and audit utilities now support PARCS two-option TRUE/FALSE cards while preserving ordinary four-option MCQ shuffling and QA.
 
 ## Next workflow
 
-Blind calibration continues in order: **M9 → M10 → M11**. After each official answer key is confirmed, review that module for any PARC-specific reasoning rule or source-coverage gap before locking the sample questions into the app.
+Blind calibration continues in order: **M10 → M11**. After each official answer key is confirmed, review that module for any PARC-specific reasoning rule or source-coverage gap before locking the sample questions into the app.
