@@ -52,17 +52,8 @@ function makeBalancedPositions(count, optionCount) {
   return shuffleCopy(Array.from({ length: count }, (_, index) => index % optionCount));
 }
 
-/**
- * Creates a presentation-only study queue.
- *
- * Question order is shuffled first. Correct answer positions are then balanced
- * within each answer format (four-option MCQ, two-option true/false, etc.), and
- * distractors are shuffled independently unless a question explicitly preserves
- * its option order. Stored source order and answer indexes are never mutated.
- */
-export function prepareStudyQueue(questions) {
-  const shuffledQuestions = shuffleCopy(questions);
-  const countsByOptionCount = shuffledQuestions.reduce((counts, question) => {
+function presentInOrder(questions) {
+  const countsByOptionCount = questions.reduce((counts, question) => {
     const optionCount = Math.max(question.options?.length || 0, 1);
     counts.set(optionCount, (counts.get(optionCount) || 0) + 1);
     return counts;
@@ -76,7 +67,7 @@ export function prepareStudyQueue(questions) {
   );
 
   const offsets = new Map();
-  return shuffledQuestions.map((question) => {
+  return questions.map((question) => {
     if (question.fixedOptionOrder) return presentQuestion(question, question.correct);
 
     const optionCount = Math.max(question.options?.length || 0, 1);
@@ -85,6 +76,27 @@ export function prepareStudyQueue(questions) {
     offsets.set(optionCount, offset + 1);
     return presentQuestion(question, targetPosition);
   });
+}
+
+/**
+ * Creates a presentation-only study queue.
+ *
+ * Question order is shuffled first. Correct answer positions are then balanced
+ * within each answer format (four-option MCQ, two-option true/false, etc.), and
+ * distractors are shuffled independently unless a question explicitly preserves
+ * its option order. Stored source order and answer indexes are never mutated.
+ */
+export function prepareStudyQueue(questions) {
+  return presentInOrder(shuffleCopy(questions));
+}
+
+/**
+ * Presents a linked scenario set without shuffling the question sequence.
+ * Options still shuffle and correct-answer positions are balanced, so retaining
+ * the official scenario order does not create answer-position cues.
+ */
+export function prepareScenarioQueue(questions) {
+  return presentInOrder([...questions]);
 }
 
 // A missed question can be reinserted later in the same session. A fresh random
