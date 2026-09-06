@@ -1,9 +1,11 @@
-import { BadgeCheck, ChevronRight, RefreshCw } from 'lucide-react';
+import { BadgeCheck, ChevronRight, Layers3, RefreshCw, Shuffle } from 'lucide-react';
 import { MODULES } from '../data/modules.js';
+import { getParcsScenarioGroups } from '../lib/scenarios.js';
 import { moduleStats } from '../lib/progress.js';
 
-export default function ParcsView({ questions, onStartMixed, onStartModule }) {
+export default function ParcsView({ questions, onStartMixed, onStartModule, onStartScenario }) {
   const parcsQuestions = questions.filter((q) => q.qaStatus === 'parcs-confirmed' && q.status === 'ready');
+  const scenarios = getParcsScenarioGroups(parcsQuestions);
   const now = Date.now();
   const due = parcsQuestions.filter((q) => q.seen > 0 && q.due <= now).length;
   const unseen = parcsQuestions.filter((q) => !q.seen).length;
@@ -11,6 +13,13 @@ export default function ParcsView({ questions, onStartMixed, onStartModule }) {
   const attempts = attempted.reduce((sum, q) => sum + (q.seen || 0), 0);
   const correct = attempted.reduce((sum, q) => sum + (q.correctCount || 0), 0);
   const accuracy = attempts ? Math.round((correct / attempts) * 100) : null;
+
+  function startRandomScenario() {
+    if (!scenarios.length) return;
+    const unseenScenarios = scenarios.filter((scenario) => scenario.questions.some((question) => !question.seen));
+    const pool = unseenScenarios.length ? unseenScenarios : scenarios;
+    onStartScenario(pool[Math.floor(Math.random() * pool.length)].key);
+  }
 
   return (
     <div>
@@ -22,13 +31,13 @@ export default function ParcsView({ questions, onStartMixed, onStartModule }) {
           This section contains only the sample questions supplied by PARCS and the answer keys you confirmed during calibration. The wording and confirmed answers are locked; ordinary authored questions are excluded.
         </p>
         <div className="mt-2 text-[11px] text-emerald-700">
-          {parcsQuestions.length} questions · {unseen} unseen · {due} due{accuracy !== null ? ` · ${accuracy}% accuracy` : ''}
+          {parcsQuestions.length} questions · {scenarios.length} linked scenarios · {unseen} unseen · {due} due{accuracy !== null ? ` · ${accuracy}% accuracy` : ''}
         </div>
       </div>
 
       <button
         onClick={onStartMixed}
-        className="mb-4 flex w-full items-center justify-between gap-3 rounded-lg border border-violet-200 bg-violet-50 p-3 text-left hover:border-violet-400"
+        className="mb-3 flex w-full items-center justify-between gap-3 rounded-lg border border-violet-200 bg-violet-50 p-3 text-left hover:border-violet-400"
       >
         <div>
           <div className="flex items-center gap-2 text-sm font-semibold text-violet-950"><RefreshCw size={17} /> Mixed PARCS review · up to 25 cards</div>
@@ -36,6 +45,34 @@ export default function ParcsView({ questions, onStartMixed, onStartModule }) {
         </div>
         <ChevronRight size={18} className="shrink-0 text-violet-600" />
       </button>
+
+      {scenarios.length > 0 && <section className="mb-5 rounded-lg border border-sky-200 bg-sky-50/50 p-3">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2 text-sm font-semibold text-sky-950"><Layers3 size={17} /> Scenario mode</div>
+            <p className="mt-1 text-xs leading-relaxed text-sky-800">The scenario stays visible and all linked questions are answered before any result or explanation is revealed.</p>
+          </div>
+          <button onClick={startRandomScenario} className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-sky-300 bg-white px-2.5 py-2 text-xs font-medium text-sky-800 hover:border-sky-500">
+            <Shuffle size={14} /> Random
+          </button>
+        </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {scenarios.map((scenario) => {
+            const scenarioAttempts = scenario.questions.reduce((sum, q) => sum + (q.seen || 0), 0);
+            const scenarioCorrect = scenario.questions.reduce((sum, q) => sum + (q.correctCount || 0), 0);
+            const scenarioAccuracy = scenarioAttempts ? Math.round((scenarioCorrect / scenarioAttempts) * 100) : null;
+            return <button
+              key={scenario.key}
+              onClick={() => onStartScenario(scenario.key)}
+              className="rounded-md border border-sky-200 bg-white p-2 text-left hover:border-sky-400"
+            >
+              <div className="text-xs font-semibold text-slate-900">Scenario {scenario.label}</div>
+              <div className="mt-0.5 text-[10px] text-slate-500">{scenario.questions.length} questions{scenarioAccuracy !== null ? ` · ${scenarioAccuracy}%` : ' · new'}</div>
+            </button>;
+          })}
+        </div>
+      </section>}
 
       <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">PARCS samples by module</div>
       <div className="space-y-2">
