@@ -15,13 +15,14 @@ import { module09ParcsQuestions } from './module09.parcs.js';
 import { module10Questions } from './module10.js';
 import { module10ParcsQuestions } from './module10.parcs.js';
 import { module11Questions } from './module11.js';
+import { module11ParcsQuestions } from './module11.parcs.js';
 import { calibrationOverrides, calibrationIds } from './calibrationOverrides.js';
 import { examOverridesBatch02, examBatch02Ids } from './examOverridesBatch02.js';
 import { examOverridesBatch03, examBatch03Ids } from './examOverridesBatch03.js';
 import { laterModuleQaOverrides } from './laterModuleQaOverrides.js';
 import { getQaMetadata, PARCS_SAMPLE_IDS, WITHHELD_QA_IDS } from './qaMetadata.js';
 
-export const SEED_VERSION = 30;
+export const SEED_VERSION = 31;
 
 const BASE_SEED = [
   ...module01Questions,
@@ -41,6 +42,7 @@ const BASE_SEED = [
   ...module10Questions,
   ...module10ParcsQuestions,
   ...module11Questions,
+  ...module11ParcsQuestions,
 ];
 
 // The original module files remain the archive/source bank. The live M1/M2 bank
