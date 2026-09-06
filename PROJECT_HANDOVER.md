@@ -148,7 +148,11 @@ Source spot-checks during the QA audit included the supplied readings on tender 
 - Wrong answers reappear after about five cards, up to two same-session retries.
 - Correct streak spacing roughly 1, 3, 7 and 14 days.
 - Three consecutive confident correct answers = mastered.
-- A correct answer marked **I guessed / not confident** returns sooner and does not advance mastery normally.
+- **Pre-answer confidence is required before an answer can be committed:** Confident / Unsure / Guessing.
+- A correct **Confident** answer advances mastery normally.
+- A correct **Unsure** answer stays correct but does not advance mastery and returns in about 12 hours.
+- A correct **Guessing** answer stays correct but does not advance mastery and returns in about 4 hours.
+- **Confident-wrong** attempts are explicitly counted and confidence history is retained in saved progress for later misconception analysis.
 
 ### PARCS-only section
 Dedicated **PARCS** tab contains only supplied confirmed PARCS questions.
@@ -185,6 +189,18 @@ Dedicated **Exam** tab:
 
 No arbitrary pass/fail threshold is displayed.
 
+## Pre-answer confidence — implemented 7 September 2026
+
+The earlier post-answer **I guessed / not confident** control has been replaced in normal card study by a pre-answer confidence choice. This avoids hindsight bias and gives the learning system a cleaner signal about whether a correct answer came from secure recall, uncertainty or guessing.
+
+Implementation files:
+
+- `src/components/StudyView.jsx` — confidence choice must be made before answer options unlock; selected confidence remains visible after reveal.
+- `src/App.jsx` — applies confidence-aware scheduling and records confidence counts/history, including confident-wrong attempts.
+- `src/lib/progress.js` — preserves confidence data through seed reconciliation and progress imports.
+
+PARCS Scenario Mode and Exam Simulation remain unchanged so their grouped/closed-feedback behavior is preserved.
+
 ## QA architecture
 
 Key files:
@@ -198,7 +214,7 @@ Key files:
 - `src/lib/learning.js` — adaptive learning and focus logic.
 - `src/lib/scenarios.js` — PARCS scenario grouping.
 - `src/lib/exam.js` — 40-question/60-minute exam simulation logic.
-- `src/components/StudyView.jsx` — post-answer explanations, Exam reasoning, QA provenance and confidence controls.
+- `src/components/StudyView.jsx` — pre-answer confidence, post-answer explanations, Exam reasoning and QA provenance.
 - `src/components/ExamView.jsx` — closed-feedback simulation UI and post-submit review.
 
 QA statuses in use:
@@ -240,7 +256,7 @@ Recommended next steps should be driven by actual study performance:
 4. create new shadow/variant questions only where performance shows memorisation rather than concept transfer;
 5. continue refining difficulty only where the learner can identify answers from wording rather than reasoning.
 
-The next planned learning-system feature from earlier discussion was **pre-answer confidence (Confident / Unsure / Guessing)** followed later by concept-level mastery/mistake analysis, but this has not yet been implemented.
+The next planned learning-system feature is now **concept-level mastery and mistake analysis**, using the newly captured pre-answer confidence data alongside repeated lapses, weak topics and PARCS calibration traps. It should distinguish at least confident misconceptions, uncertain knowledge and guess-driven correct answers rather than relying on raw accuracy alone.
 
 ## Deployment
 
