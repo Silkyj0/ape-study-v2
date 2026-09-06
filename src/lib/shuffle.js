@@ -10,6 +10,16 @@ export function shuffleCopy(items, random = Math.random) {
 function presentQuestion(question, targetCorrectPosition) {
   if (question.correct === null || question.correct === undefined) return question;
 
+  if (question.fixedOptionOrder) {
+    return {
+      ...question,
+      presentationOptions: question.options.map((text, sourceIndex) => ({ text, sourceIndex })),
+      presentationCorrect: question.correct,
+    };
+  }
+
+  const optionCount = question.options.length;
+  const safeTargetPosition = Math.max(0, Math.min(targetCorrectPosition, optionCount - 1));
   const correctEntry = {
     text: question.options[question.correct],
     sourceIndex: question.correct,
@@ -23,8 +33,8 @@ function presentQuestion(question, targetCorrectPosition) {
 
   const presentationOptions = [];
   let distractorIndex = 0;
-  for (let i = 0; i < question.options.length; i += 1) {
-    if (i === targetCorrectPosition) presentationOptions.push(correctEntry);
+  for (let i = 0; i < optionCount; i += 1) {
+    if (i === safeTargetPosition) presentationOptions.push(correctEntry);
     else {
       presentationOptions.push(distractors[distractorIndex]);
       distractorIndex += 1;
@@ -34,32 +44,54 @@ function presentQuestion(question, targetCorrectPosition) {
   return {
     ...question,
     presentationOptions,
-    presentationCorrect: targetCorrectPosition,
+    presentationCorrect: safeTargetPosition,
   };
+}
+
+function makeBalancedPositions(count, optionCount) {
+  return shuffleCopy(Array.from({ length: count }, (_, index) => index % optionCount));
 }
 
 /**
  * Creates a presentation-only study queue.
  *
  * Question order is shuffled first. Correct answer positions are then balanced
- * across A/B/C/D for the session, and distractors are shuffled independently.
- * Stored source order and answer indexes are never mutated. Spaced repetition
- * determines which questions are eligible; this function only randomises their
- * presentation.
+ * within each answer format (four-option MCQ, two-option true/false, etc.), and
+ * distractors are shuffled independently unless a question explicitly preserves
+ * its option order. Stored source order and answer indexes are never mutated.
  */
 export function prepareStudyQueue(questions) {
   const shuffledQuestions = shuffleCopy(questions);
-  const answerPositions = shuffleCopy(
-    shuffledQuestions.map((_, index) => index % 4),
+  const countsByOptionCount = shuffledQuestions.reduce((counts, question) => {
+    const optionCount = Math.max(question.options?.length || 0, 1);
+    counts.set(optionCount, (counts.get(optionCount) || 0) + 1);
+    return counts;
+  }, new Map());
+
+  const positionsByOptionCount = new Map(
+    [...countsByOptionCount.entries()].map(([optionCount, count]) => [
+      optionCount,
+      makeBalancedPositions(count, optionCount),
+    ]),
   );
 
-  return shuffledQuestions.map((question, index) =>
-    presentQuestion(question, answerPositions[index]),
-  );
+  const offsets = new Map();
+  return shuffledQuestions.map((question) => {
+    if (question.fixedOptionOrder) return presentQuestion(question, question.correct);
+
+    const optionCount = Math.max(question.options?.length || 0, 1);
+    const offset = offsets.get(optionCount) || 0;
+    const targetPosition = positionsByOptionCount.get(optionCount)[offset];
+    offsets.set(optionCount, offset + 1);
+    return presentQuestion(question, targetPosition);
+  });
 }
 
 // A missed question can be reinserted later in the same session. A fresh random
-// answer position prevents the repeat from becoming a memory-of-position test.
+// answer position prevents an ordinary MCQ repeat from becoming a memory-of-position
+// test. Fixed-order formats such as true/false preserve their original order.
 export function prepareRepeatQuestion(question) {
-  return presentQuestion(question, Math.floor(Math.random() * 4));
+  if (question.fixedOptionOrder) return presentQuestion(question, question.correct);
+  const optionCount = Math.max(question.options?.length || 0, 1);
+  return presentQuestion(question, Math.floor(Math.random() * optionCount));
 }
