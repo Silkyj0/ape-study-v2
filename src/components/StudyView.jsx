@@ -52,6 +52,11 @@ export default function StudyView({ question, index, total, sessionCorrect, sele
         {revealed && <div className="mt-4 border-t border-slate-200 pt-3">
           <p className="mb-3 text-xs leading-relaxed text-slate-600">{question.explanation}</p>
 
+          {question.examTip && <div className="mb-3 rounded-md border border-indigo-200 bg-indigo-50 p-2 text-indigo-900">
+            <div className="text-[11px] font-semibold">Exam reasoning</div>
+            <p className="mt-1 text-[10px] leading-relaxed">{question.examTip}</p>
+          </div>}
+
           {calibrationTrap && <div className="mb-3 rounded-md border border-violet-200 bg-violet-50 p-2 text-violet-900">
             <div className="text-[11px] font-semibold">PARCS calibration trap · Scenario {calibrationTrap.scenario} Q{calibrationTrap.questionNumber}</div>
             <p className="mt-1 text-[10px] leading-relaxed">{calibrationTrap.lesson}</p>
