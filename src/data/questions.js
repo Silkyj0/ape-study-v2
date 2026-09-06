@@ -22,7 +22,7 @@ import { examOverridesBatch03, examBatch03Ids } from './examOverridesBatch03.js'
 import { laterModuleQaOverrides } from './laterModuleQaOverrides.js';
 import { getQaMetadata, PARCS_SAMPLE_IDS, WITHHELD_QA_IDS } from './qaMetadata.js';
 
-export const SEED_VERSION = 31;
+export const SEED_VERSION = 32;
 
 const BASE_SEED = [
   ...module01Questions,
