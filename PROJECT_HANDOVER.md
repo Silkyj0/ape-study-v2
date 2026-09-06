@@ -30,6 +30,12 @@ Total live seed: **534 questions**.
 - PARCS-confirmed: **128**
 - `SEED_VERSION = 34`
 
+Separate Acumen flashcard bank: **30 source-verified cards** across M6, M9, M10 and M11.
+
+- `FLASHCARD_SEED_VERSION = 1`
+- Source audit: `FLASHCARD_SOURCE_AUDIT.md`
+- Flashcard content source rule: supplied Acumen readings only; definitions and examples must not be filled from general knowledge.
+
 The two M1 items `m1-woolcock` and `m1-introvigne` remain withheld pending source re-checks.
 
 ## PARCS blind calibration summary
@@ -154,6 +160,28 @@ Source spot-checks during the QA audit included the supplied readings on tender 
 - A correct **Guessing** answer stays correct but does not advance mastery and returns in about 4 hours.
 - **Confident-wrong** attempts are explicitly counted and confidence history is retained in saved progress for later misconception analysis.
 
+### Acumen Flashcards
+Dedicated **Cards** tab for terminology recall.
+
+- Initial seed contains **30 cards**, all derived from supplied Acumen PDFs.
+- Front shows the term plus module/topic context; tap/click flips to definition.
+- Back shows a concise source-faithful definition, source-supported examples where useful, exact Acumen reading title and relevant section.
+- Smart mixed review, complete-bank review, by-module review and by-topic review.
+- Recall ratings: **Knew it / Unsure / Didn’t know**.
+- **Knew it** advances the recall streak with spacing of roughly 1, 3, 7 and 14 days.
+- **Unsure** returns in about 12 hours.
+- **Didn’t know** returns in about 4 hours and can be reinserted after about four other cards, up to two same-session retries.
+- Three consecutive **Knew it** ratings = mastered.
+- Flashcard progress is stored independently from MCQ progress and survives flashcard seed updates/import reconciliation.
+- Never add a flashcard definition or example from general knowledge. Read `FLASHCARD_SOURCE_AUDIT.md` first.
+
+Current flashcard distribution:
+
+- M6: 13 — procurement, novation, PPRs, shop drawings
+- M9: 10 — prime cost/provisional/contingency sums, variations, progress payments, security
+- M10: 5 — EOTs, critical path and practical completion
+- M11: 2 — final completion and final certificate
+
 ### PARCS-only section
 Dedicated **PARCS** tab contains only supplied confirmed PARCS questions.
 
@@ -201,20 +229,34 @@ Implementation files:
 
 PARCS Scenario Mode and Exam Simulation remain unchanged so their grouped/closed-feedback behavior is preserved.
 
+## Acumen flashcards — implemented 7 September 2026
+
+Implementation files:
+
+- `src/data/flashcards.js` — source-verified flashcard seed and precise reading provenance.
+- `src/lib/flashcards.js` — adaptive scheduling, retry logic, mastery and flashcard stats.
+- `src/components/FlashcardsView.jsx` — dashboard, module/topic entry points and flip-card study UI.
+- `src/App.jsx` — Cards navigation, flashcard sessions, rating persistence and migration.
+- `src/lib/progress.js` — separate flashcard seed reconciliation and persistent progress.
+- `FLASHCARD_SOURCE_AUDIT.md` — mandatory source standard and initial reading/card map.
+
 ## QA architecture
 
 Key files:
 
-- `src/data/questions.js` — live seed assembly, currently seed v34.
+- `src/data/questions.js` — live MCQ seed assembly, currently seed v34.
+- `src/data/flashcards.js` — Acumen-only flashcard seed, currently seed v1.
 - `src/data/qaMetadata.js` — PARCS sample IDs and QA labels.
 - `src/data/laterModuleQaOverrides.js` — earlier distractor/shape refinements.
 - `src/data/laterModuleDifficultyOverrides.js` — 33 M5–M11 targeted difficulty upgrades and exam reasoning notes.
 - `src/data/calibrationTraps.js` — official blind-calibration trap patterns.
 - `src/lib/audit.js` — structural option/answer/source QA checks.
-- `src/lib/learning.js` — adaptive learning and focus logic.
+- `src/lib/learning.js` — adaptive MCQ learning and focus logic.
+- `src/lib/flashcards.js` — adaptive flashcard recall logic.
 - `src/lib/scenarios.js` — PARCS scenario grouping.
 - `src/lib/exam.js` — 40-question/60-minute exam simulation logic.
 - `src/components/StudyView.jsx` — pre-answer confidence, post-answer explanations, Exam reasoning and QA provenance.
+- `src/components/FlashcardsView.jsx` — Acumen term recall and source display.
 - `src/components/ExamView.jsx` — closed-feedback simulation UI and post-submit review.
 
 QA statuses in use:
@@ -229,7 +271,7 @@ QA statuses in use:
 
 ## Source discipline
 
-Read `QUESTION_WRITING_STANDARD.md` before changing study content.
+Read `QUESTION_WRITING_STANDARD.md` before changing MCQ study content and `FLASHCARD_SOURCE_AUDIT.md` before changing flashcard content.
 
 Core rules:
 
@@ -238,25 +280,27 @@ Core rules:
 3. Prefer Australian/Queensland framing where the source supports it.
 4. Every authored live question needs precise provenance.
 5. Quality over volume; pruning is valid QA.
-6. Prefer scenario/application judgement over definition recognition.
+6. Prefer scenario/application judgement over definition recognition for MCQs; use the flashcard mode for terminology recall.
 7. Confirmed PARCS samples and official keys are immutable.
 8. Withhold uncertainty rather than guessing.
 9. Keep course-specific PARCS framing even where broader real-world legal analysis could be more nuanced.
 10. Do not expand M5 PARC-linked external website material unless the user changes that instruction.
+11. Flashcard definitions, distinctions and examples must come from the supplied Acumen reading itself; do not derive them from the MCQ bank or general knowledge.
 
 ## Recommended next work
 
-The content bank is now mature. Do **not** default to adding more volume.
+The MCQ content bank is mature. Do **not** default to adding more MCQ volume.
 
-Recommended next steps should be driven by actual study performance:
+Recommended next steps:
 
-1. use normal mixed study and Exam Simulation;
-2. watch confident-wrong / repeated-lapse patterns;
-3. use user QA flags for any question that feels off;
-4. create new shadow/variant questions only where performance shows memorisation rather than concept transfer;
-5. continue refining difficulty only where the learner can identify answers from wording rather than reasoning.
+1. use normal mixed study, Acumen Flashcards and Exam Simulation;
+2. expand flashcards module-by-module only where the supplied Acumen PDFs contain a clear, useful term or distinction;
+3. watch confident-wrong / repeated-lapse MCQ patterns and Did-not-know / Unsure flashcard patterns;
+4. use user QA flags for any question that feels off;
+5. create new shadow/variant MCQs only where performance shows memorisation rather than concept transfer;
+6. continue refining difficulty only where the learner can identify answers from wording rather than reasoning.
 
-The next planned learning-system feature is now **concept-level mastery and mistake analysis**, using the newly captured pre-answer confidence data alongside repeated lapses, weak topics and PARCS calibration traps. It should distinguish at least confident misconceptions, uncertain knowledge and guess-driven correct answers rather than relying on raw accuracy alone.
+The next planned learning-system feature remains **concept-level mastery and mistake analysis**, now using both pre-answer MCQ confidence and flashcard recall data alongside repeated lapses, weak topics and PARCS calibration traps. It should distinguish confident misconceptions, uncertain knowledge and guess-driven correct answers rather than relying on raw accuracy alone.
 
 ## Deployment
 
