@@ -20,6 +20,9 @@ export const PARCS_SAMPLE_IDS = [
   'm8-sc81-1', 'm8-sc81-2', 'm8-sc81-3', 'm8-sc81-4',
   'm8-sc82-1', 'm8-sc82-2', 'm8-sc82-3', 'm8-sc82-4',
   'm8-sc83-1', 'm8-sc83-2', 'm8-sc83-3', 'm8-sc83-4',
+  'm9-sc91-1', 'm9-sc91-2', 'm9-sc91-3', 'm9-sc91-4', 'm9-sc91-5',
+  'm9-sc92-1', 'm9-sc92-2', 'm9-sc92-3', 'm9-sc92-4', 'm9-sc92-5',
+  'm9-sc93-1', 'm9-sc93-2', 'm9-sc93-3', 'm9-sc93-4',
 ];
 
 export const PARCS_SAMPLE_SET = new Set(PARCS_SAMPLE_IDS);
@@ -46,7 +49,9 @@ export function getQaMetadata(question) {
     return {
       qaStatus: 'parcs-confirmed',
       qaLabel: 'PARCS confirmed',
-      qaNote: 'Supplied PARCS sample question. Scenario, stem, options and confirmed answer key are preserved unchanged; only presentation order may shuffle.',
+      qaNote: question.answerFormat === 'true-false'
+        ? 'Supplied PARCS sample true/false item. Scenario, statement, TRUE/FALSE format and confirmed answer key are preserved unchanged.'
+        : 'Supplied PARCS sample question. Scenario, stem, options and confirmed answer key are preserved unchanged; only presentation order may shuffle.',
     };
   }
 
