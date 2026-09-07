@@ -2,15 +2,17 @@
 
 ## Purpose
 
-APE Part 2 study application for Patrick's Queensland Architectural Practice Examination preparation. The study program is based on PARCS modules, supplied readings, PARCS sample questions and user-confirmed official answer keys.
+APE Part 2 study application for Patrick's Queensland Architectural Practice Examination preparation. The core study program is based on PARCS Modules 1–11, supplied readings, PARCS sample questions and user-confirmed official answer keys. A supplementary Module 12 now provides direct study of the supplied ABIC SW 2018 Simple Works Contract.
 
 Production: `https://ape-study-v2.vercel.app/`
 
-Private repo: `Silkyj0/ape-study-v2`
+Repo: `Silkyj0/ape-study-v2`
 
 Vercel deploys automatically from `main`.
 
-## Current MCQ bank
+## Current release state — 7 September 2026
+
+### MCQ bank
 
 | Module | Live | Composition |
 | --- | ---: | --- |
@@ -25,79 +27,106 @@ Vercel deploys automatically from `main`.
 | M9 | 42 | 28 authored + 14 PARCS answer points |
 | M10 | 44 | 32 authored + 12 PARCS answer points |
 | M11 | 36 | 24 authored + 12 PARCS answer points |
+| M12 | 50 | supplementary ABIC SW 2018 source-verified |
 
-Total live MCQ seed: **534 questions**.
+Total live MCQ seed: **584 questions**.
 
-- Verified/source-audited authored bank: **406**
+- Core M1–M11 bank: **534**
+- Supplementary ABIC M12: **50**
 - PARCS-confirmed: **128**
-- `SEED_VERSION = 34`
-- The two M1 items `m1-woolcock` and `m1-introvigne` remain withheld pending source re-checks.
+- `SEED_VERSION = 35`
+- `m1-woolcock` and `m1-introvigne` remain withheld pending source re-checks.
 
-The MCQ bank is mature. Do not default to adding more volume unless performance exposes a specific gap.
+M12 is supplementary and is intentionally excluded from the normal 40-question M1–M11 Exam Simulation.
 
-## Acumen flashcard bank — v2 completed 7 September 2026
+### Flashcard bank
 
-The dedicated **Cards** mode now uses **113 source-audited Acumen flashcards across Modules 1–11**.
+Total flashcards: **185**.
 
-- `FLASHCARD_SEED_VERSION = 2`
-- Existing cards retained: **30**
-- New cards added: **83**
-- Existing flashcard seed IDs changed: **0**
-- Source/QA record: `FLASHCARD_SOURCE_AUDIT.md`
-- Build-time QA: `scripts/audit-flashcards.mjs`
-- Source rule: supplied Acumen readings only. Do not fill definitions, distinctions or examples from general knowledge, the MCQ bank, external websites or unsupplied commentary.
+- M1–M11 Acumen bank: **113 source-audited cards**
+- M12 ABIC bank: **72 source-verified cards**
+- `FLASHCARD_SEED_VERSION = 3`
+- Existing pre-v3 IDs remain unchanged so stored progress reconciles by `seedId`; new M12 cards enter as unseen.
 
-Current distribution:
+M1–M11 Acumen distribution remains:
 
-| Module | Cards | Main coverage |
-| --- | ---: | --- |
-| M1 | 10 | standard of care, liability, duty to warn/correct, PII |
-| M2 | 10 | practice structures, copyright, assignment/licence, moral rights |
-| M3 | 8 | client agreements, collateral warranties, fitness for purpose, consultant engagement |
-| M4 | 8 | budgets, design stages, variations to services, value management, consultant roles |
-| M5 | 8 | safe design, WHS duties, access, embodied/operational impacts |
-| M6 | 20 | procurement, novation, NCC pathways, construction documentation |
-| M7 | 7 | tendering, addenda, conforming/alternative tenders, contract documents |
-| M8 | 8 | construction roles, latent conditions, substitutions, inspections/hold/witness points |
-| M9 | 15 | contract sums, variations, progress payments/certification, security, discrepancies |
-| M10 | 12 | EOTs, critical path/float, prevention principle, liquidated damages, completion/defects |
-| M11 | 7 | final completion/certificate, ADR, insolvency/termination, fee disputes |
+| Module | Cards |
+| --- | ---: |
+| M1 | 10 |
+| M2 | 10 |
+| M3 | 8 |
+| M4 | 8 |
+| M5 | 8 |
+| M6 | 20 |
+| M7 | 7 |
+| M8 | 8 |
+| M9 | 15 |
+| M10 | 12 |
+| M11 | 7 |
+| M12 | 72 |
 
-### Flashcard v2 architecture
+`FLASHCARD_SOURCE_AUDIT.md` remains the source/QA record for the Acumen M1–M11 bank. `ABIC_SOURCE_AUDIT.md` is the source/QA record for Module 12 and ABIC cross-references.
 
-- `src/data/flashcardsCore.js` — historical initial 30-card bank retained intact for auditability and stable IDs.
-- `src/data/flashcards/` — M1–M11 modular expansion files containing 83 new source-audited cards.
-- `src/data/flashcardsExpanded.js` — assembles the modular expansion.
-- `src/data/flashcardQaOverrides.js` — wording refinements applied by stable seed ID after the source QA pass.
-- `src/data/flashcards.js` — version-2 public bank entrypoint used by the app; combines the core, QA overrides and expansion.
-- `scripts/audit-flashcards.mjs` — checks total count, module distribution, unique IDs/terms, minimum definition depth and Acumen provenance.
-- `package.json` — production `build` runs flashcard QA before `vite build`, so Vercel fails if the bank violates the structural standard.
-- `src/lib/flashcards.js` — adaptive scheduling, retry logic, mastery and stats.
-- `src/components/FlashcardsView.jsx` — module/topic dashboard and click-to-flip study UI.
-- `src/App.jsx` — Cards navigation/session state/rating persistence.
-- `src/lib/progress.js` — separate flashcard reconciliation and persistent progress.
+## ABIC SW 2018 integration v1
 
-### Flashcard QA outcome
+Primary source:
 
-All original 30 cards were checked against their named supplied Acumen readings. No original card required withdrawal. Refinements were made where qualification improved exam reliability, including:
+- `reference-contract-abic-sw-2018-c-071118 (1).pdf`
+- Google Drive file ID retained in `src/data/abic/contractMap.js`
 
-- Prime cost item vs provisional sum;
-- contingency sum;
-- contract security / cash retention / unconditional guarantees;
-- EOT, EOT-with-costs and EOT-only as distinct contract-dependent entitlements;
-- critical-path effect and float;
-- practical completion;
-- final completion and final certificate.
+Architecture:
 
-The expansion was also reviewed for over-generalisation. In particular:
+- `src/data/abic/contractMap.js` — canonical source map for schedules, clause headings and selected definitions.
+- `src/data/abic/factories.js` — source metadata factory for ABIC questions/cards.
+- `src/data/abic/questions01.js` … `questions05.js` — 50 M12 MCQs.
+- `src/data/abic/flashcards01.js` … `flashcards04.js` — 72 M12 flashcards.
+- `src/data/abic/crossReferences.js` — ABIC clause/page cross-references for relevant existing M8–M11 Acumen content.
+- `src/data/module12.js` — M12 question assembly.
+- `src/data/flashcards/module12.js` — M12 flashcard assembly.
+- `scripts/audit-abic.mjs` — build-time ABIC structural/provenance audit.
+- `ABIC_SOURCE_AUDIT.md` — detailed integration/source notes and known reference-copy anomalies.
 
-- liquidated damages now avoids presenting an oversimplified universal penalty test;
-- defects-liability wording does not imply a contractor automatically owns design defects outside its contractual design responsibility;
-- determinative ADR records Acumen's qualification that Security of Payment adjudication can bind while underlying contractual rights may still be pursued.
+M12 question mix is deliberately application-heavy:
 
-Flashcard progress survives the v1-to-v2 seed migration because reconciliation matches existing cards by stable `seedId`; the 83 new IDs enter as unseen cards.
+- 10 foundation/navigation questions;
+- 15 clause/procedure mechanics questions;
+- 25 scenario/application questions;
+- authored correct positions balanced A 13 / B 13 / C 12 / D 12.
 
-## PARCS blind calibration summary
+The ABIC deck teaches three levels of recall:
+
+1. where contract mechanisms live;
+2. how the contractual procedure operates;
+3. what high-value defined terms and schedule entries mean.
+
+Existing M8–M11 Acumen content is not reclassified as ABIC content. Relevant items retain their original Acumen source and receive a secondary ABIC clause/page cross-reference only where directly supported by the supplied contract.
+
+The current cross-reference layer covers **40 existing M8–M11 questions** and **22 existing M8–M11 flashcards**.
+
+### ABIC QA status
+
+M12 questions receive:
+
+- `qaStatus: abic-source-verified`
+- `qaLabel: ABIC source verified`
+
+This status is intentionally not listed in `EXAM_QA_STATUSES`, which keeps supplementary M12 out of the normal M1–M11 Exam Simulation.
+
+The supplied ABIC reference copy contains a small number of internal schedule/clause cross-reference inconsistencies. Do not silently correct these from outside knowledge. Where a reference-copy inconsistency could create unreliable rote learning, withhold that particular cross-reference and teach the supported substantive contract requirement instead. See `ABIC_SOURCE_AUDIT.md`.
+
+## Acumen flashcard bank — v2 baseline
+
+The original Acumen flashcard QA project remains valid for M1–M11:
+
+- original 30 historical cards retained;
+- 83 expansion cards added;
+- stable original IDs preserved;
+- all definitions/distinctions/examples sourced only from supplied Acumen readings;
+- precision refinements applied through `src/data/flashcardQaOverrides.js`.
+
+Important refined concepts include prime cost items vs provisional sums, contingency, security, EOT entitlement vs costs, critical-path effect, practical completion, final completion/final certificate, liquidated damages, defects responsibility and determinative ADR.
+
+## PARCS blind calibration
 
 Modules 3–11 blind calibration total: **98/109 (89.9%)**.
 
@@ -113,20 +142,18 @@ Modules 3–11 blind calibration total: **98/109 (89.9%)**.
 | M10 | 10/12 | 10.1 Q2, 10.3 Q2 |
 | M11 | 11/12 | 11.1 Q3 |
 
-`PARCS_CALIBRATION_AUDIT.md` records the recurring course-specific reasoning patterns. `src/data/calibrationTraps.js` feeds those traps into adaptive study.
+Recurring calibration themes:
 
-Important calibration themes:
-
-- identify the professional role at the exact moment: client agent vs independent assessor/certifier;
-- consultant/contractor responsibility does not automatically erase the architect's own coordination or professional duty;
-- change control is measured against the current documented position, including reinstating an earlier design after an intervening change;
-- preserve a fair common tender basis before changing it;
-- urgent mitigation should preserve the existing project delivery chain where possible;
+- identify the architect's exact role at the relevant moment: owner agent vs independent assessor/valuer/certifier;
+- consultant/contractor responsibility does not erase the architect's own coordination/professional duty;
+- change control is measured against the current documented position;
+- preserve a fair common tender basis;
+- urgent mitigation should preserve the project delivery chain where possible;
 - separate EOT entitlement, critical-path effect, overlap/concurrency and cost entitlement;
 - distinguish contractor workmanship defects from architect design/detailing errors;
-- preserve official PARCS keys exactly even where broader real-world analysis could be more nuanced.
+- preserve confirmed PARCS keys exactly even where broader real-world analysis may be more nuanced.
 
-### Key official PARCS keys retained
+Confirmed PARCS keys retained:
 
 M3:
 - 3.1: **D, C, D, C**
@@ -145,98 +172,61 @@ M11:
 
 Confirmed PARCS wording and official keys are immutable.
 
-## Modules 5–11 QA audit — completed 7 September 2026
-
-`MODULES05_11_QUALITY_AUDIT.md` is the detailed audit.
-
-Main finding: source fidelity and keyed answers were materially sound; the weakness was uneven authored-question difficulty. A targeted **33 authored questions** across M5–M11 were upgraded in `src/data/laterModuleDifficultyOverrides.js` without changing the underlying source proposition or stored correct-answer position:
-
-- M5: 3
-- M6: 6
-- M7: 6
-- M8: 4
-- M9: 4
-- M10: 4
-- M11: 6
-
-The upgraded items use richer project facts, plausible competing duties/answers and post-answer `examTip` guidance. `StudyView.jsx` displays this as **Exam reasoning** only after an answer is committed.
-
 ## Study modes live
 
 ### Normal adaptive MCQ study
 
 - Module sessions up to 20 cards.
 - Due/weak items before unseen items.
-- Wrong answers reappear after about five cards, up to two same-session retries.
+- Wrong answers reappear within the session and become due sooner.
 - Correct streak spacing roughly 1, 3, 7 and 14 days.
-- Three consecutive confident correct answers = mastered.
-- Pre-answer confidence is required: **Confident / Unsure / Guessing**.
-- Correct + Confident advances mastery normally.
-- Correct + Unsure does not advance mastery and returns in about 12 hours.
-- Correct + Guessing does not advance mastery and returns in about 4 hours.
-- Confident-wrong attempts are explicitly retained for later misconception analysis.
+- The pre-answer Confident / Unsure / Guessing checker is currently disabled in the UI.
+- Existing confidence fields are retained in stored progress for backwards compatibility, but the learner goes directly from the question to answer choices.
 
-### Acumen Flashcards
+### Flashcards
 
-- Front shows term plus module/topic context; tap/click flips to definition.
-- Back shows concise source-faithful definition, source-supported examples where useful, exact Acumen reading title and section.
-- Smart mixed review, complete-bank review, by-module review and by-topic review.
+- Click/tap to flip term → definition.
+- Smart review, complete-bank review, by-module review and by-topic review.
 - Recall ratings: **Knew it / Unsure / Didn’t know**.
 - Knew it advances spacing roughly 1, 3, 7 and 14 days.
 - Unsure returns in about 12 hours.
-- Didn’t know returns in about 4 hours and can be reinserted after several cards, up to two same-session retries.
-- Three consecutive Knew it ratings = mastered.
-- Flashcard mastery is stored separately from MCQ mastery.
+- Didn’t know returns in about 4 hours and can reappear in-session.
+- M1–M11 cards identify Acumen provenance; M12 cards identify ABIC SW 2018 provenance and contract references.
 
-### PARCS-only
+### PARCS-only / Scenario Mode / calibration drills
 
-Dedicated **PARCS** tab contains only supplied confirmed PARCS questions, with mixed review, by-module review and immutable confirmed keys.
-
-### PARCS Scenario Mode
-
-Official scenarios stay grouped: scenario visible throughout, all linked questions answered before reveal, whole-scenario submit, then score/review.
-
-### PARCS calibration trap drills
-
-Stats includes drills for recurring patterns exposed by blind calibration. Exact official trap questions appear first, followed by related source-verified questions.
+These remain unchanged. Official supplied scenarios, wording and confirmed keys are immutable.
 
 ### Exam Simulation
 
-Dedicated **Exam** tab:
-
 - 40 questions;
 - 60-minute countdown;
-- trusted bank only;
-- spread across M1–M11;
-- no feedback/source information during sitting;
-- previous/next navigation and 1–40 navigator;
-- flag-for-review;
-- unanswered warning;
+- trusted M1–M11 bank only;
+- no feedback/source information during the sitting;
+- navigation, flag-for-review and unanswered warning;
 - auto-submit at 00:00;
-- score, module breakdown and detailed review after submission;
-- exam results feed adaptive learning only after submission.
+- module breakdown and detailed review after submission;
+- no arbitrary pass/fail threshold.
 
-No arbitrary pass/fail threshold is displayed.
+M12 ABIC questions do **not** enter this exam pool.
 
 ## QA architecture
 
 Key files:
 
-- `src/data/questions.js` — MCQ seed assembly, seed v34.
-- `src/data/flashcards.js` — Acumen flashcard bank entrypoint, seed v2.
-- `src/data/flashcardsCore.js` — historical 30-card flashcard core.
-- `src/data/flashcardsExpanded.js` + `src/data/flashcards/module01.js` … `module11.js` — 83-card expansion.
-- `src/data/flashcardQaOverrides.js` — source-QA refinements by stable ID.
-- `scripts/audit-flashcards.mjs` — production flashcard structural/provenance audit.
-- `src/data/qaMetadata.js` — PARCS sample IDs and QA labels.
-- `src/data/laterModuleQaOverrides.js` — earlier MCQ distractor/shape refinements.
-- `src/data/laterModuleDifficultyOverrides.js` — 33 M5–M11 difficulty upgrades.
-- `src/data/calibrationTraps.js` — official blind-calibration trap patterns.
-- `src/lib/audit.js` — MCQ structural option/answer/source QA checks.
-- `src/lib/learning.js` — adaptive MCQ learning and focus logic.
-- `src/lib/flashcards.js` — adaptive flashcard recall logic.
-- `src/lib/scenarios.js` — PARCS scenario grouping.
-- `src/lib/exam.js` — 40-question/60-minute exam simulation logic.
+- `src/data/questions.js` — MCQ seed assembly, seed v35.
+- `src/data/flashcards.js` — flashcard public entrypoint, seed v3.
+- `src/data/qaMetadata.js` — PARCS, Drive, external and ABIC QA classifications.
+- `src/data/laterModuleQaOverrides.js` — existing later-module MCQ refinements.
+- `src/data/laterModuleDifficultyOverrides.js` — M5–M11 difficulty upgrades.
+- `src/data/calibrationTraps.js` — confirmed blind-calibration traps.
+- `src/data/abic/` — ABIC source map, questions, cards and cross-references.
+- `src/lib/audit.js` — MCQ structural audit.
+- `scripts/audit-flashcards.mjs` — flashcard bank audit.
+- `scripts/audit-abic.mjs` — ABIC source/reference audit.
+- `src/lib/exam.js` — M1–M11 Exam Simulation eligibility and generation.
+
+Production `npm run build` runs flashcard QA and ABIC QA before `vite build`; Vercel therefore fails if those source-bank structural safeguards fail.
 
 QA statuses in use:
 
@@ -244,40 +234,36 @@ QA statuses in use:
 - `source-audited`
 - `drive-source-verified`
 - `parc-external-verified`
+- `abic-source-verified`
 - `needs-source-check`
 - `legacy-placeholder`
 - `user-added`
 
 ## Source discipline
 
-Read `QUESTION_WRITING_STANDARD.md` before changing MCQ study content and `FLASHCARD_SOURCE_AUDIT.md` before changing flashcard content.
+1. Supplied course/source material is the source of truth for authored study content.
+2. Do not silently fill gaps from model/general knowledge.
+3. Confirmed PARCS content and keys are immutable.
+4. Acumen M1–M11 flashcards must use the supplied Acumen readings; do not use ABIC to silently rewrite Acumen definitions.
+5. ABIC M12 contractual content must use the supplied ABIC SW 2018 contract itself.
+6. Dual-source/cross-referenced items must preserve the original source and identify ABIC only as a secondary contract cross-reference unless the item was authored directly from ABIC.
+7. Preserve contract-specific, jurisdiction-specific and source-specific qualifications.
+8. Withhold uncertainty rather than guessing or repairing a source from outside knowledge.
+9. Prefer application/professional judgment for MCQs and direct recall/navigation for appropriate flashcards.
+10. Quality is more important than bank size.
 
-Core rules:
-
-1. Supplied course material is the source of truth for authored study content.
-2. Do not silently fill gaps from general knowledge.
-3. Prefer Australian/Queensland framing where the source supports it.
-4. Every authored live question needs precise provenance.
-5. Quality over volume; pruning is valid QA.
-6. Prefer scenario/application judgement over definition recognition for MCQs; use Cards for terminology recall.
-7. Confirmed PARCS samples and official keys are immutable.
-8. Withhold uncertainty rather than guessing.
-9. Keep course-specific PARCS framing even where broader real-world legal analysis could be more nuanced.
-10. Do not expand M5 PARC-linked external website material unless the user changes that instruction.
-11. Flashcard definitions, distinctions and examples must come from the supplied Acumen reading itself.
-12. Preserve qualifiers such as contract-specific, jurisdiction-specific, general rule, ABIC-specific and client-approval-dependent.
+Read `QUESTION_WRITING_STANDARD.md`, `FLASHCARD_SOURCE_AUDIT.md` and `ABIC_SOURCE_AUDIT.md` before changing study content.
 
 ## Recommended next work
 
-The content banks are now sufficiently broad. Do **not** default to another large MCQ or flashcard expansion.
+Do **not** default to another bulk bank expansion. The content base is now broad enough.
 
-Recommended next steps:
+Recommended priorities:
 
-1. use mixed study, Cards and Exam Simulation regularly;
-2. monitor confident-wrong / repeated-lapse MCQ patterns and Didn’t-know / Unsure flashcard patterns;
-3. add targeted flashcards only where actual study performance reveals a missing distinction or the user identifies a supplied Acumen term that is not covered;
-4. use user QA flags for any MCQ or card that feels off;
-5. create shadow/variant MCQs only where performance shows memorisation rather than concept transfer;
-6. continue difficulty refinement only where answer wording makes the correct choice too easy.
-
-The next planned learning-system feature is **concept-level mastery and mistake analysis**, combining pre-answer MCQ confidence, repeated lapses, weak topics, PARCS calibration traps and flashcard recall data. It should distinguish confident misconceptions, uncertain knowledge and guess-driven correct answers rather than relying on raw accuracy alone.
+1. use mixed M1–M11 study, Cards and Exam Simulation regularly;
+2. use M12 separately for ABIC contract navigation and application practice;
+3. monitor repeated-lapse MCQs and Unsure / Didn’t know flashcards;
+4. use user QA flags for content that feels off;
+5. add targeted questions/cards only where study performance reveals a genuine gap;
+6. consider a dedicated ABIC Contract Test later if M12 proves useful, rather than changing normal Exam Simulation weighting;
+7. continue concept-level mastery/mistake analysis work using repeated lapses, weak topics, PARCS calibration traps and flashcard recall data.

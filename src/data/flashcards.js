@@ -1,20 +1,30 @@
 import { FLASHCARDS as CORE_FLASHCARDS } from './flashcardsCore.js';
 import { EXPANDED_FLASHCARDS } from './flashcardsExpanded.js';
+import { FLASHCARDS_M12 } from './flashcards/module12.js';
 import { FLASHCARD_QA_OVERRIDES } from './flashcardQaOverrides.js';
+import { ABIC_FLASHCARD_CROSS_REFS } from './abic/crossReferences.js';
 
-export const FLASHCARD_SEED_VERSION = 2;
-export const EXPECTED_FLASHCARD_COUNT = 113;
+export const FLASHCARD_SEED_VERSION = 3;
+export const EXPECTED_FLASHCARD_COUNT = 185;
 
-function applyQaOverride(card) {
-  return {
+function applyQaAndAbic(card) {
+  const base = {
     ...card,
     ...(FLASHCARD_QA_OVERRIDES[card.id] || {}),
+  };
+  const crossRef = ABIC_FLASHCARD_CROSS_REFS[card.id];
+  if (!crossRef) return base;
+  return {
+    ...base,
+    ...crossRef,
+    sourceSection: `${base.sourceSection} · ABIC SW 2018 ${crossRef.contractRef} (p.${crossRef.contractPage})`,
   };
 }
 
 export const FLASHCARDS = [
-  ...CORE_FLASHCARDS.map(applyQaOverride),
-  ...EXPANDED_FLASHCARDS.map(applyQaOverride),
+  ...CORE_FLASHCARDS.map(applyQaAndAbic),
+  ...EXPANDED_FLASHCARDS.map(applyQaAndAbic),
+  ...FLASHCARDS_M12,
 ];
 
 const flashcardIds = FLASHCARDS.map((card) => card.id);
@@ -23,7 +33,7 @@ const incompleteCards = FLASHCARDS.filter((card) => (
   !card.id
   || !Number.isInteger(card.module)
   || card.module < 1
-  || card.module > 11
+  || card.module > 12
   || !card.topic
   || !card.term
   || !card.definition

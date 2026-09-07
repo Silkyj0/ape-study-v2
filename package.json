@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/audit-flashcards.mjs && vite build",
+    "build": "node scripts/audit-flashcards.mjs && node scripts/audit-abic.mjs && vite build",
     "preview": "vite preview",
     "audit": "node scripts/audit-questions.mjs",
-    "audit:flashcards": "node scripts/audit-flashcards.mjs"
+    "audit:flashcards": "node scripts/audit-flashcards.mjs",
+    "audit:abic": "node scripts/audit-abic.mjs"
   },
   "dependencies": {
     "lucide-react": "latest",
