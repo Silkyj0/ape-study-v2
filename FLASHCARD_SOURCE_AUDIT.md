@@ -1,124 +1,75 @@
-# Acumen Flashcard Source Audit
+# Flashcard Bank QA — 7 September 2026
 
-## Scope
+## Release summary
 
-Initial flashcard release implemented 7 September 2026.
+- Seed version: `FLASHCARD_SEED_VERSION = 2`
+- Total source-audited cards: **113**
+- Existing cards retained: **30**
+- New cards added: **83**
+- Existing seed IDs changed: **0**
+- Modules represented: **M1–M11**
 
-The flashcard bank is deliberately separate from the MCQ seed and follows a stricter source rule: **definitions, distinctions and examples must come from the supplied Acumen readings. General knowledge is not used to fill gaps.**
+## Module coverage
 
-Current seed: `FLASHCARD_SEED_VERSION = 1`
-
-Current total: **30 source-verified flashcards**.
-
-| Module | Cards | Main coverage |
+| Module | Cards | Coverage |
 | --- | ---: | --- |
-| M6 | 13 | procurement, novation, PPRs, shop drawings |
-| M9 | 10 | contract sums, variations, progress payments, security |
-| M10 | 5 | EOTs, critical-path effect, practical completion |
-| M11 | 2 | final completion and final certificate |
+| M1 | 10 | standard of care, liability, duty to warn/correct, PII |
+| M2 | 10 | practice structures, copyright, assignment/licence, moral rights |
+| M3 | 8 | client agreements, collateral warranties, fitness for purpose, consultant engagement |
+| M4 | 8 | budgets, design stages, variations to services, value management, consultant roles |
+| M5 | 8 | safe design, WHS duties, access, embodied/operational impacts |
+| M6 | 20 | procurement, novation, NCC pathways, construction documentation |
+| M7 | 7 | tendering, tender addenda, conformity/alternatives, contract documents |
+| M8 | 8 | construction roles, latent conditions, substitutions, inspections/hold/witness points |
+| M9 | 15 | contract sums, variations, progress payments/certification, security, discrepancies |
+| M10 | 12 | EOTs, critical path/float, prevention principle, liquidated damages, completion/defects |
+| M11 | 7 | final completion/certificate, ADR, insolvency/termination, fee disputes |
 
-## Supplied Acumen readings used
+## QA method
 
-### Procurement - alternative methods
-Cards derived from the supplied reading:
+Every existing card was checked against its named supplied Acumen reading for:
 
-- Negotiated contract
-- Cost-plus contract
-- Construction management
-- Managing contractor
-- Two-stage tender
-- Alliancing
-- Public Private Partnership (PPP)
-- Design and construct
-- Turnkey
-- Early Contractor Involvement (ECI)
+1. factual accuracy;
+2. preservation of contract-specific or general-rule qualifications;
+3. sufficient detail to distinguish the term from nearby concepts;
+4. source-supported examples only;
+5. a specific Acumen reading title and section;
+6. absence of unsupported general-knowledge additions.
 
-### Novation
-Cards derived from the supplied reading:
+No original card required withdrawal. The QA pass refined wording by stable ID where added qualification materially improves exam reliability.
 
-- Novation
-- Principal’s Project Requirements (PPR)
+## Core refinements
 
-### Shop drawings
-Cards derived from the supplied reading:
+The following existing concepts were strengthened without changing their seed IDs:
 
-- Shop drawings
+- Prime cost item — emphasises supply-item allowance vs incompletely described work.
+- Provisional sum — emphasises work/materials not sufficiently described at contract formation.
+- Contingency sum — distinguishes genuine unforeseen/discrepancy reserve from discretionary scope changes.
+- Security / cash retention / unconditional guarantee — makes contractual entitlement and release mechanics explicit.
+- EOT / EOT with costs / EOT only — makes clear that time and money are separate contractual entitlements.
+- Critical-path effect — explains float and why a delay event alone is insufficient.
+- Practical completion — preserves ABIC qualification that minor defects/incomplete work can remain where contract requirements are met.
+- Final completion / final certificate — removes any assumption of a fixed one-year timing and makes the contract control explicit.
 
-### Prime cost items and provisional sums
-Cards derived from the supplied reading:
+Expansion cards were also tightened where needed:
 
-- Prime cost item
-- Provisional sum
+- Liquidated damages — avoids treating a simplistic penalty test as universal; contract and applicable law control recoverability.
+- Defects liability period — avoids implying the contractor is responsible for design outside its own contractual design obligations.
+- Determinative ADR — records Acumen's qualification that Security of Payment adjudication can bind while underlying contract rights may still be pursued.
 
-The examples on these cards preserve the supplied reading’s own examples. In particular, the initial Provisional Sum card uses joinery/service-connection examples rather than introducing unrelated examples from general construction knowledge.
+## Source discipline
 
-### Contingency sum
-Cards derived from the supplied reading:
+The source rule remains strict: **the supplied Acumen readings are the source of truth for flashcards.** Definitions, distinctions and examples are concise paraphrases of those readings. No card is created merely because a term appears in a pathway heading, an MCQ explanation, model knowledge, legislation commentary elsewhere, or an external website.
 
-- Contingency sum
+Where a reading frames a proposition as dependent on the building contract, jurisdiction, form of procurement or particular facts, the card must preserve that qualification.
 
-### Client note: Variations to construction scope
-Cards derived from the supplied reading:
+## Structural safeguards
 
-- Variation
+The version-2 bank entrypoint checks at runtime that:
 
-### Progress payments
-Cards derived from the supplied reading:
+- total count is exactly 113;
+- every seed ID is unique;
+- every card has a valid M1–M11 module;
+- every card has topic, term, definition, source and source section.
 
-- Progress payment
-- Set-off
-
-### Security – bank guarantees and cash retention
-Cards derived from the supplied reading:
-
-- Security
-- Cash retention
-- Unconditional guarantee
-- Surety bond
-
-### Extensions of time
-Cards derived from the supplied reading:
-
-- Extension of time (EOT)
-- EOT with costs
-- EOT only
-- Critical-path effect
-
-### Practical completion
-Cards derived from the supplied reading:
-
-- Practical completion
-
-### Final completion and certificate
-Cards derived from the supplied reading:
-
-- Final completion
-- Final certificate
-
-## Flashcard writing standard
-
-1. Use a supplied Acumen reading as the source of truth.
-2. Keep the front to one recall target: a term or tightly defined concept.
-3. The back should use a concise source-faithful paraphrase rather than adding broader legal or industry commentary.
-4. Examples are optional and must be supported by the same supplied reading.
-5. Record the exact Acumen reading title and the relevant section on every card.
-6. If a term appears important but the supplied reading does not define it sufficiently, withhold the card until a suitable supplied source is located.
-7. Do not silently import definitions from legislation, standards, websites, textbooks, existing MCQ explanations or general model knowledge.
-8. When the Acumen reading frames a proposition as a general rule or contract-specific point, preserve that qualification.
-9. New cards should receive stable seed IDs so progress survives wording refinements and bank expansion.
-10. Quality is more important than card volume.
-
-## Learning behaviour
-
-- Front shows the term only, with module/topic context.
-- User attempts recall before tapping to flip.
-- Back shows definition, source-supported examples where useful, Acumen reading title and section.
-- **Knew it:** advances recall streak; spaced roughly 1, 3, 7 and 14 days.
-- **Unsure:** returns in about 12 hours and does not receive a full mastery advance.
-- **Didn’t know:** returns in about 4 hours and can reappear after several cards in the same session, up to two retries.
-- Three consecutive `Knew it` ratings = mastered.
-- Flashcard mastery is stored independently from MCQ mastery.
-
-## Next content work
-
-Expand the bank module-by-module by inspecting the supplied PARC Acumen reading pathways and then the actual linked Acumen PDFs. Do not create cards merely from the pathway headings; the underlying supplied reading must contain enough text to source the definition or distinction.
+The existing 30-card seed is retained as a historical core. QA overrides are applied by seed ID and the 83-card modular expansion is then appended. Reconciliation continues to preserve learner progress using stable seed IDs.
