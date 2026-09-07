@@ -16,6 +16,8 @@ import { module10Questions } from './module10.js';
 import { module10ParcsQuestions } from './module10.parcs.js';
 import { module11Questions } from './module11.js';
 import { module11ParcsQuestions } from './module11.parcs.js';
+import { module12Questions } from './module12.js';
+import { ABIC_QUESTION_CROSS_REFS } from './abic/crossReferences.js';
 import { calibrationOverrides, calibrationIds } from './calibrationOverrides.js';
 import { examOverridesBatch02, examBatch02Ids } from './examOverridesBatch02.js';
 import { examOverridesBatch03, examBatch03Ids } from './examOverridesBatch03.js';
@@ -23,7 +25,7 @@ import { laterModuleQaOverrides } from './laterModuleQaOverrides.js';
 import { laterModuleDifficultyOverrides } from './laterModuleDifficultyOverrides.js';
 import { getQaMetadata, PARCS_SAMPLE_IDS, WITHHELD_QA_IDS } from './qaMetadata.js';
 
-export const SEED_VERSION = 34;
+export const SEED_VERSION = 35;
 
 const BASE_SEED = [
   ...module01Questions,
@@ -44,6 +46,7 @@ const BASE_SEED = [
   ...module10ParcsQuestions,
   ...module11Questions,
   ...module11ParcsQuestions,
+  ...module12Questions,
 ];
 
 // The original module files remain the archive/source bank. The live M1/M2 bank
@@ -72,5 +75,8 @@ export const SEED = ACTIVE_BASE_SEED.map((question) => {
     || examOverridesBatch02[question.id]
     || calibrationOverrides[question.id];
   const revised = override ? { ...question, ...override } : question;
-  return { ...revised, ...getQaMetadata(revised) };
+  const withAbicCrossRef = ABIC_QUESTION_CROSS_REFS[question.id]
+    ? { ...revised, ...ABIC_QUESTION_CROSS_REFS[question.id] }
+    : revised;
+  return { ...withAbicCrossRef, ...getQaMetadata(withAbicCrossRef) };
 });
