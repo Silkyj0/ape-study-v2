@@ -72,6 +72,14 @@ export function getQaMetadata(question) {
     };
   }
 
+  if (question.module === 12 && question.sourceKind === 'abic-contract' && question.sourceFileId && question.sourceUrl) {
+    return {
+      qaStatus: 'abic-source-verified',
+      qaLabel: 'ABIC source verified',
+      qaNote: `Built directly from the supplied ABIC SW 2018 Simple Works Contract and checked against the cited contract reference${question.contractRef ? ` ${question.contractRef}` : ''}${question.contractPage ? ` on page ${question.contractPage}` : ''}. This supplementary module is kept separate from the PARCS M1–M11 exam bank.`,
+    };
+  }
+
   if (question.module === 1 || question.module === 2) {
     return {
       qaStatus: 'source-audited',
