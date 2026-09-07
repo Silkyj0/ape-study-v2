@@ -49,10 +49,6 @@ const BASE_SEED = [
   ...module12Questions,
 ];
 
-// The original module files remain the archive/source bank. The live M1/M2 bank
-// is deliberately smaller: immutable PARCS samples plus questions that have
-// passed the exam-standard rewrite workflow. Known source-check items are held
-// back from study rather than guessed or silently corrected.
 export const CURATED_M1_M2_IDS = [
   ...new Set([
     ...PARCS_SAMPLE_IDS,
@@ -63,10 +59,24 @@ export const CURATED_M1_M2_IDS = [
 ];
 
 const CURATED_M1_M2_SET = new Set(CURATED_M1_M2_IDS);
+const ACTIVE_BASE_SEED = BASE_SEED.filter((question) => question.module > 2 || CURATED_M1_M2_SET.has(question.id));
 
-const ACTIVE_BASE_SEED = BASE_SEED.filter((question) =>
-  question.module > 2 || CURATED_M1_M2_SET.has(question.id),
-);
+function qaFor(question) {
+  if (question.module === 12 && question.sourceKind === 'abic-contract') {
+    return {
+      qaStatus: 'abic-source-verified',
+      qaLabel: 'ABIC contract verified',
+      qaNote: `Built directly from ABIC SW 2018 and checked against ${question.contractRef}${question.contractPage ? ` on contract page ${question.contractPage}` : ''}. Module 12 is supplementary and is excluded from the main M1–M11 exam simulation.`,
+    };
+  }
+
+  const qa = getQaMetadata(question);
+  if (!question.contractRef) return qa;
+  return {
+    ...qa,
+    qaNote: `${qa.qaNote} Cross-checked against ABIC SW 2018 ${question.contractRef}${question.contractPage ? ` (p.${question.contractPage})` : ''}; the original Acumen source remains the primary source for this question.`,
+  };
+}
 
 export const SEED = ACTIVE_BASE_SEED.map((question) => {
   const override = laterModuleDifficultyOverrides[question.id]
@@ -78,5 +88,5 @@ export const SEED = ACTIVE_BASE_SEED.map((question) => {
   const withAbicCrossRef = ABIC_QUESTION_CROSS_REFS[question.id]
     ? { ...revised, ...ABIC_QUESTION_CROSS_REFS[question.id] }
     : revised;
-  return { ...withAbicCrossRef, ...getQaMetadata(withAbicCrossRef) };
+  return { ...withAbicCrossRef, ...qaFor(withAbicCrossRef) };
 });
