@@ -5,6 +5,10 @@ function Stat({ label, value }) {
   return <div className="rounded-lg border border-slate-200 bg-white p-3"><div className="text-lg font-semibold text-slate-900">{value}</div><div className="text-[10px] uppercase tracking-wide text-slate-400">{label}</div></div>;
 }
 
+function moduleLabel(moduleId) {
+  return moduleId === 12 ? 'Module 12 · ABIC supplementary' : `Module ${moduleId}`;
+}
+
 function Dashboard({ cards, onStartAdaptive, onStartFull, onStartTopic }) {
   const overall = flashcardStats(cards);
   const modules = [...new Set(cards.map((card) => card.moduleId))].sort((a, b) => a - b);
@@ -12,8 +16,8 @@ function Dashboard({ cards, onStartAdaptive, onStartFull, onStartTopic }) {
 
   return <div>
     <div className="mb-5">
-      <div className="flex items-center gap-2"><Layers3 size={20} className="text-indigo-600" /><h2 className="text-lg font-semibold text-slate-900">Acumen Flashcards</h2></div>
-      <p className="mt-1 text-xs leading-relaxed text-slate-500">Recall key APE terminology before flipping the card. Definitions and examples are sourced only from the supplied Acumen readings.</p>
+      <div className="flex items-center gap-2"><Layers3 size={20} className="text-indigo-600" /><h2 className="text-lg font-semibold text-slate-900">APE Flashcards</h2></div>
+      <p className="mt-1 text-xs leading-relaxed text-slate-500">Recall key APE terminology and contract mechanics before flipping. Modules 1–11 retain their supplied Acumen provenance; supplementary Module 12 is sourced directly from ABIC SW 2018.</p>
     </div>
 
     <div className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-5">
@@ -40,12 +44,12 @@ function Dashboard({ cards, onStartAdaptive, onStartFull, onStartTopic }) {
       <div className="grid gap-2 sm:grid-cols-2">
         {modules.map((moduleId) => {
           const stats = flashcardStats(cards, moduleId);
-          return <div key={moduleId} className="rounded-lg border border-slate-200 p-3">
+          return <div key={moduleId} className={`rounded-lg border p-3 ${moduleId === 12 ? 'border-violet-200 bg-violet-50/30' : 'border-slate-200'}`}>
             <div className="flex items-center justify-between gap-3">
-              <div><div className="text-sm font-semibold text-slate-900">Module {moduleId}</div><div className="mt-0.5 text-[10px] text-slate-400">{stats.total} terms · {stats.due} due · {stats.mastered} mastered</div></div>
+              <div><div className="text-sm font-semibold text-slate-900">{moduleLabel(moduleId)}</div><div className="mt-0.5 text-[10px] text-slate-400">{stats.total} terms · {stats.due} due · {stats.mastered} mastered</div></div>
               <div className="flex gap-1.5">
                 <button onClick={() => onStartAdaptive(moduleId)} className="rounded-md bg-slate-900 px-2.5 py-1.5 text-[10px] font-medium text-white">Review</button>
-                <button onClick={() => onStartFull(moduleId)} className="rounded-md border border-slate-200 px-2.5 py-1.5 text-[10px] font-medium text-slate-600 hover:bg-slate-50">All</button>
+                <button onClick={() => onStartFull(moduleId)} className="rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[10px] font-medium text-slate-600 hover:bg-slate-50">All</button>
               </div>
             </div>
           </div>;
@@ -77,13 +81,13 @@ function StudyCard({ card, index, total, flipped, onFlip, onRate, onEndSession }
       <div className="relative min-h-[380px] w-full" style={{ perspective: '1200px' }}>
         <div className="absolute inset-0" style={{ transformStyle: 'preserve-3d', transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)', transition: 'transform 500ms ease' }}>
           <div className="absolute inset-0 flex min-h-[380px] flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-7 text-center shadow-sm" style={{ backfaceVisibility: 'hidden' }}>
-            <div className="mb-4 rounded-full bg-indigo-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-indigo-700">Module {card.moduleId} · {card.topic}</div>
+            <div className="mb-4 rounded-full bg-indigo-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-indigo-700">{moduleLabel(card.moduleId)} · {card.topic}</div>
             <h2 className="max-w-xl text-2xl font-semibold leading-tight text-slate-900 sm:text-3xl">{card.term}</h2>
             <p className="mt-6 flex items-center gap-1.5 text-xs text-slate-400"><RotateCcw size={13} /> Tap to reveal</p>
           </div>
 
           <div className="absolute inset-0 min-h-[380px] overflow-auto rounded-2xl border border-indigo-200 bg-indigo-50/30 p-6 shadow-sm" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
-            <div className="mb-4 flex flex-wrap items-center gap-2"><span className="rounded-full bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-indigo-700">{card.term}</span><span className="text-[10px] text-slate-400">Module {card.moduleId} · {card.topic}</span></div>
+            <div className="mb-4 flex flex-wrap items-center gap-2"><span className="rounded-full bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-indigo-700">{card.term}</span><span className="text-[10px] text-slate-400">{moduleLabel(card.moduleId)} · {card.topic}</span></div>
             <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Definition</div>
             <p className="mt-1 text-sm leading-relaxed text-slate-800">{card.definition}</p>
 
