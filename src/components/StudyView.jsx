@@ -7,6 +7,7 @@ function qaClasses(status) {
   if (status === 'source-audited') return 'border-blue-200 bg-blue-50 text-blue-800';
   if (status === 'drive-source-verified') return 'border-cyan-200 bg-cyan-50 text-cyan-800';
   if (status === 'parc-external-verified') return 'border-violet-200 bg-violet-50 text-violet-800';
+  if (status === 'abic-source-verified') return 'border-indigo-200 bg-indigo-50 text-indigo-800';
   if (status === 'needs-source-check' || status === 'legacy-placeholder') return 'border-amber-200 bg-amber-50 text-amber-800';
   return 'border-slate-200 bg-slate-50 text-slate-600';
 }
