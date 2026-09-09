@@ -17,6 +17,7 @@ import { module10ParcsQuestions } from './module10.parcs.js';
 import { module11Questions } from './module11.js';
 import { module11ParcsQuestions } from './module11.parcs.js';
 import { module12Questions } from './module12.js';
+import { module13Questions } from './module13.js';
 import { ABIC_QUESTION_CROSS_REFS } from './abic/crossReferences.js';
 import { calibrationOverrides, calibrationIds } from './calibrationOverrides.js';
 import { examOverridesBatch02, examBatch02Ids } from './examOverridesBatch02.js';
@@ -25,7 +26,7 @@ import { laterModuleQaOverrides } from './laterModuleQaOverrides.js';
 import { laterModuleDifficultyOverrides } from './laterModuleDifficultyOverrides.js';
 import { getQaMetadata, PARCS_SAMPLE_IDS, WITHHELD_QA_IDS } from './qaMetadata.js';
 
-export const SEED_VERSION = 35;
+export const SEED_VERSION = 36;
 
 const BASE_SEED = [
   ...module01Questions,
@@ -47,6 +48,7 @@ const BASE_SEED = [
   ...module11Questions,
   ...module11ParcsQuestions,
   ...module12Questions,
+  ...module13Questions,
 ];
 
 export const CURATED_M1_M2_IDS = [
@@ -67,6 +69,14 @@ function qaFor(question) {
       qaStatus: 'abic-source-verified',
       qaLabel: 'ABIC contract verified',
       qaNote: `Built directly from ABIC SW 2018 and checked against ${question.contractRef}${question.contractPage ? ` on contract page ${question.contractPage}` : ''}. Module 12 is supplementary and is excluded from the main M1–M11 exam simulation.`,
+    };
+  }
+
+  if (question.module === 13 && question.sourceKind === 'caa2024-contract') {
+    return {
+      qaStatus: 'caa2024-source-verified',
+      qaLabel: 'CAA2024 contract verified',
+      qaNote: `Built directly from the supplied CAA2024 full-services agreement and checked against ${question.contractRef}. Module 13 is supplementary and is excluded from the main M1–M11 exam simulation.`,
     };
   }
 
