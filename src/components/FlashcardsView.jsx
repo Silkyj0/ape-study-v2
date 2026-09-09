@@ -6,7 +6,15 @@ function Stat({ label, value }) {
 }
 
 function moduleLabel(moduleId) {
-  return moduleId === 12 ? 'Module 12 · ABIC supplementary' : `Module ${moduleId}`;
+  if (moduleId === 12) return 'Module 12 · ABIC supplementary';
+  if (moduleId === 13) return 'Module 13 · CAA2024 supplementary';
+  return `Module ${moduleId}`;
+}
+
+function moduleClasses(moduleId) {
+  if (moduleId === 12) return 'border-violet-200 bg-violet-50/30';
+  if (moduleId === 13) return 'border-teal-200 bg-teal-50/30';
+  return 'border-slate-200';
 }
 
 function Dashboard({ cards, onStartAdaptive, onStartFull, onStartTopic }) {
@@ -17,7 +25,7 @@ function Dashboard({ cards, onStartAdaptive, onStartFull, onStartTopic }) {
   return <div>
     <div className="mb-5">
       <div className="flex items-center gap-2"><Layers3 size={20} className="text-indigo-600" /><h2 className="text-lg font-semibold text-slate-900">APE Flashcards</h2></div>
-      <p className="mt-1 text-xs leading-relaxed text-slate-500">Recall key APE terminology and contract mechanics before flipping. Modules 1–11 retain their supplied Acumen provenance; supplementary Module 12 is sourced directly from ABIC SW 2018.</p>
+      <p className="mt-1 text-xs leading-relaxed text-slate-500">Recall key APE terminology and contract mechanics before flipping. Modules 1–11 retain their supplied Acumen provenance; supplementary Modules 12 and 13 are sourced directly from ABIC SW 2018 and CAA2024 respectively.</p>
     </div>
 
     <div className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-5">
@@ -44,7 +52,7 @@ function Dashboard({ cards, onStartAdaptive, onStartFull, onStartTopic }) {
       <div className="grid gap-2 sm:grid-cols-2">
         {modules.map((moduleId) => {
           const stats = flashcardStats(cards, moduleId);
-          return <div key={moduleId} className={`rounded-lg border p-3 ${moduleId === 12 ? 'border-violet-200 bg-violet-50/30' : 'border-slate-200'}`}>
+          return <div key={moduleId} className={`rounded-lg border p-3 ${moduleClasses(moduleId)}`}>
             <div className="flex items-center justify-between gap-3">
               <div><div className="text-sm font-semibold text-slate-900">{moduleLabel(moduleId)}</div><div className="mt-0.5 text-[10px] text-slate-400">{stats.total} terms · {stats.due} due · {stats.mastered} mastered</div></div>
               <div className="flex gap-1.5">
