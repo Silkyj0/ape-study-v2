@@ -18,9 +18,11 @@ M13 is a **supplementary contract module**, not an official PARCS module. It is 
 Initial bank:
 
 - **40 MCQs**
-- **54 flashcards**
+- **65 flashcards**
 - MCQ answer-position distribution: **A 10 / B 10 / C 10 / D 10**
 - **11 existing Acumen flashcards** receive a secondary CAA2024 cross-reference while retaining their original Acumen source.
+
+The 65-card deck is intentional: it retains the full set of source-verified section maps, operative mechanisms, Schedule A/B navigation, Items 1–7B and selected defined-term application cards rather than pruning useful material to meet an arbitrary provisional count.
 
 ## Verified contract areas used
 
