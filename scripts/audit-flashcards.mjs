@@ -14,7 +14,7 @@ const expectedByModule = {
   10: 12,
   11: 7,
   12: 72,
-  13: 54,
+  13: 65,
 };
 
 function fail(message) {
