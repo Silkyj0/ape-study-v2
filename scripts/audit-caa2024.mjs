@@ -1,7 +1,7 @@
 import { CAA2024_FLASHCARD_CROSS_REFS } from '../src/data/caa2024/crossReferences.js';
-import { CAA2024_FLASHCARDS } from '../src/data/caa2024/flashcards.js';
 import { CAA2024_QUESTIONS } from '../src/data/caa2024/questions.js';
 import { CAA2024_SOURCE, isValidCaa2024Ref } from '../src/data/caa2024/contractMap.js';
+import { FLASHCARDS_M13 } from '../src/data/flashcards/module13.js';
 
 function fail(message) {
   console.error(`CAA2024 QA FAILED: ${message}`);
@@ -9,7 +9,7 @@ function fail(message) {
 }
 
 if (CAA2024_QUESTIONS.length !== 40) fail(`expected 40 M13 questions, found ${CAA2024_QUESTIONS.length}`);
-if (CAA2024_FLASHCARDS.length !== 54) fail(`expected 54 M13 flashcards, found ${CAA2024_FLASHCARDS.length}`);
+if (FLASHCARDS_M13.length !== 54) fail(`expected 54 M13 flashcards, found ${FLASHCARDS_M13.length}`);
 
 const qIds = new Set();
 for (const question of CAA2024_QUESTIONS) {
@@ -27,7 +27,7 @@ const answerCounts = [0, 1, 2, 3].map((position) => CAA2024_QUESTIONS.filter((q)
 if (answerCounts.some((count) => count !== 10)) fail(`expected balanced 10/10/10/10 answer positions, found ${answerCounts.join('/')}`);
 
 const cardIds = new Set();
-for (const card of CAA2024_FLASHCARDS) {
+for (const card of FLASHCARDS_M13) {
   if (cardIds.has(card.id)) fail(`duplicate M13 flashcard ID ${card.id}`);
   cardIds.add(card.id);
   if (card.module !== 13) fail(`${card.id} is not Module 13`);
