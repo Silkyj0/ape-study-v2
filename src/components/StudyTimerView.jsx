@@ -17,7 +17,6 @@ export default function StudyTimerView({ timer }) {
     goalMet,
     streak,
     history,
-    running,
     autoActive,
     manualRunning,
     startManual,
@@ -31,7 +30,7 @@ export default function StudyTimerView({ timer }) {
   return <div>
     <div className="mb-5">
       <div className="flex items-center gap-2"><Timer size={20} className="text-indigo-600" /><h2 className="text-lg font-semibold text-slate-900">Daily study timer</h2></div>
-      <p className="mt-1 text-xs leading-relaxed text-slate-500">Target at least {goalMinutes} minutes of focused APE study each day. Active study sessions are tracked automatically while this tab is visible.</p>
+      <p className="mt-1 text-xs leading-relaxed text-slate-500">Target at least {goalMinutes} minutes in the APE study app each day. Active use is tracked automatically after your first interaction while the tab remains visible.</p>
     </div>
 
     <div className={`rounded-2xl border p-5 ${goalMet ? 'border-emerald-200 bg-emerald-50/50' : 'border-indigo-200 bg-indigo-50/30'}`}>
@@ -42,7 +41,7 @@ export default function StudyTimerView({ timer }) {
           <div className="mt-2 text-xs text-slate-500">{goalMet ? 'You have hit today’s one-hour goal.' : `${formatStudyMinutes(remainingSeconds)} remaining to reach today’s goal.`}</div>
         </div>
         <div className="flex items-center gap-2">
-          {autoActive ? <div className="rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-medium text-indigo-700">Auto tracking active study</div> : manualRunning ? <button onClick={pauseManual} className="flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white"><Pause size={15} /> Pause focus timer</button> : <button onClick={startManual} className="flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white"><Play size={15} /> Start focus timer</button>}
+          {autoActive ? <div className="rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-medium text-indigo-700">Auto tracking active use</div> : manualRunning ? <button onClick={pauseManual} className="flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white"><Pause size={15} /> Pause focus timer</button> : <button onClick={startManual} className="flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white"><Play size={15} /> Start focus timer</button>}
         </div>
       </div>
 
@@ -74,7 +73,7 @@ export default function StudyTimerView({ timer }) {
 
     <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4 text-xs leading-relaxed text-slate-600">
       <div className="font-semibold text-slate-800">What counts as study time?</div>
-      <p className="mt-1">The app automatically counts time while you are actively inside an MCQ study session, PARCS scenario, flashcard session or exam/review. It pauses when the browser tab is hidden. Use the focus timer above when you want to count other deliberate study inside the app.</p>
+      <p className="mt-1">Automatic tracking counts visible, active use of the study app after you interact with it. It pauses after five minutes without interaction and whenever the tab is hidden. If you are doing a longer reading task with little clicking or scrolling, use the focus timer so that deliberate study continues to count.</p>
     </div>
 
     <div className="mt-5 flex justify-end">
