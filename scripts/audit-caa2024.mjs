@@ -9,7 +9,7 @@ function fail(message) {
 }
 
 if (CAA2024_QUESTIONS.length !== 40) fail(`expected 40 M13 questions, found ${CAA2024_QUESTIONS.length}`);
-if (FLASHCARDS_M13.length !== 54) fail(`expected 54 M13 flashcards, found ${FLASHCARDS_M13.length}`);
+if (FLASHCARDS_M13.length !== 65) fail(`expected 65 M13 flashcards, found ${FLASHCARDS_M13.length}`);
 
 const qIds = new Set();
 for (const question of CAA2024_QUESTIONS) {
@@ -40,5 +40,5 @@ for (const [id, crossRef] of Object.entries(CAA2024_FLASHCARD_CROSS_REFS)) {
   if (!isValidCaa2024Ref(crossRef.caaContractRef)) fail(`invalid CAA2024 cross-reference ${crossRef.caaContractRef} on ${id}`);
 }
 
-console.log(`CAA2024 QA passed: 40 questions, 54 flashcards and ${Object.keys(CAA2024_FLASHCARD_CROSS_REFS).length} existing-card cross-references verified.`);
+console.log(`CAA2024 QA passed: 40 questions, 65 flashcards and ${Object.keys(CAA2024_FLASHCARD_CROSS_REFS).length} existing-card cross-references verified.`);
 console.log(`M13 answer-position distribution: A=${answerCounts[0]}, B=${answerCounts[1]}, C=${answerCounts[2]}, D=${answerCounts[3]}.`);
