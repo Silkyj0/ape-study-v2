@@ -7,7 +7,7 @@ import useDailyStudyTimer from '../hooks/useDailyStudyTimer.js';
 const IDLE_AFTER_MS = 5 * 60 * 1000;
 
 function useRecentAppActivity(enabled) {
-  const [active, setActive] = useState(enabled);
+  const [active, setActive] = useState(false);
 
   useEffect(() => {
     if (!enabled) {
@@ -15,8 +15,8 @@ function useRecentAppActivity(enabled) {
       return undefined;
     }
 
-    let lastActivity = Date.now();
-    setActive(true);
+    let lastActivity = 0;
+    setActive(false);
 
     const markActive = () => {
       lastActivity = Date.now();
@@ -24,7 +24,7 @@ function useRecentAppActivity(enabled) {
     };
 
     const checkIdle = window.setInterval(() => {
-      setActive(Date.now() - lastActivity < IDLE_AFTER_MS);
+      setActive(lastActivity > 0 && Date.now() - lastActivity < IDLE_AFTER_MS);
     }, 15000);
 
     const events = ['pointerdown', 'keydown', 'scroll', 'touchstart'];
@@ -62,7 +62,7 @@ export default function StudyTimerWidget() {
         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3">
           <div>
             <div className="text-sm font-semibold text-slate-900">Study time</div>
-            <div className="mt-0.5 text-[10px] text-slate-400">Auto tracking pauses after 5 minutes of inactivity and whenever the tab is hidden.</div>
+            <div className="mt-0.5 text-[10px] text-slate-400">Auto tracking begins after your first interaction, then pauses after 5 minutes of inactivity or whenever the tab is hidden.</div>
           </div>
           <div className="flex items-center gap-2">
             <button
