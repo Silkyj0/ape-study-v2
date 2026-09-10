@@ -12,6 +12,17 @@ function ref(contractRef, contractPage) {
 }
 
 export const ABIC_QUESTION_CROSS_REFS = {
+  // M4 — allowances that later adjust the building contract
+  'm4-pcps-01': ref('K1', 36),
+  'm4-pcps-02': ref('K1', 36),
+  'm4-pcps-04': ref('K4', 37),
+
+  // M7 — project-specific contract settings and identified contract drawings
+  'm7-04': ref('Schedule 1', 1),
+  'm7-26': ref('Schedule 1', 1),
+  'm7-28': ref('B2', 20),
+
+  // M8–M11 — construction contract administration
   'm8-01': ref('G2', 30),
   'm8-09': ref('G7', 31),
   'm8-13': ref('F5', 29),
@@ -55,6 +66,7 @@ export const ABIC_QUESTION_CROSS_REFS = {
 };
 
 export const ABIC_FLASHCARD_CROSS_REFS = {
+  'fc-m7-contract-documents': ref('B2', 20),
   'fc-m8-contractors-construction-role': ref('G2', 30),
   'fc-m8-latent-condition': ref('F5', 29),
   'fc-m9-progress-certificate': ref('N4', 43),

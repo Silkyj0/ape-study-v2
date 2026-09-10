@@ -1,30 +1,46 @@
 import { FLASHCARDS as CORE_FLASHCARDS } from './flashcardsCore.js';
 import { EXPANDED_FLASHCARDS } from './flashcardsExpanded.js';
 import { FLASHCARDS_M12 } from './flashcards/module12.js';
+import { FLASHCARDS_M13 } from './flashcards/module13.js';
 import { FLASHCARD_QA_OVERRIDES } from './flashcardQaOverrides.js';
 import { ABIC_FLASHCARD_CROSS_REFS } from './abic/crossReferences.js';
+import { CAA2024_FLASHCARD_CROSS_REFS } from './caa2024/crossReferences.js';
 
-export const FLASHCARD_SEED_VERSION = 3;
-export const EXPECTED_FLASHCARD_COUNT = 185;
+export const FLASHCARD_SEED_VERSION = 4;
+export const EXPECTED_FLASHCARD_COUNT = 257;
 
-function applyQaAndAbic(card) {
-  const base = {
+function applyQaAndContractRefs(card) {
+  let next = {
     ...card,
     ...(FLASHCARD_QA_OVERRIDES[card.id] || {}),
   };
-  const crossRef = ABIC_FLASHCARD_CROSS_REFS[card.id];
-  if (!crossRef) return base;
-  return {
-    ...base,
-    ...crossRef,
-    sourceSection: `${base.sourceSection} · ABIC SW 2018 ${crossRef.contractRef} (p.${crossRef.contractPage})`,
-  };
+
+  const abicRef = ABIC_FLASHCARD_CROSS_REFS[card.id];
+  if (abicRef) {
+    next = {
+      ...next,
+      ...abicRef,
+      sourceSection: `${next.sourceSection} · ABIC SW 2018 ${abicRef.contractRef} (p.${abicRef.contractPage})`,
+    };
+  }
+
+  const caaRef = CAA2024_FLASHCARD_CROSS_REFS[card.id];
+  if (caaRef) {
+    next = {
+      ...next,
+      ...caaRef,
+      sourceSection: `${next.sourceSection} · CAA2024 ${caaRef.caaContractRef}${caaRef.caaContractPage ? ` (p.${caaRef.caaContractPage})` : ''}`,
+    };
+  }
+
+  return next;
 }
 
 export const FLASHCARDS = [
-  ...CORE_FLASHCARDS.map(applyQaAndAbic),
-  ...EXPANDED_FLASHCARDS.map(applyQaAndAbic),
+  ...CORE_FLASHCARDS.map(applyQaAndContractRefs),
+  ...EXPANDED_FLASHCARDS.map(applyQaAndContractRefs),
   ...FLASHCARDS_M12,
+  ...FLASHCARDS_M13,
 ];
 
 const flashcardIds = FLASHCARDS.map((card) => card.id);
@@ -33,7 +49,7 @@ const incompleteCards = FLASHCARDS.filter((card) => (
   !card.id
   || !Number.isInteger(card.module)
   || card.module < 1
-  || card.module > 12
+  || card.module > 13
   || !card.topic
   || !card.term
   || !card.definition

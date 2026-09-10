@@ -17,7 +17,10 @@ import { module10ParcsQuestions } from './module10.parcs.js';
 import { module11Questions } from './module11.js';
 import { module11ParcsQuestions } from './module11.parcs.js';
 import { module12Questions } from './module12.js';
+import { module13Questions } from './module13.js';
 import { ABIC_QUESTION_CROSS_REFS } from './abic/crossReferences.js';
+import { CAA2024_QUESTION_CROSS_REFS } from './caa2024/crossReferences.js';
+import { CONTRACT_INTEGRATION_QA_OVERRIDES } from './contractIntegrationQaOverrides.js';
 import { calibrationOverrides, calibrationIds } from './calibrationOverrides.js';
 import { examOverridesBatch02, examBatch02Ids } from './examOverridesBatch02.js';
 import { examOverridesBatch03, examBatch03Ids } from './examOverridesBatch03.js';
@@ -25,7 +28,7 @@ import { laterModuleQaOverrides } from './laterModuleQaOverrides.js';
 import { laterModuleDifficultyOverrides } from './laterModuleDifficultyOverrides.js';
 import { getQaMetadata, PARCS_SAMPLE_IDS, WITHHELD_QA_IDS } from './qaMetadata.js';
 
-export const SEED_VERSION = 35;
+export const SEED_VERSION = 36;
 
 const BASE_SEED = [
   ...module01Questions,
@@ -47,6 +50,7 @@ const BASE_SEED = [
   ...module11Questions,
   ...module11ParcsQuestions,
   ...module12Questions,
+  ...module13Questions,
 ];
 
 export const CURATED_M1_M2_IDS = [
@@ -70,23 +74,42 @@ function qaFor(question) {
     };
   }
 
+  if (question.module === 13 && question.sourceKind === 'caa2024-contract') {
+    return {
+      qaStatus: 'caa2024-source-verified',
+      qaLabel: 'CAA2024 contract verified',
+      qaNote: `Built directly from the supplied CAA2024 full-services agreement and checked against ${question.contractRef}${question.contractPage ? ` on contract page ${question.contractPage}` : ''}. Module 13 is supplementary and is excluded from the main M1–M11 exam simulation.`,
+    };
+  }
+
   const qa = getQaMetadata(question);
-  if (!question.contractRef) return qa;
-  return {
-    ...qa,
-    qaNote: `${qa.qaNote} Cross-checked against ABIC SW 2018 ${question.contractRef}${question.contractPage ? ` (p.${question.contractPage})` : ''}; the original Acumen source remains the primary source for this question.`,
-  };
+  const notes = [qa.qaNote].filter(Boolean);
+
+  if (question.contractRef && question.contractSource) {
+    notes.push(`Cross-checked against ABIC SW 2018 ${question.contractRef}${question.contractPage ? ` (p.${question.contractPage})` : ''}; the original Acumen/PARCS source remains primary.`);
+  }
+
+  if (question.caaContractRef && question.caaContractSource) {
+    notes.push(`Cross-checked against CAA2024 ${question.caaContractRef}${question.caaContractPage ? ` (p.${question.caaContractPage})` : ''}; the original Acumen/PARCS source remains primary.`);
+  }
+
+  return { ...qa, qaNote: notes.join(' ') };
 }
 
 export const SEED = ACTIVE_BASE_SEED.map((question) => {
-  const override = laterModuleDifficultyOverrides[question.id]
+  const existingOverride = laterModuleDifficultyOverrides[question.id]
     || laterModuleQaOverrides[question.id]
     || examOverridesBatch03[question.id]
     || examOverridesBatch02[question.id]
     || calibrationOverrides[question.id];
-  const revised = override ? { ...question, ...override } : question;
+  const revised = existingOverride ? { ...question, ...existingOverride } : question;
+  const precisionOverride = CONTRACT_INTEGRATION_QA_OVERRIDES[question.id];
+  const precisionRefined = precisionOverride ? { ...revised, ...precisionOverride } : revised;
   const withAbicCrossRef = ABIC_QUESTION_CROSS_REFS[question.id]
-    ? { ...revised, ...ABIC_QUESTION_CROSS_REFS[question.id] }
-    : revised;
-  return { ...withAbicCrossRef, ...qaFor(withAbicCrossRef) };
+    ? { ...precisionRefined, ...ABIC_QUESTION_CROSS_REFS[question.id] }
+    : precisionRefined;
+  const withContractCrossRefs = CAA2024_QUESTION_CROSS_REFS[question.id]
+    ? { ...withAbicCrossRef, ...CAA2024_QUESTION_CROSS_REFS[question.id] }
+    : withAbicCrossRef;
+  return { ...withContractCrossRefs, ...qaFor(withContractCrossRefs) };
 });

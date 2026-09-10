@@ -10,5 +10,6 @@ export const MODULES = [
   { "id": 9, "title": "Contract Administration - Money" },
   { "id": 10, "title": "Contract Administration - Time, Time Extension Costs, Liquidated Damages" },
   { "id": 11, "title": "Contract Administration - Final Certificate, Dispute Resolution + Termination" },
-  { "id": 12, "title": "Supplementary — ABIC SW 2018 Contract", "supplementary": true }
+  { "id": 12, "title": "Supplementary — ABIC SW 2018 Contract", "supplementary": true },
+  { "id": 13, "title": "Supplementary — CAA2024 Client Architect Agreement", "supplementary": true }
 ];
