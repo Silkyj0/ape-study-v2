@@ -7,7 +7,7 @@ import { ABIC_FLASHCARD_CROSS_REFS } from './abic/crossReferences.js';
 import { CAA2024_FLASHCARD_CROSS_REFS } from './caa2024/crossReferences.js';
 
 export const FLASHCARD_SEED_VERSION = 4;
-export const EXPECTED_FLASHCARD_COUNT = 250;
+export const EXPECTED_FLASHCARD_COUNT = 257;
 
 function applyQaAndContractRefs(card) {
   let next = {
@@ -29,7 +29,7 @@ function applyQaAndContractRefs(card) {
     next = {
       ...next,
       ...caaRef,
-      sourceSection: `${next.sourceSection} · CAA2024 ${caaRef.caaContractRef}`,
+      sourceSection: `${next.sourceSection} · CAA2024 ${caaRef.caaContractRef}${caaRef.caaContractPage ? ` (p.${caaRef.caaContractPage})` : ''}`,
     };
   }
 
