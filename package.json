@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/audit-flashcards.mjs && vite build",
+    "build": "node scripts/audit-flashcards.mjs && node scripts/audit-abic.mjs && node scripts/audit-caa2024.mjs && vite build",
     "preview": "vite preview",
     "audit": "node scripts/audit-questions.mjs",
     "audit:flashcards": "node scripts/audit-flashcards.mjs",
