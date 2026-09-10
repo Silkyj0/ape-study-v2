@@ -43,11 +43,11 @@ M12 and M13 are supplementary and are intentionally excluded from the normal 40-
 
 ### Flashcard bank
 
-Total flashcards after M13 release: **239**.
+Total flashcards after M13 release: **257**.
 
 - M1–M11 Acumen: **113 source-audited cards**
 - M12 ABIC: **72 source-verified cards**
-- M13 CAA2024: **54 source-verified cards**
+- M13 CAA2024: **72 source-verified cards**
 - `FLASHCARD_SEED_VERSION = 4`
 - Existing IDs are preserved so stored progress reconciles by `seedId`; new M13 cards enter as unseen.
 
@@ -67,15 +67,15 @@ Distribution:
 | M10 | 12 |
 | M11 | 7 |
 | M12 | 72 |
-| M13 | 54 |
+| M13 | 72 |
 
-Source/QA records: `FLASHCARD_SOURCE_AUDIT.md`, `ABIC_SOURCE_AUDIT.md`, `CAA2024_SOURCE_AUDIT.md`.
+Source/QA records: `FLASHCARD_SOURCE_AUDIT.md`, `ABIC_SOURCE_AUDIT.md`, `CAA2024_SOURCE_AUDIT.md`, `MODULE_CONTRACT_QA.md`.
 
 ## Supplementary M12 — ABIC SW 2018
 
 Primary source: `reference-contract-abic-sw-2018-c-071118 (1).pdf`.
 
-M12 contains 50 contract MCQs and 72 flashcards. The ABIC source map covers schedules, clauses and selected definitions; build-time QA is in `scripts/audit-abic.mjs`. Relevant existing M8–M11 Acumen items retain their Acumen provenance and receive ABIC clause/page cross-references only where directly supported.
+M12 contains 50 contract MCQs and 72 flashcards. The ABIC source map covers schedules, clauses and selected definitions; build-time QA is in `scripts/audit-abic.mjs`. Relevant existing core items retain their original Acumen/PARCS provenance and receive ABIC clause/page cross-references only where directly supported.
 
 M12 questions use `qaStatus: abic-source-verified`, which is deliberately absent from `EXAM_QA_STATUSES`.
 
@@ -88,13 +88,13 @@ Primary source:
 - `caa2024_fullservices_digital.pdf`
 - Drive file ID: `1U7EYkpAml2d0lNOEf6jWmtZyaP7NDFpn`
 
-M13 contains **40 MCQs** and **54 flashcards**. The question bank is deliberately scenario-heavy and focuses on applying the architect–client engagement rather than memorising clause labels alone.
+M13 contains **40 MCQs** and **72 flashcards**. The question bank is deliberately scenario-heavy and focuses on applying the architect–client engagement rather than memorising clause labels alone.
 
 High-value coverage includes:
 
 - A1 Architect obligations and standard of care;
 - A2 scope exclusions and no fitness-for-purpose warranty;
-- A3 Cost of Works forecasting;
+- A3 Cost of Works forecasting and its distinction from the defined Cost of Works / Total Project Cost;
 - A4–A6 program, protracted Services and suspension;
 - Section B Client obligations and contractor instructions through the Architect where CA is included;
 - Section C authorised representatives;
@@ -102,27 +102,36 @@ High-value coverage includes:
 - E1–E2 Specialist Consultants;
 - F1–F5 copyright/licence, Moral Rights, section F indemnity, electronic data and BIM;
 - G1 insurance requirements and Item 6;
-- Section J dispute resolution;
-- K1–K4 termination pathways;
+- G2 liability allocation and the net-PI-recovery cap subject to its qualifications;
+- H1–H10 General Conditions, including writing/email rules, written variations, novation/assignment/transfer, pre-execution Services and deemed receipt;
+- J1–J2 dispute resolution, including the five-business-day meeting step;
+- K1–K5 termination pathways, consequences and surviving obligations;
+- K2 no-reason termination on no less than 30 business days' notice;
+- K3 distinction between insolvency/bankruptcy and specified material breach requiring notice and a 10-business-day remedy opportunity;
+- Section L / Schedule C special conditions and precedence;
 - Schedule A Services and Schedule B commercial/project Items;
-- Section M defined-term navigation.
+- Item 7A default 10-business-day payment period and Item 7B default 15% p.a. overdue interest where unstated;
+- Section M definitions and defined-term application.
 
 Architecture:
 
-- `src/data/caa2024/contractMap.js` — verified source/provision map;
+- `src/data/caa2024/contractMap.js` — verified source/provision/page map;
 - `src/data/caa2024/factories.js` — CAA source metadata factories;
-- `src/data/caa2024/questions.js` — 40 M13 questions;
-- `src/data/caa2024/flashcards.js` + `flashcardsItems.js` — 54 M13 cards;
-- `src/data/caa2024/crossReferences.js` — secondary CAA references for selected existing Acumen cards;
-- `src/data/module13.js` and `src/data/flashcards/module13.js` — M13 assembly;
-- `scripts/audit-caa2024.mjs` — build-time CAA source/structure audit;
-- `CAA2024_SOURCE_AUDIT.md` — source discipline and coverage record.
+- `src/data/caa2024/questions.js` — base 40 M13 questions;
+- `src/data/caa2024/questionQaOverrides.js` — stable-ID QA refinements for M13 questions;
+- `src/data/caa2024/flashcards.js` + `flashcardsItems.js` — source-verified M13 cards;
+- `src/data/caa2024/crossReferences.js` — secondary CAA references for selected existing core questions/cards;
+- `src/data/module13.js` and `src/data/flashcards/module13.js` — final M13 assemblies;
+- `scripts/audit-caa2024.mjs` — build-time CAA source/structure audit of the final M13 assembly;
+- `scripts/audit-contract-integration.mjs` — cross-module contract/provenance guard;
+- `CAA2024_SOURCE_AUDIT.md` — source discipline and coverage record;
+- `MODULE_CONTRACT_QA.md` — M1–M13 contract-integration review ledger.
 
 The M13 keyed-answer distribution is deliberately balanced **A 10 / B 10 / C 10 / D 10**.
 
-CAA2024 definition cards explain how important defined terms operate across the agreement and direct the learner to Section M for the formal definition. They do not invent verbatim definition wording where the accessible source extraction is insufficiently reliable.
+CAA2024 definition cards use the supplied Section M definitions and their contractual application. They do not fill unsupported gaps with general model knowledge.
 
-Eleven existing M2–M4 Acumen flashcards receive a secondary CAA2024 cross-reference while retaining their original Acumen source.
+The strict cross-module review currently adds secondary CAA2024 references to **22 active core questions** and **20 core flashcards** while retaining each item's original primary provenance. ABIC secondary references are likewise restricted to direct support.
 
 M13 questions use `qaStatus: caa2024-source-verified`, deliberately excluded from the normal Exam Simulation.
 
@@ -204,7 +213,8 @@ Production `npm run build` runs:
 1. `scripts/audit-flashcards.mjs`
 2. `scripts/audit-abic.mjs`
 3. `scripts/audit-caa2024.mjs`
-4. `vite build`
+4. `scripts/audit-contract-integration.mjs`
+5. `vite build`
 
 Key source-specific QA statuses:
 
@@ -217,6 +227,8 @@ Key source-specific QA statuses:
 - `needs-source-check`
 - `legacy-placeholder`
 - `user-added`
+
+The cross-module contract audit verifies that ABIC/CAA2024 links point to active study items, PARCS-confirmed questions are not rewritten by the contract precision layer, core M1–M11 material keeps its original provenance, and M12/M13 remain supplementary/exam-excluded.
 
 ## Source discipline
 
@@ -232,7 +244,7 @@ Key source-specific QA statuses:
 10. Prefer application/professional judgment in MCQs and use flashcards for appropriate navigation/recall.
 11. Quality is more important than bank size.
 
-Read `QUESTION_WRITING_STANDARD.md`, `FLASHCARD_SOURCE_AUDIT.md`, `ABIC_SOURCE_AUDIT.md` and `CAA2024_SOURCE_AUDIT.md` before changing study content.
+Read `QUESTION_WRITING_STANDARD.md`, `FLASHCARD_SOURCE_AUDIT.md`, `ABIC_SOURCE_AUDIT.md`, `CAA2024_SOURCE_AUDIT.md` and `MODULE_CONTRACT_QA.md` before changing study content.
 
 ## Recommended next work
 
