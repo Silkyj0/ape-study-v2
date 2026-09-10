@@ -17,8 +17,7 @@ export const ABIC_QUESTION_CROSS_REFS = {
   'm4-pcps-02': ref('K1', 36),
   'm4-pcps-04': ref('K4', 37),
 
-  // M6–M7 — contract-document coherence and execution
-  'm6-27': ref('B2', 20),
+  // M7 — project-specific contract settings and identified contract drawings
   'm7-04': ref('Schedule 1', 1),
   'm7-26': ref('Schedule 1', 1),
   'm7-28': ref('B2', 20),
@@ -67,8 +66,6 @@ export const ABIC_QUESTION_CROSS_REFS = {
 };
 
 export const ABIC_FLASHCARD_CROSS_REFS = {
-  'fc-m6-construction-drawings': ref('B2', 20),
-  'fc-m6-specification': ref('B2', 20),
   'fc-m7-contract-documents': ref('B2', 20),
   'fc-m8-contractors-construction-role': ref('G2', 30),
   'fc-m8-latent-condition': ref('F5', 29),
