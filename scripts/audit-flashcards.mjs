@@ -14,7 +14,7 @@ const expectedByModule = {
   10: 12,
   11: 7,
   12: 72,
-  13: 65,
+  13: 72,
 };
 
 function fail(message) {
@@ -50,6 +50,7 @@ for (const card of FLASHCARDS) {
     if (card.source !== 'CAA2024 — Client Architect Agreement') fail(`invalid CAA2024 source on ${card.id}`);
     if (card.sourceKind !== 'caa2024-contract') fail(`missing CAA2024 source kind on ${card.id}`);
     if (!card.contractRef) fail(`missing CAA2024 reference on ${card.id}`);
+    if (!Number.isInteger(card.contractPage) || card.contractPage < 1 || card.contractPage > 16) fail(`invalid CAA2024 printed page on ${card.id}`);
   } else if (!card.source?.startsWith('Acumen — ')) {
     fail(`non-Acumen or missing primary source on ${card.id}`);
   }
