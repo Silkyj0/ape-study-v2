@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/audit-flashcards.mjs && node scripts/audit-abic.mjs && node scripts/audit-caa2024.mjs && vite build",
+    "build": "node scripts/audit-flashcards.mjs && node scripts/audit-abic.mjs && node scripts/audit-caa2024.mjs && node scripts/audit-contract-integration.mjs && vite build",
     "preview": "vite preview",
     "audit": "node scripts/audit-questions.mjs",
     "audit:flashcards": "node scripts/audit-flashcards.mjs",
     "audit:abic": "node scripts/audit-abic.mjs",
-    "audit:caa2024": "node scripts/audit-caa2024.mjs"
+    "audit:caa2024": "node scripts/audit-caa2024.mjs",
+    "audit:contracts": "node scripts/audit-contract-integration.mjs"
   },
   "dependencies": {
     "lucide-react": "latest",
