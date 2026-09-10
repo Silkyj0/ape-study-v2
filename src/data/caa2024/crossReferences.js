@@ -12,6 +12,7 @@ function ref(contractRef) {
 }
 
 // Secondary cross-references only. The original Acumen/PARCS source remains primary.
+// Add a cross-reference only where the contract directly supports the proposition being tested.
 export const CAA2024_QUESTION_CROSS_REFS = {
   // M1 — professional liability / CAA mechanics
   'm1-limitation-g2': ref('G2'),
@@ -19,10 +20,6 @@ export const CAA2024_QUESTION_CROSS_REFS = {
   'm1-caa-scheduleA': ref('Schedule A'),
   'm1-caa-copyright': ref('F1'),
   'm1-caa-termination': ref('K2'),
-
-  // M2 — copyright / moral-rights implementation in the engagement
-  'm2-parra-lesson': ref('F1'),
-  'm2-mr-attributionact': ref('F2'),
 
   // M3 — agreement scope, fitness-for-purpose, early services and remuneration
   'm3-sc-agreement-2': ref('A2'),
@@ -32,23 +29,18 @@ export const CAA2024_QUESTION_CROSS_REFS = {
   'm3-agreement-scope': ref('Schedule A'),
   'm3-agreement-remuneration': ref('D8'),
 
-  // M4 — budget/cost terminology and consultant coordination
+  // M4 — budget/cost terminology and consultant engagement
   'm4-budget-02': ref('A3'),
   'm4-budget-03': ref('Definition: Total Project Cost'),
   'm4-budget-06': ref('A3'),
   'm4-cons-01': ref('E1'),
-  'm4-cons-05': ref('E1'),
-
-  // M6 — specialist technical review coordinated through the architect
-  'm6-30': ref('E1'),
 
   // M7 — architect acting as the Client's agent when the engagement includes the task
   'm7-02': ref('A1'),
 
-  // M8 — construction compliance boundary and specialist-consultant responsibility
+  // M8 — construction-compliance boundary in the Client–Architect agreement
   'm8-01': ref('A2'),
   'm8-02': ref('A2'),
-  'm8-18': ref('E1'),
 
   // M11 — architect-client fee dispute and variation mechanisms
   'm11-18': ref('J2'),
@@ -63,7 +55,7 @@ export const CAA2024_FLASHCARD_CROSS_REFS = {
   'fc-m1-limitation-of-liability': ref('G2'),
   'fc-m1-professional-indemnity-insurance': ref('G1'),
 
-  // M2
+  // M2 — CAA implementation of copyright / attribution concepts
   'fc-m2-copyright': ref('F1'),
   'fc-m2-implied-copyright-licence': ref('F1'),
   'fc-m2-moral-rights': ref('F2'),
