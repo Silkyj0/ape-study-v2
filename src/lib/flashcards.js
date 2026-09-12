@@ -37,8 +37,13 @@ export function flashcardPriority(card, now = Date.now()) {
   );
 }
 
+function selectFlashcardPool(cards, moduleId = null) {
+  if (moduleId === 'advanced') return cards.filter((card) => card.difficulty === 'advanced');
+  return moduleId ? cards.filter((card) => card.moduleId === moduleId) : cards;
+}
+
 export function buildFlashcardSession(cards, limit = FLASHCARD_SESSION_LIMIT, moduleId = null, now = Date.now()) {
-  const pool = moduleId ? cards.filter((card) => card.moduleId === moduleId) : cards;
+  const pool = selectFlashcardPool(cards, moduleId);
   const due = pool
     .filter((card) => card.seen > 0 && (card.due || 0) <= now)
     .sort((a, b) => flashcardPriority(b, now) - flashcardPriority(a, now));
@@ -53,7 +58,7 @@ export function buildFlashcardSession(cards, limit = FLASHCARD_SESSION_LIMIT, mo
 }
 
 export function buildFlashcardFullSet(cards, moduleId = null) {
-  return shuffleCopy(moduleId ? cards.filter((card) => card.moduleId === moduleId) : cards);
+  return shuffleCopy(selectFlashcardPool(cards, moduleId));
 }
 
 export function applyFlashcardResult(card, rating, now = Date.now()) {
@@ -98,7 +103,7 @@ export function applyFlashcardResult(card, rating, now = Date.now()) {
 }
 
 export function flashcardStats(cards, moduleId = null, now = Date.now()) {
-  const pool = moduleId ? cards.filter((card) => card.moduleId === moduleId) : cards;
+  const pool = selectFlashcardPool(cards, moduleId);
   const due = pool.filter((card) => card.seen > 0 && (card.due || 0) <= now).length;
   const newCount = pool.filter((card) => !card.seen).length;
   const mastered = pool.filter((card) => flashcardMasteryState(card) === 'mastered').length;

@@ -2,211 +2,151 @@
 
 ## Purpose
 
-APE Part 2 study application for Patrick's Queensland Architectural Practice Examination preparation. The core program is based on PARCS Modules 1–11, supplied readings, PARCS sample questions and user-confirmed official keys. Supplementary M12 provides direct ABIC SW 2018 study and supplementary M13 provides direct CAA2024 Client Architect Agreement study.
+APE Part 2 study application for Patrick's Queensland Architectural Practice Examination preparation.
 
-Production: `https://ape-study-v2.vercel.app/`
-
-Repo: `Silkyj0/ape-study-v2`
-
+Production: `https://ape-study-v2.vercel.app/`  
+Repo: `Silkyj0/ape-study-v2`  
 Vercel deploys automatically from `main`.
 
-## Current release state — 10 September 2026
+## Current release target — 12 September 2026
 
-### MCQ bank
+### MCQs
 
-| Module | Live | Composition |
-| --- | ---: | --- |
-| M1 | 44 | source-audited + PARCS |
-| M2 | 75 | source-audited + PARCS |
-| M3 | 72 | Drive-source-verified + PARCS |
-| M4 | 69 | authored + PARCS |
-| M5 | 23 | authored + PARCS |
-| M6 | 51 | authored + PARCS |
-| M7 | 42 | authored + PARCS |
-| M8 | 36 | authored + PARCS |
-| M9 | 42 | authored + PARCS |
-| M10 | 44 | authored + PARCS |
-| M11 | 36 | authored + PARCS |
-| M12 | 50 | supplementary ABIC SW 2018 source-verified |
-| M13 | 40 | supplementary CAA2024 source-verified |
+**624 total questions** — unchanged by the advanced-flashcard release.
 
-Total live MCQ seed after M13 release: **624 questions**.
-
-- Core M1–M11 bank: **534**
-- Supplementary ABIC M12: **50**
-- Supplementary CAA2024 M13: **40**
-- PARCS-confirmed: **128**
+- M1–M11 core/PARCS: 534
+- M12 supplementary ABIC: 50
+- M13 supplementary CAA2024: 40
 - `SEED_VERSION = 36`
-- `m1-woolcock` and `m1-introvigne` remain withheld pending source re-checks.
 
-M12 and M13 are supplementary and are intentionally excluded from the normal 40-question M1–M11 Exam Simulation.
-
-### Flashcard bank
-
-Total flashcards after M13 release: **257**.
-
-- M1–M11 Acumen: **113 source-audited cards**
-- M12 ABIC: **72 source-verified cards**
-- M13 CAA2024: **72 source-verified cards**
-- `FLASHCARD_SEED_VERSION = 4`
-- Existing IDs are preserved so stored progress reconciles by `seedId`; new M13 cards enter as unseen.
-
-Distribution:
-
-| Module | Cards |
-| --- | ---: |
-| M1 | 10 |
-| M2 | 10 |
-| M3 | 8 |
-| M4 | 8 |
-| M5 | 8 |
-| M6 | 20 |
-| M7 | 7 |
-| M8 | 8 |
-| M9 | 15 |
-| M10 | 12 |
-| M11 | 7 |
-| M12 | 72 |
-| M13 | 72 |
-
-Source/QA records: `FLASHCARD_SOURCE_AUDIT.md`, `ABIC_SOURCE_AUDIT.md`, `CAA2024_SOURCE_AUDIT.md`, `MODULE_CONTRACT_QA.md`.
-
-## Supplementary M12 — ABIC SW 2018
-
-Primary source: `reference-contract-abic-sw-2018-c-071118 (1).pdf`.
-
-M12 contains 50 contract MCQs and 72 flashcards. The ABIC source map covers schedules, clauses and selected definitions; build-time QA is in `scripts/audit-abic.mjs`. Relevant existing core items retain their original Acumen/PARCS provenance and receive ABIC clause/page cross-references only where directly supported.
-
-M12 questions use `qaStatus: abic-source-verified`, which is deliberately absent from `EXAM_QA_STATUSES`.
-
-Do not silently repair inconsistencies in the supplied ABIC reference copy from outside knowledge. `ABIC_SOURCE_AUDIT.md` records the known source-copy cross-reference issues.
-
-## Supplementary M13 — CAA2024
-
-Primary source:
-
-- `caa2024_fullservices_digital.pdf`
-- Drive file ID: `1U7EYkpAml2d0lNOEf6jWmtZyaP7NDFpn`
-
-M13 contains **40 MCQs** and **72 flashcards**. The question bank is deliberately scenario-heavy and focuses on applying the architect–client engagement rather than memorising clause labels alone.
-
-High-value coverage includes:
-
-- A1 Architect obligations and standard of care;
-- A2 scope exclusions and no fitness-for-purpose warranty;
-- A3 Cost of Works forecasting and its distinction from the defined Cost of Works / Total Project Cost;
-- A4–A6 program, protracted Services and suspension;
-- Section B Client obligations and contractor instructions through the Architect where CA is included;
-- Section C authorised representatives;
-- D1–D8 Fees, claims, payment, interest, percentage/lump/time fees, Disbursements and changes to Services;
-- E1–E2 Specialist Consultants;
-- F1–F5 copyright/licence, Moral Rights, section F indemnity, electronic data and BIM;
-- G1 insurance requirements and Item 6;
-- G2 liability allocation and the net-PI-recovery cap subject to its qualifications;
-- H1–H10 General Conditions, including writing/email rules, written variations, novation/assignment/transfer, pre-execution Services and deemed receipt;
-- J1–J2 dispute resolution, including the five-business-day meeting step;
-- K1–K5 termination pathways, consequences and surviving obligations;
-- K2 no-reason termination on no less than 30 business days' notice;
-- K3 distinction between insolvency/bankruptcy and specified material breach requiring notice and a 10-business-day remedy opportunity;
-- Section L / Schedule C special conditions and precedence;
-- Schedule A Services and Schedule B commercial/project Items;
-- Item 7A default 10-business-day payment period and Item 7B default 15% p.a. overdue interest where unstated;
-- Section M definitions and defined-term application.
-
-Architecture:
-
-- `src/data/caa2024/contractMap.js` — verified source/provision/page map;
-- `src/data/caa2024/factories.js` — CAA source metadata factories;
-- `src/data/caa2024/questions.js` — base 40 M13 questions;
-- `src/data/caa2024/questionQaOverrides.js` — stable-ID QA refinements for M13 questions;
-- `src/data/caa2024/flashcards.js` + `flashcardsItems.js` — source-verified M13 cards;
-- `src/data/caa2024/crossReferences.js` — secondary CAA references for selected existing core questions/cards;
-- `src/data/module13.js` and `src/data/flashcards/module13.js` — final M13 assemblies;
-- `scripts/audit-caa2024.mjs` — build-time CAA source/structure audit of the final M13 assembly;
-- `scripts/audit-contract-integration.mjs` — cross-module contract/provenance guard;
-- `CAA2024_SOURCE_AUDIT.md` — source discipline and coverage record;
-- `MODULE_CONTRACT_QA.md` — M1–M13 contract-integration review ledger.
-
-The M13 keyed-answer distribution is deliberately balanced **A 10 / B 10 / C 10 / D 10**.
-
-CAA2024 definition cards use the supplied Section M definitions and their contractual application. They do not fill unsupported gaps with general model knowledge.
-
-The strict cross-module review currently adds secondary CAA2024 references to **22 active core questions** and **20 core flashcards** while retaining each item's original primary provenance. ABIC secondary references are likewise restricted to direct support.
-
-M13 questions use `qaStatus: caa2024-source-verified`, deliberately excluded from the normal Exam Simulation.
-
-## Acumen M1–M11 baseline
-
-The original 113-card Acumen bank remains source-audited and unchanged in primary provenance. Do not use ABIC or CAA2024 to silently rewrite Acumen-derived definitions. Contract cross-references are secondary context only unless a card/question is authored directly as M12 or M13 content.
-
-The MCQ bank is mature. Do not default to large-volume expansion unless actual performance reveals a missing distinction.
-
-## PARCS blind calibration
-
-Modules 3–11 blind calibration total: **98/109 (89.9%)**.
-
-| Module | Blind result | Confirmed misses |
-| --- | ---: | --- |
-| M3 | 11/12 | 3.2 Q4 |
-| M4 | 12/13 | 4.1 Q1 |
-| M5 | 11/13 | 5.2 Q3, 5.2 Q4 |
-| M6 | 11/11 | none |
-| M7 | 8/10 | 7.1 Q1, 7.2 Q1 |
-| M8 | 11/12 | 8.2 Q4 |
-| M9 | 13/14 | 9.1 Q5 |
-| M10 | 10/12 | 10.1 Q2, 10.3 Q2 |
-| M11 | 11/12 | 11.1 Q3 |
-
-Recurring traps: exact architect role at the relevant moment; consultant/contractor responsibility vs architect coordination duty; current documented position for change control; fair tender basis; EOT/critical-path/overlap/cost distinctions; workmanship vs design defects; preserving course-specific official keys.
-
-Official PARCS keys remain immutable:
-
-M3:
-- 3.1: **D, C, D, C**
-- 3.2: **D, A, B, C**
-- 3.3: **B, B, B, C**
-
-M10:
-- 10.1: **D, B, C, FALSE, FALSE**
-- 10.2: **B, D, C**
-- 10.3: **D, B, B, B**
-
-M11:
-- 11.1: **B, C, C, TRUE, FALSE**
-- 11.2: **C, A, C, A**
-- 11.3: **B, C, D**
-
-## Study modes
-
-### Adaptive MCQ study
-
-Module sessions prioritise due/weak items and space correct answers. Wrong answers can reappear in-session. The pre-answer Confident / Unsure / Guessing UI is currently disabled; legacy confidence fields remain in stored progress for compatibility.
+M12/M13 remain excluded from the normal 40-question / 60-minute M1–M11 Exam Simulation.
 
 ### Flashcards
 
-Cards support Smart review, full-bank, module and topic review. Recall ratings are **Knew it / Unsure / Didn’t know**. M1–M11 identify Acumen provenance; M12 identifies ABIC; M13 identifies CAA2024.
+**322 total flashcards**.
 
-### PARCS and Exam
+- M1–M11 Acumen: **168** = 113 established + 55 advanced
+- M12 ABIC: **77** = 72 established + 5 advanced
+- M13 CAA2024: **77** = 72 established + 5 advanced
+- Advanced set: **65** = exactly 5 per M1–M13
+- `FLASHCARD_SEED_VERSION = 5`
 
-PARCS-only, grouped scenario mode and calibration drills remain unchanged. Confirmed PARCS wording and keys are immutable.
+Distribution:
 
-Exam Simulation remains **40 questions / 60 minutes**, using only trusted M1–M11 QA statuses. M12 ABIC and M13 CAA2024 do not enter the normal exam pool.
+| Module | Cards | Advanced |
+| --- | ---: | ---: |
+| M1 | 15 | 5 |
+| M2 | 15 | 5 |
+| M3 | 13 | 5 |
+| M4 | 13 | 5 |
+| M5 | 13 | 5 |
+| M6 | 25 | 5 |
+| M7 | 12 | 5 |
+| M8 | 13 | 5 |
+| M9 | 20 | 5 |
+| M10 | 17 | 5 |
+| M11 | 12 | 5 |
+| M12 | 77 | 5 |
+| M13 | 77 | 5 |
 
-## Daily study timer
+Existing flashcard IDs are preserved, so prior learner progress reconciles by stable `seedId`; the 65 new advanced cards enter as unseen.
 
-The app includes a persistent **60-minute daily study goal**:
+## Advanced flashcards
 
-- automatic tracking begins after the learner first interacts with the app;
-- hidden tabs do not count;
-- automatic tracking pauses after 5 minutes of inactivity;
-- a manual focus timer supports deliberate low-interaction reading;
-- floating progress indicator is visible across the app;
-- expanded view shows time remaining, 7-day history, weekly total, goal days and current streak;
-- timer data is browser-local under `ape-study-daily-time-v1` and is intentionally separate from MCQ/flashcard progress in v1.
+Advanced cards are intentionally more specific than the original glossary-style bank. They focus on:
 
-See `STUDY_TIMER.md`.
+- role/responsibility boundaries;
+- procedural triggers and sequences;
+- contractual time periods;
+- entitlement distinctions;
+- consequences of missed steps;
+- qualifications that prevent over-broad APE answers.
 
-## QA architecture
+Each advanced card has `difficulty: 'advanced'` and displays an **Advanced** badge.
+
+The Cards dashboard includes **Advanced review**, which filters to the 65 advanced cards while retaining the spaced-repetition prioritisation of due cards and new cards. Module cards display how many advanced cards they contain.
+
+See `ADVANCED_FLASHCARD_QA.md`.
+
+## Source discipline
+
+1. Supplied material is the source of truth.
+2. M1–M11 direct study content remains Acumen/PARCS-derived.
+3. M12 direct content uses the supplied ABIC SW 2018 Simple Works Contract.
+4. M13 direct content uses the supplied CAA2024 full-services agreement.
+5. Existing core cross-references to ABIC/CAA are secondary metadata only unless the item was authored directly from that contract.
+6. Confirmed PARCS wording and official keys are immutable.
+7. Do not fill source gaps from general model knowledge.
+8. Preserve jurisdiction- and contract-specific qualifications.
+9. Quality/depth is more important than bank size.
+
+The advanced release revisited the supplied Acumen source files for higher-risk propositions rather than treating existing MCQ explanations as independent authority. See `FLASHCARD_SOURCE_AUDIT.md` and `ADVANCED_FLASHCARD_QA.md`.
+
+## M12 — ABIC SW 2018
+
+Primary source: `reference-contract-abic-sw-2018-c-071118 (1).pdf`.
+
+M12 now contains:
+
+- 50 source-verified MCQs;
+- 77 source-verified flashcards;
+- 5 advanced cards on A8, F5, G5, H1 and L3 process/timing.
+
+M12 questions use `qaStatus: abic-source-verified`, deliberately excluded from the normal exam pool.
+
+Do not silently repair inconsistencies in the supplied reference copy. `ABIC_SOURCE_AUDIT.md` records the known anomalies.
+
+## M13 — CAA2024
+
+Primary source: `caa2024_fullservices_digital.pdf`, Drive ID `1U7EYkpAml2d0lNOEf6jWmtZyaP7NDFpn`.
+
+M13 now contains:
+
+- 40 source-verified MCQs;
+- 77 source-verified flashcards;
+- 5 advanced cards on D8, F1, J2, K2 and K3.
+
+High-value CAA distinctions include Cost of Works vs forecast/Total Project Cost, services/scope changes, consultant responsibility, copyright/licence, liability, dispute sequence, K2/K3 termination timing and Schedule A/B/C operation.
+
+M13 questions use `qaStatus: caa2024-source-verified`, deliberately excluded from the normal exam pool.
+
+## PARCS calibration
+
+M3–M11 blind calibration remains **98/109 (89.9%)**. The advanced-flashcard release does not alter any PARCS sample wording, answer key or MCQ result.
+
+Recurring traps remain:
+
+- architect role at the exact contractual moment;
+- coordination vs specialist/contractor responsibility;
+- current documented position for change control;
+- fair tender comparison;
+- EOT critical-path/time/cost distinctions;
+- workmanship vs design defects;
+- contract-specific dispute/termination processes.
+
+## Study modes
+
+### MCQs
+
+Adaptive module study, PARCS-only modes and Exam Simulation remain unchanged.
+
+### Flashcards
+
+Cards now support:
+
+- Smart review;
+- **Advanced review**;
+- All terms;
+- module review;
+- topic review.
+
+Recall ratings remain **Knew it / Unsure / Didn’t know**.
+
+### Daily timer
+
+The 60-minute daily study timer remains unchanged: foreground/active-use tracking, five-minute inactivity pause, manual focus mode, seven-day history and streak tracking.
+
+## QA build
 
 Production `npm run build` runs:
 
@@ -216,45 +156,29 @@ Production `npm run build` runs:
 4. `scripts/audit-contract-integration.mjs`
 5. `vite build`
 
-Key source-specific QA statuses:
+Flashcard QA now additionally requires:
 
-- `parcs-confirmed`
-- `source-audited`
-- `drive-source-verified`
-- `parc-external-verified`
-- `abic-source-verified`
-- `caa2024-source-verified`
-- `needs-source-check`
-- `legacy-placeholder`
-- `user-added`
+- exactly 322 cards;
+- exact module distribution;
+- exactly 65 advanced cards;
+- exactly 5 advanced cards in every module;
+- unique IDs/terms;
+- non-thin definitions;
+- source-specific provenance.
 
-The cross-module contract audit verifies that ABIC/CAA2024 links point to active study items, PARCS-confirmed questions are not rewritten by the contract precision layer, core M1–M11 material keeps its original provenance, and M12/M13 remain supplementary/exam-excluded.
+ABIC/CAA audits separately require 77 cards and exactly five advanced cards in each supplementary deck.
 
-## Source discipline
+## Key QA/source records
 
-1. Supplied material is the source of truth for authored study content.
-2. Do not silently fill gaps from model/general knowledge.
-3. Confirmed PARCS wording and keys are immutable.
-4. M1–M11 Acumen content remains Acumen-derived.
-5. M12 contractual content uses the supplied ABIC SW 2018 contract.
-6. M13 contractual content uses the supplied CAA2024 full-services agreement.
-7. Cross-referenced items preserve their original source; contract references are secondary unless the item was authored directly from that contract.
-8. Preserve contract-specific, jurisdiction-specific and source-specific qualifications.
-9. Withhold uncertainty rather than guessing or repairing a source from outside knowledge.
-10. Prefer application/professional judgment in MCQs and use flashcards for appropriate navigation/recall.
-11. Quality is more important than bank size.
+Read before modifying study content:
 
-Read `QUESTION_WRITING_STANDARD.md`, `FLASHCARD_SOURCE_AUDIT.md`, `ABIC_SOURCE_AUDIT.md`, `CAA2024_SOURCE_AUDIT.md` and `MODULE_CONTRACT_QA.md` before changing study content.
+- `QUESTION_WRITING_STANDARD.md`
+- `FLASHCARD_SOURCE_AUDIT.md`
+- `ADVANCED_FLASHCARD_QA.md`
+- `ABIC_SOURCE_AUDIT.md`
+- `CAA2024_SOURCE_AUDIT.md`
+- `MODULE_CONTRACT_QA.md`
 
 ## Recommended next work
 
-Do not default to another bulk expansion. Priorities are actual study use and performance-driven refinement:
-
-1. use M1–M11 adaptive study, Cards and Exam Simulation regularly;
-2. use M12 separately for ABIC contract administration/navigation;
-3. use M13 separately for client–architect agreement practice;
-4. use the 60-minute daily timer to build consistency;
-5. monitor repeated-lapse MCQs and Unsure / Didn’t know flashcards;
-6. add targeted variants only where performance shows a genuine concept gap;
-7. consider dedicated ABIC/CAA contract tests later rather than changing the normal exam weighting;
-8. continue concept-level mastery and mistake-analysis work using actual performance data.
+Do not immediately add another bulk set. Use the 65 advanced cards in real study, then refine from actual `Unsure` / `Didn’t know` patterns. Good next candidates are targeted second-order cards only where performance reveals a genuine gap, or dedicated timed ABIC/CAA contract drills without changing normal exam weighting.

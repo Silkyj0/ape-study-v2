@@ -12,7 +12,7 @@ if (ABIC_CLAUSES.length !== 142) fail(`expected 142 mapped clauses including S1,
 if (ABIC_SCHEDULES.length !== 8) fail(`expected 8 schedules, found ${ABIC_SCHEDULES.length}`);
 if (ABIC_DEFINITIONS.length !== 37) fail(`expected 37 definitions, found ${ABIC_DEFINITIONS.length}`);
 if (module12Questions.length !== 50) fail(`expected 50 M12 questions, found ${module12Questions.length}`);
-if (FLASHCARDS_M12.length !== 72) fail(`expected 72 M12 flashcards, found ${FLASHCARDS_M12.length}`);
+if (FLASHCARDS_M12.length !== 77) fail(`expected 77 M12 flashcards, found ${FLASHCARDS_M12.length}`);
 
 const qIds = new Set();
 for (const question of module12Questions) {
@@ -40,11 +40,13 @@ for (const card of FLASHCARDS_M12) {
   if (!Number.isInteger(card.contractPage) || card.contractPage < 1 || card.contractPage > 56) fail(`invalid contract page on ${card.id}`);
 }
 
+if (FLASHCARDS_M12.filter((card) => card.difficulty === 'advanced').length !== 5) fail('expected 5 advanced ABIC flashcards');
+
 for (const [id, crossRef] of Object.entries({ ...ABIC_QUESTION_CROSS_REFS, ...ABIC_FLASHCARD_CROSS_REFS })) {
   if (!isValidAbicRef(crossRef.contractRef)) fail(`invalid cross-reference ${crossRef.contractRef} on ${id}`);
   if (!Number.isInteger(crossRef.contractPage) || crossRef.contractPage < 1 || crossRef.contractPage > 56) fail(`invalid cross-reference page on ${id}`);
 }
 
-console.log(`ABIC QA passed: ${ABIC_CLAUSES.length} clauses, ${ABIC_SCHEDULES.length} schedules, ${ABIC_DEFINITIONS.length} definitions mapped; 50 questions and 72 flashcards verified.`);
+console.log(`ABIC QA passed: ${ABIC_CLAUSES.length} clauses, ${ABIC_SCHEDULES.length} schedules, ${ABIC_DEFINITIONS.length} definitions mapped; 50 questions and 77 flashcards verified.`);
 console.log(`M12 answer-position distribution: A=${answerCounts[0]}, B=${answerCounts[1]}, C=${answerCounts[2]}, D=${answerCounts[3]}.`);
 console.log(`Existing-bank cross-references: ${Object.keys(ABIC_QUESTION_CROSS_REFS).length} questions, ${Object.keys(ABIC_FLASHCARD_CROSS_REFS).length} flashcards.`);

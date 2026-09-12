@@ -23,7 +23,7 @@ if (CAA2024_SCHEDULES.length !== 3) fail(`expected 3 schedules, found ${CAA2024_
 if (CAA2024_ITEMS.length !== 8) fail(`expected 8 Schedule B items, found ${CAA2024_ITEMS.length}`);
 if (CAA2024_DEFINITIONS.length !== 13) fail(`expected 13 mapped definitions, found ${CAA2024_DEFINITIONS.length}`);
 if (module13Questions.length !== 40) fail(`expected 40 M13 questions, found ${module13Questions.length}`);
-if (FLASHCARDS_M13.length !== 72) fail(`expected 72 M13 flashcards, found ${FLASHCARDS_M13.length}`);
+if (FLASHCARDS_M13.length !== 77) fail(`expected 77 M13 flashcards, found ${FLASHCARDS_M13.length}`);
 
 const qIds = new Set();
 for (const question of module13Questions) {
@@ -54,6 +54,8 @@ for (const card of FLASHCARDS_M13) {
   if (!card.definition?.trim() || card.definition.trim().length < 70) fail(`definition too thin on ${card.id}`);
 }
 
+if (FLASHCARDS_M13.filter((card) => card.difficulty === 'advanced').length !== 5) fail('expected 5 advanced CAA2024 flashcards');
+
 for (const [id, crossRef] of Object.entries(CAA2024_QUESTION_CROSS_REFS)) {
   if (!isValidCaa2024Ref(crossRef.caaContractRef)) fail(`invalid CAA2024 question cross-reference ${crossRef.caaContractRef} on ${id}`);
   if (crossRef.caaContractPage !== caaReferencePage(crossRef.caaContractRef)) fail(`CAA2024 question cross-reference page mismatch on ${id}`);
@@ -65,5 +67,5 @@ for (const [id, crossRef] of Object.entries(CAA2024_FLASHCARD_CROSS_REFS)) {
 }
 
 console.log(`CAA2024 QA passed: ${CAA2024_SECTIONS.length} sections, ${CAA2024_PROVISIONS.length} provisions/navigation refs, ${CAA2024_SCHEDULES.length} schedules, ${CAA2024_ITEMS.length} items and ${CAA2024_DEFINITIONS.length} definitions mapped.`);
-console.log(`M13: 40 questions, 72 flashcards; answer distribution A=${answerCounts[0]}, B=${answerCounts[1]}, C=${answerCounts[2]}, D=${answerCounts[3]}.`);
+console.log(`M13: 40 questions, 77 flashcards; answer distribution A=${answerCounts[0]}, B=${answerCounts[1]}, C=${answerCounts[2]}, D=${answerCounts[3]}.`);
 console.log(`Existing-bank cross-references: ${Object.keys(CAA2024_QUESTION_CROSS_REFS).length} questions, ${Object.keys(CAA2024_FLASHCARD_CROSS_REFS).length} flashcards.`);

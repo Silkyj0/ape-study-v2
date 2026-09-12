@@ -1,118 +1,83 @@
 # ABIC SW 2018 Integration — Source Audit
 
-## Release
+## Source
 
-Completed: 7 September 2026
-
-Primary source: `reference-contract-abic-sw-2018-c-071118 (1).pdf`
-
-Google Drive file ID: `1YR9f1eBTQ0XSK2QHhnmTTKjtbRqUw_gS`
-
+Primary source: `reference-contract-abic-sw-2018-c-071118 (1).pdf`  
+Google Drive file ID: `1YR9f1eBTQ0XSK2QHhnmTTKjtbRqUw_gS`  
 Contract: **ABIC SW 2018 — Simple Works Contract**
 
-The supplied reference copy was read directly and used as the primary source for all new contractual propositions in supplementary Module 12. No ABIC clause wording, time period, schedule default or definition was filled from model/general knowledge.
+All direct M12 contractual propositions come from this supplied reference copy. No clause wording, time period, schedule default or definition is filled from general model knowledge.
 
 ## Source map
 
 `src/data/abic/contractMap.js` records:
 
-- **8 schedules** — Schedules 1–8;
-- **142 clause headings** including S1 — Sections A, B, C, D, E, F, G, H, J, K, L, M, N, P, Q, R and S;
-- **37 defined terms** from Section S;
-- contract page references;
-- the exact connected Drive source ID and URL.
+- 8 schedules;
+- 142 clause headings including S1;
+- 37 defined terms;
+- contract-page references;
+- the connected Drive source metadata.
 
 Sections I and O do not appear as operative sections in this contract form.
 
 ## Supplementary Module 12
 
-Visible title: **Supplementary — ABIC SW 2018 Contract**
-
-This is an app-created supplementary module, not an official PARCS Module 12.
+M12 remains an app-created supplementary module and is excluded from the normal M1–M11 Exam Simulation.
 
 ### Questions
 
-- **50 source-verified questions**
-- IDs: `m12-abic-01` to `m12-abic-50`
-- approximately 10 foundation/navigation questions, 15 clause-mechanics questions and 25 scenario/application questions
-- correct source-position distribution: **A 13 / B 13 / C 12 / D 12**
-- `qaStatus`: `abic-source-verified`
-- excluded from the main M1–M11 Exam Simulation because the exam-eligible QA-status list does not include `abic-source-verified`
-
-Question source display includes the exact ABIC reference and contract page.
+- **50 source-verified MCQs**
+- IDs `m12-abic-01`–`m12-abic-50`
+- answer-position distribution A13 / B13 / C12 / D12
+- `qaStatus: abic-source-verified`
 
 ### Flashcards
 
-- **72 ABIC flashcards**
-- section maps for Sections A–S represented in the contract;
-- Schedules 1–8;
-- high-value clause/process cards for architect role, documents, security, latent conditions, programming, claims, variations, PC/PS sums, time, completion, payment, disputes, termination and notices;
-- selected defined terms from Section S;
-- IDs use the `fc-m12-...` namespace.
+- **77 source-verified ABIC flashcards**
+- 72 established section/schedule/clause/definition cards
+- **5 new advanced cards** covering:
+  - A8 dispute timing;
+  - F5 latent-condition notice;
+  - G5 construction program timing/status;
+  - H1 claim timing;
+  - L3 start/end delay notices.
 
-`FLASHCARD_SEED_VERSION = 3` and the total flashcard bank is **185 cards**.
+The advanced cards preserve exact clause/page provenance and use `difficulty: 'advanced'`.
 
-## Existing-bank ABIC cross-check
+## Advanced mechanics verified
 
-The existing Acumen source remains primary for existing M8–M11 authored content. ABIC is added only as a secondary cross-check where the proposition maps cleanly to this contract.
+- **A8:** dispute period of 20 working days; architect then has 10 working days for the written decision.
+- **F5:** relevant latent-condition notice within 5 working days.
+- **G5:** construction program within 10 working days after possession; includes major stages, practical-completion date, trades and critical path; program is expressly not part of the contract.
+- **H1:** detailed claim within the agreed period or default 20 working days where applicable.
+- **L3:** delay-start and delay-end notices each within 2 working days.
 
-Current cross-reference coverage:
+## Existing-bank cross-checks
 
-- **40 existing M8–M11 questions**
-- **22 existing M8–M11 flashcards**
+Existing core questions/cards retain their Acumen/PARCS primary source. ABIC is secondary metadata only where the supplied contract directly supports the proposition. The contract-integration audit rejects references to inactive items and prevents core items from being reclassified as ABIC-authored.
 
-Question QA notes state the ABIC clause/page while preserving the original Acumen source. Flashcard `sourceSection` displays the retained Acumen section plus the ABIC clause/page.
+## Automated safeguards
 
-This prevents a source-category error: an Acumen explanation is not relabelled as if it were direct contract text merely because the same topic appears in ABIC.
+Production QA verifies:
 
-## Source-specific safeguards
-
-Production `build` now runs:
-
-1. `scripts/audit-flashcards.mjs`
-2. `scripts/audit-abic.mjs`
-3. Vite build
-
-The ABIC audit verifies:
-
-- 142 mapped clauses;
-- 8 schedules;
-- 37 definitions;
+- source map counts;
 - 50 M12 questions;
-- 72 M12 flashcards;
+- **77 M12 cards**;
+- exactly **5 advanced M12 cards**;
 - unique IDs;
-- valid four-option answer keys;
-- balanced authored answer positions;
-- ABIC source provenance;
-- clause/schedule/definition references against the source map;
-- ABIC contract-page bounds;
-- existing-bank cross-reference validity.
+- ABIC provenance and valid contract pages/references;
+- MCQ answer keys/balance;
+- existing-bank ABIC cross-reference validity.
 
-Vercel therefore fails the production build if these structural/provenance expectations drift.
+## Reference-copy anomalies
 
-## Reference-copy anomalies deliberately withheld from recall testing
+Two internal source-copy inconsistencies remain deliberately excluded from rote-memory testing:
 
-Two internal cross-reference inconsistencies were identified in the supplied reference copy and are **not** used as rote-memory study points:
+1. M1 contains a commissioning-test Schedule 1 item reference that does not align with the commissioning-test item used elsewhere. The substantive commissioning requirement is taught instead.
+2. Section S's `business day` definition refers to a Schedule 1 item that does not align with the visible Schedule 1 numbering. No card/question relies on that item number.
 
-1. M1's practical-completion text contains a commissioning-test Schedule 1 item reference that does not align with the commissioning-test item used elsewhere in the contract; the substantive commissioning requirement is taught instead.
-2. The Section S definition of `business day` contains a Schedule 1 item reference that does not align with the visible Schedule 1 numbering in this reference copy; no question/card relies on that item number.
-
-These are treated as source-document anomalies rather than silently corrected from outside knowledge.
+These are treated as source-document anomalies and are not silently repaired from outside material.
 
 ## Insolvency qualification
 
-ABIC Q2 and Q14 contain contract-form insolvency termination rights. Existing Acumen material separately identifies statutory ipso-facto qualifications. Module 12 does not turn the ABIC insolvency clauses into an unqualified proposition that termination is always legally available. Existing M11 material retains the Acumen qualification and legal-advice boundary.
-
-## Seed/progress effect
-
-- MCQ seed: **v35** — existing question IDs unchanged; 50 M12 IDs enter as unseen.
-- Flashcard seed: **v3** — existing 113 flashcard IDs unchanged; 72 M12 IDs enter as unseen.
-- Existing learner progress is preserved by stable `seedId` reconciliation.
-
-## Source rule going forward
-
-- Acumen-derived content: supplied Acumen reading remains primary.
-- ABIC contractual content: actual supplied ABIC SW 2018 contract is primary.
-- Dual-source content: identify both sources and their roles explicitly.
-- PARCS supplied questions/keys: immutable.
-- If the contract does not clearly support a proposed ABIC proposition, withhold it rather than generalise from another contract form or outside knowledge.
+ABIC Q2/Q14 contain contractual insolvency termination provisions. Existing Acumen M11 content separately preserves statutory ipso-facto qualifications. M12 does not teach the ABIC clauses as an unqualified statement that termination is always legally enforceable.

@@ -1,0 +1,53 @@
+import { abicFlashcard } from './factories.js';
+
+export const ABIC_ADVANCED_FLASHCARDS = [
+  abicFlashcard({
+    id: 'fc-m12-advanced-a8-dispute-timing',
+    topic: 'Architect decisions and disputes',
+    term: 'Advanced · A8 dispute timing after an architect certificate or decision',
+    definition: 'A party disputing an architect’s certificate or written decision must use the A8 process within the contract’s 20-working-day dispute period. Once the dispute notice is given, the architect then has 10 working days to give the written decision required by A8.',
+    examples: ['Treat the 20-working-day dispute period and the architect’s later 10-working-day response period as two separate clocks.'],
+    sourceSection: 'A8 — Disputing architect’s certificate or written decision',
+    contractRef: 'A8',
+    contractPage: 18,
+  }),
+  abicFlashcard({
+    id: 'fc-m12-advanced-f5-latent-notice',
+    topic: 'Latent conditions',
+    term: 'Advanced · F5 latent-condition notice — 5 working days',
+    definition: 'If the contractor discovers a latent condition or valuable item that may affect cost or time, F5 requires written notice within 5 working days. The notice step comes before the architect’s instruction under F6 and any qualifying adjustment claim under F7 and Section H.',
+    examples: ['Do not collapse discovery, architect instruction and the later claim into one step; ABIC separates them.'],
+    sourceSection: 'F5 — Latent condition or valuable item',
+    contractRef: 'F5',
+    contractPage: 29,
+  }),
+  abicFlashcard({
+    id: 'fc-m12-advanced-g5-program',
+    topic: 'Programming',
+    term: 'Advanced · G5 construction program — due within 10 working days and not a contract document',
+    definition: 'Within 10 working days after possession of the site, the contractor must give the architect a construction program showing major stages, the practical-completion date, relevant trades and the critical path. ABIC expressly states that this program does not become part of the contract.',
+    examples: ['The program is administratively important without changing the contractual document hierarchy.'],
+    sourceSection: 'G5 — Contractor to give program to architect',
+    contractRef: 'G5',
+    contractPage: 30,
+  }),
+  abicFlashcard({
+    id: 'fc-m12-advanced-h1-claim-time',
+    topic: 'Claims to adjust contract',
+    term: 'Advanced · H1 claim timing — agreed period or default 20 working days',
+    definition: 'Section H requires prompt notice of a claim to adjust the contract and a detailed claim within the period agreed in the contract, or within the default 20 working days where no other period applies. Delay claims also require the additional timing and detail required by the delay provisions.',
+    sourceSection: 'H1 — Time for making a claim to adjust the contract',
+    contractRef: 'H1',
+    contractPage: 32,
+  }),
+  abicFlashcard({
+    id: 'fc-m12-advanced-l3-delay-notices',
+    topic: 'Adjustment of time',
+    term: 'Advanced · L3 delay notices — start and end within 2 working days',
+    definition: 'For an ABIC delay claim, L3 requires the contractor to notify the architect within 2 working days after the delay starts and again within 2 working days after the delay ends. The notices support the later claim process and should not be confused with proving critical-path effect or cost entitlement.',
+    examples: ['A qualifying cause of delay does not remove the need to follow the contractual notice procedure.'],
+    sourceSection: 'L3 — Contractor to notify of delay',
+    contractRef: 'L3',
+    contractPage: 39,
+  }),
+].map((card) => ({ ...card, difficulty: 'advanced' }));

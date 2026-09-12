@@ -17,15 +17,20 @@ function moduleClasses(moduleId) {
   return 'border-slate-200';
 }
 
+function AdvancedBadge() {
+  return <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-800">Advanced</span>;
+}
+
 function Dashboard({ cards, onStartAdaptive, onStartFull, onStartTopic }) {
   const overall = flashcardStats(cards);
+  const advanced = flashcardStats(cards, 'advanced');
   const modules = [...new Set(cards.map((card) => card.moduleId))].sort((a, b) => a - b);
   const topics = [...new Set(cards.map((card) => card.topic))].sort((a, b) => a.localeCompare(b));
 
   return <div>
     <div className="mb-5">
       <div className="flex items-center gap-2"><Layers3 size={20} className="text-indigo-600" /><h2 className="text-lg font-semibold text-slate-900">APE Flashcards</h2></div>
-      <p className="mt-1 text-xs leading-relaxed text-slate-500">Recall key APE terminology and contract mechanics before flipping. Modules 1–11 retain their supplied Acumen provenance; supplementary Modules 12 and 13 are sourced directly from ABIC SW 2018 and CAA2024 respectively.</p>
+      <p className="mt-1 text-xs leading-relaxed text-slate-500">Recall key APE terminology, role boundaries and contract mechanics before flipping. The advanced set focuses on harder distinctions, triggers, timing, procedure and consequences. Modules 1–11 retain Acumen provenance; Modules 12 and 13 are sourced directly from ABIC SW 2018 and CAA2024.</p>
     </div>
 
     <div className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-5">
@@ -36,10 +41,14 @@ function Dashboard({ cards, onStartAdaptive, onStartFull, onStartTopic }) {
       <Stat label="Mastered" value={overall.mastered} />
     </div>
 
-    <div className="mb-6 grid gap-3 sm:grid-cols-2">
+    <div className="mb-6 grid gap-3 sm:grid-cols-3">
       <button onClick={() => onStartAdaptive(null)} className="rounded-lg bg-slate-900 p-4 text-left text-white hover:bg-slate-800">
         <div className="flex items-center gap-2 text-sm font-semibold"><Sparkles size={16} /> Smart review</div>
         <p className="mt-1 text-[11px] leading-relaxed text-slate-300">Due terms first, then new terms. Up to 20 cards.</p>
+      </button>
+      <button onClick={() => onStartAdaptive('advanced')} className="rounded-lg border border-amber-200 bg-amber-50/60 p-4 text-left hover:border-amber-300 hover:bg-amber-50">
+        <div className="flex items-center gap-2 text-sm font-semibold text-amber-950"><Sparkles size={16} /> Advanced review</div>
+        <p className="mt-1 text-[11px] leading-relaxed text-amber-800">{advanced.total} harder cards · {advanced.due} due · {advanced.newCount} new.</p>
       </button>
       <button onClick={() => onStartFull(null)} className="rounded-lg border border-slate-200 p-4 text-left hover:border-indigo-300 hover:bg-indigo-50/40">
         <div className="flex items-center gap-2 text-sm font-semibold text-slate-900"><BookOpenCheck size={16} /> All terms</div>
@@ -52,9 +61,10 @@ function Dashboard({ cards, onStartAdaptive, onStartFull, onStartTopic }) {
       <div className="grid gap-2 sm:grid-cols-2">
         {modules.map((moduleId) => {
           const stats = flashcardStats(cards, moduleId);
+          const advancedCount = cards.filter((card) => card.moduleId === moduleId && card.difficulty === 'advanced').length;
           return <div key={moduleId} className={`rounded-lg border p-3 ${moduleClasses(moduleId)}`}>
             <div className="flex items-center justify-between gap-3">
-              <div><div className="text-sm font-semibold text-slate-900">{moduleLabel(moduleId)}</div><div className="mt-0.5 text-[10px] text-slate-400">{stats.total} terms · {stats.due} due · {stats.mastered} mastered</div></div>
+              <div><div className="text-sm font-semibold text-slate-900">{moduleLabel(moduleId)}</div><div className="mt-0.5 text-[10px] text-slate-400">{stats.total} terms · {advancedCount} advanced · {stats.due} due · {stats.mastered} mastered</div></div>
               <div className="flex gap-1.5">
                 <button onClick={() => onStartAdaptive(moduleId)} className="rounded-md bg-slate-900 px-2.5 py-1.5 text-[10px] font-medium text-white">Review</button>
                 <button onClick={() => onStartFull(moduleId)} className="rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[10px] font-medium text-slate-600 hover:bg-slate-50">All</button>
@@ -79,6 +89,7 @@ function Dashboard({ cards, onStartAdaptive, onStartFull, onStartTopic }) {
 
 function StudyCard({ card, index, total, flipped, onFlip, onRate, onEndSession }) {
   const examples = card.examples || [];
+  const isAdvanced = card.difficulty === 'advanced';
   return <div>
     <div className="mb-3 flex items-center justify-between text-xs text-slate-500">
       <button onClick={onEndSession} className="flex items-center gap-1 hover:text-slate-800"><ChevronLeft size={14} /> Flashcards</button>
@@ -89,13 +100,13 @@ function StudyCard({ card, index, total, flipped, onFlip, onRate, onEndSession }
       <div className="relative min-h-[380px] w-full" style={{ perspective: '1200px' }}>
         <div className="absolute inset-0" style={{ transformStyle: 'preserve-3d', transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)', transition: 'transform 500ms ease' }}>
           <div className="absolute inset-0 flex min-h-[380px] flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-7 text-center shadow-sm" style={{ backfaceVisibility: 'hidden' }}>
-            <div className="mb-4 rounded-full bg-indigo-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-indigo-700">{moduleLabel(card.moduleId)} · {card.topic}</div>
+            <div className="mb-4 flex flex-wrap items-center justify-center gap-2"><span className="rounded-full bg-indigo-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-indigo-700">{moduleLabel(card.moduleId)} · {card.topic}</span>{isAdvanced && <AdvancedBadge />}</div>
             <h2 className="max-w-xl text-2xl font-semibold leading-tight text-slate-900 sm:text-3xl">{card.term}</h2>
             <p className="mt-6 flex items-center gap-1.5 text-xs text-slate-400"><RotateCcw size={13} /> Tap to reveal</p>
           </div>
 
           <div className="absolute inset-0 min-h-[380px] overflow-auto rounded-2xl border border-indigo-200 bg-indigo-50/30 p-6 shadow-sm" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
-            <div className="mb-4 flex flex-wrap items-center gap-2"><span className="rounded-full bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-indigo-700">{card.term}</span><span className="text-[10px] text-slate-400">{moduleLabel(card.moduleId)} · {card.topic}</span></div>
+            <div className="mb-4 flex flex-wrap items-center gap-2"><span className="rounded-full bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-indigo-700">{card.term}</span>{isAdvanced && <AdvancedBadge />}<span className="text-[10px] text-slate-400">{moduleLabel(card.moduleId)} · {card.topic}</span></div>
             <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Definition</div>
             <p className="mt-1 text-sm leading-relaxed text-slate-800">{card.definition}</p>
 
