@@ -2,19 +2,19 @@ import { EXPECTED_FLASHCARD_COUNT, FLASHCARDS } from '../src/data/flashcards.js'
 import { FLASHCARD_QA_OVERRIDES } from '../src/data/flashcardQaOverrides.js';
 
 const expectedByModule = {
-  1: 10,
-  2: 10,
-  3: 8,
-  4: 8,
-  5: 8,
-  6: 20,
-  7: 7,
-  8: 8,
-  9: 15,
-  10: 12,
-  11: 7,
-  12: 72,
-  13: 72,
+  1: 15,
+  2: 15,
+  3: 13,
+  4: 13,
+  5: 13,
+  6: 25,
+  7: 12,
+  8: 13,
+  9: 20,
+  10: 17,
+  11: 12,
+  12: 77,
+  13: 77,
 };
 
 function fail(message) {
@@ -61,9 +61,16 @@ for (const [module, expected] of Object.entries(expectedByModule)) {
   if (actual !== expected) fail(`M${module} expected ${expected} cards, found ${actual}`);
 }
 
+const advancedCards = FLASHCARDS.filter((card) => card.difficulty === 'advanced');
+if (advancedCards.length !== 65) fail(`expected 65 advanced cards, found ${advancedCards.length}`);
+for (let module = 1; module <= 13; module += 1) {
+  const count = advancedCards.filter((card) => card.module === module).length;
+  if (count !== 5) fail(`M${module} expected 5 advanced cards, found ${count}`);
+}
+
 for (const overrideId of Object.keys(FLASHCARD_QA_OVERRIDES)) {
   if (!ids.includes(overrideId)) fail(`QA override points to missing card ${overrideId}`);
 }
 
-console.log(`Flashcard QA passed: ${FLASHCARDS.length} cards across M1–M13, unique IDs/terms and source-specific provenance.`);
+console.log(`Flashcard QA passed: ${FLASHCARDS.length} cards across M1–M13, including 65 advanced cards, with unique IDs/terms and source-specific provenance.`);
 console.log(`Module distribution: ${Object.entries(expectedByModule).map(([module, count]) => `M${module}=${count}`).join(', ')}`);
