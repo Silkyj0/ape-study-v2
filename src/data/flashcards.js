@@ -1,6 +1,7 @@
 import { FLASHCARDS as CORE_FLASHCARDS } from './flashcardsCore.js';
 import { EXPANDED_FLASHCARDS } from './flashcardsExpanded.js';
 import { ADVANCED_FLASHCARDS_CORE } from './flashcardsAdvanced.js';
+import { ADVANCED_FLASHCARD_REFINEMENTS } from './flashcardsAdvancedRefinements.js';
 import { FLASHCARDS_M12 } from './flashcards/module12.js';
 import { FLASHCARDS_M13 } from './flashcards/module13.js';
 import { FLASHCARD_QA_OVERRIDES } from './flashcardQaOverrides.js';
@@ -14,6 +15,7 @@ function applyQaAndContractRefs(card) {
   let next = {
     ...card,
     ...(FLASHCARD_QA_OVERRIDES[card.id] || {}),
+    ...(ADVANCED_FLASHCARD_REFINEMENTS[card.id] || {}),
   };
 
   const abicRef = ABIC_FLASHCARD_CROSS_REFS[card.id];
