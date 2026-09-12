@@ -1,5 +1,6 @@
 import { CAA2024_FLASHCARDS } from '../caa2024/flashcards.js';
 import { CAA2024_ITEM_FLASHCARDS } from '../caa2024/flashcardsItems.js';
+import { CAA2024_ADVANCED_FLASHCARDS } from '../caa2024/advancedFlashcards.js';
 import { caaFlashcard as c } from '../caa2024/factories.js';
 
 const CARD_REFINEMENTS = {
@@ -36,4 +37,5 @@ export const FLASHCARDS_M13 = [
   ...CAA2024_FLASHCARDS.map(refine),
   ...CAA2024_ITEM_FLASHCARDS.map(refine),
   ...QA_EXPANSION,
+  ...CAA2024_ADVANCED_FLASHCARDS,
 ];
