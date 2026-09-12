@@ -16,9 +16,6 @@ function learningProgress(prior, fallback = {}) {
     due: prior ? (prior.due ?? 0) : 0,
     seen: prior ? (prior.seen ?? 0) : 0,
     correctCount: prior ? (prior.correctCount ?? 0) : 0,
-    // null distinguishes historical progress whose consecutive-answer streak
-    // cannot be reconstructed from aggregate counts. The first new answer will
-    // start a real streak without falsely snoozing an old question.
     correctStreak: prior ? (prior.correctStreak ?? null) : 0,
     lapseCount: prior ? (prior.lapseCount ?? 0) : 0,
     recentResults: prior?.recentResults || [],
@@ -121,6 +118,7 @@ export function reconcile(stored = { questions: [] }) {
       examples: card.examples || [],
       source: card.source,
       sourceSection: card.sourceSection || null,
+      difficulty: card.difficulty || 'core',
       ...flashcardProgress(prior),
     };
   });
